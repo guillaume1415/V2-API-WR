@@ -1380,36 +1380,22 @@ function laneSeries(lane, totalLength){
     }
   }
 
-  // ── A-conditionnel : suppression du dernier tick s'il est clippé ───────
-  // Le dernier tick où d atteint totalLength correspond souvent à un
-  // franchissement de ligne survenu AU MILIEU de l'intervalle d'échantil-
-  // lonnage : l'API clippe distanceTravelled à totalLength alors que le
-  // boat est physiquement au-delà. → Δd enregistré < Δd réel sur ce
-  // dernier intervalle → vitesse calculée artificiellement basse → le
-  // RTS propage cette valeur basse en arrière (queue qui plonge).
+  // ── Détection du dernier tick clippé (franchissement de ligne) ─────────
+  // Le tick où `distanceTravelled` atteint `totalLength` pour la première
+  // fois correspond au franchissement, qui s'est produit AU MILIEU de
+  // l'intervalle d'échantillonnage. L'API clippe la position à totalLength
+  // alors que le bateau est physiquement au-delà : Δd enregistré < Δd réel
+  // → vitesse calculée artificiellement basse → le RTS propage cette
+  // valeur basse en arrière (queue qui plonge de plusieurs m/s).
   //
-  // Heuristique : on compare le Δd du dernier intervalle au Δd attendu
-  // extrapolé des 3 ticks précédents. Si Δd_last < 0.7 × Δd_attendu, on
-  // considère le tick comme clippé et on le supprime.
-  // Effet : ~1 tick perdu sur les courses 1 s/tick (négligeable) ; aucun
-  // tick perdu sur les courses sparses (Olympics, 4-5 s/tick) si la
-  // vitesse moyenne reste cohérente.
-  if(best.length >= 5){
-    const last = best[best.length-1];
-    const prev = best[best.length-2];
-    const dd_last = last.x - prev.x;
-    // Δd attendu = moyenne des 3 derniers Δd avant le dernier intervalle
-    let sumDd = 0, nDd = 0;
-    for(let i = best.length-4; i < best.length-1; i++){
-      if(i >= 1){ sumDd += best[i].x - best[i-1].x; nDd++; }
-    }
-    if(nDd > 0){
-      const dd_expected = sumDd / nDd;
-      if(dd_expected > 0 && dd_last < 0.7 * dd_expected){
-        best = best.slice(0, best.length - 1);
-      }
-    }
-  }
+  // Stratégie (validée vs splits officiels 1500-2000m) : on détecte le
+  // tick clippé (dernier point ≥ totalLength alors que l'avant-dernier
+  // était < totalLength) et on le supprime APRÈS calibration du pas
+  // temporel. On évite aussi d'ancrer ce tick comme gate 2000m, sinon le
+  // Kalman réinjecte la contrainte (cf. buildGateAnchors).
+  const lastClipped = best.length >= 2
+                   && best[best.length-1].x >= totalLength
+                   && best[best.length-2].x <  totalLength;
 
   // ── Calibration du pas temporel (secondes par tick) ─────────────────────
   // L'API garantit `trackCount` strictement monotone (+1), MAIS le pas réel
@@ -1437,6 +1423,8 @@ function laneSeries(lane, totalLength){
   if(secondsPerTick !== 1){
     for(const p of best) p.t = p.t * secondsPerTick;
   }
+  // Suppression du tick de franchissement clippé (voir explication ci-dessus).
+  if(lastClipped){ best = best.slice(0, best.length - 1); }
   return best;
 }
 
@@ -1890,13 +1878,19 @@ function rtsSmooth1D(distances, gates, opts, times){
 // Extrait les portes (intermediates officiels) en les rattachant au tick
 // dont la distance est la plus proche. Cette association est robuste car
 // les portes 500/1000/1500/2000 m sont en général hors zone de pont.
-function buildGateAnchors(lane, pts){
+function buildGateAnchors(lane, pts, totalLength){
   const inters = lane.intermediates || [];
   const gates = [];
   for(const it of inters){
     const dStr = (it.distance?.DisplayName||"").replace(/\D/g,"");
     const dGate = parseInt(dStr);
     if(!isFinite(dGate)) continue;
+    // Skip la gate de fin de course : le dernier point GPS conservé est
+    // celui qui précède le franchissement, ResultTime correspond à un
+    // moment intermédiaire entre ce tick et le tick clippé (supprimé en
+    // amont). Forcer la gate à totalLength = dernier tick injecterait
+    // une vitesse moyenne tronquée qui plonge la queue de courbe.
+    if(totalLength && dGate >= totalLength) continue;
     let bestI = -1, bestErr = Infinity;
     for(let i=0;i<pts.length;i++){
       const e = Math.abs(pts[i].d - dGate);
@@ -1989,7 +1983,7 @@ function buildLaneSeries(lane, totalLength){
   const ranks   = pts.map(p=>p.rank);
   // Niveau 0 : Kalman + RTS (seule méthode de correction conservée)
   if(state.rtsEnabled){
-    const gates = buildGateAnchors(lane, pts);
+    const gates = buildGateAnchors(lane, pts, totalLength);
     if(gates.length >= 1){
       const dists = pts.map(p => p.d);
       const tsec = pts.map(p => p.t);
