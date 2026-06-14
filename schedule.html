@@ -443,6 +443,9 @@
     <a class="nav-link" id="nav-analyse-link" href="analyse.html">
       <span class="nav-icon">📊</span><span class="nav-label" id="nav-analyse-label">Analyse</span>
     </a>
+    <a class="nav-link" id="nav-nations-link" href="nations.html">
+      <span class="nav-icon">🏅</span><span class="nav-label" id="nav-nations-label">Nations</span>
+    </a>
   </nav>
 
   <div class="header-tools">
@@ -527,7 +530,7 @@ const I18N = {
   en: {
     title_schedule: "World Rowing — Schedule",
     subtitle: "Local interface · Official World Rowing API",
-    nav_results: "Results", nav_schedule: "Schedule", nav_live: "Live", nav_analyse: "Analyse",
+    nav_results: "Results", nav_schedule: "Schedule", nav_live: "Live", nav_analyse: "Analyse", nav_nations: "Nations",
     hdr_notifs: "Notifs",
     tt_home: "Home", tt_notifs: "Race notifications",
     tt_theme: "Light / dark mode", tt_more: "More options",
@@ -581,7 +584,7 @@ const I18N = {
   fr: {
     title_schedule: "World Rowing — Programme",
     subtitle: "Interface locale · API officielle World Rowing",
-    nav_results: "Résultats", nav_schedule: "Programme", nav_live: "Live", nav_analyse: "Analyse",
+    nav_results: "Résultats", nav_schedule: "Programme", nav_live: "Live", nav_analyse: "Analyse", nav_nations: "Nations",
     hdr_notifs: "Notifs",
     tt_home: "Accueil", tt_notifs: "Notifications de courses",
     tt_theme: "Mode clair / sombre", tt_more: "Plus d'options",
@@ -663,12 +666,14 @@ function applyStaticI18n() {
   setText("nav-schedule-label", "nav_schedule");
   setText("nav-live-label",     "nav_live");
   setText("nav-analyse-label",  "nav_analyse");
+  setText("nav-nations-label",  "nav_nations");
   setText("btn-notifs-label",   "hdr_notifs");
   setAttr("brand-link", "title", "tt_home");
   setAttr("nav-results-link",  "title", "nav_results");
   setAttr("nav-schedule-link", "title", "nav_schedule");
   setAttr("nav-live-link",     "title", "nav_live");
   setAttr("nav-analyse-link",  "title", "nav_analyse");
+  setAttr("nav-nations-link",  "title", "nav_nations");
   setAttr("btn-notif", "title", "tt_notifs");
   setAttr("btn-theme", "title", "tt_theme");
   setAttr("btn-more",  "title", "tt_more");
