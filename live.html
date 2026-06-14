@@ -157,34 +157,6 @@
     .hdr-more { display: inline-flex; align-items: center; justify-content: center; }
   }
 
-  @media (max-width: 720px) {
-    .layout {
-      flex-direction: column;
-      overflow-y: auto;
-      overflow-x: hidden;
-      -webkit-overflow-scrolling: touch;
-    }
-    aside {
-      width: 100%;
-      flex-shrink: 0;
-      overflow: visible;
-      border-right: none;
-      border-bottom: 1px solid var(--border);
-    }
-    .cards-grid { grid-template-columns: 1fr; }
-    main {
-      flex: none;
-      overflow: visible;
-      padding: 14px;
-    }
-    .race-head h2 { font-size: 0.95rem; }
-    .progress { min-width: 80px; }
-    table.lanes .col-split,
-    table.lanes .col-final,
-    table.lanes .col-crew { display: none; }
-    .tracker-actions { flex-wrap: wrap; gap: 6px; }
-  }
-
   /* ── Toast notifications ── */
   .toast-container {
     position: fixed; bottom: 16px; right: 16px; z-index: 300;
@@ -396,8 +368,9 @@
   .legend i{width:10px;height:10px;border-radius:2px;display:inline-block}
   .zoom-hint{font-size:10px;color:var(--text-muted);margin-left:6px;font-style:italic}
 
-  /* Mobile layout — après règles desktop pour gagner en cascade */
-  @media (max-width: 720px) {
+  /* Mobile / tablette paysage : sidebar en haut (comme mobile portrait) */
+  @media (max-width: 720px),
+         (orientation: landscape) and (max-width: 1366px) and (hover: none) and (pointer: coarse) {
     .layout {
       flex-direction: column;
       overflow-y: auto;
@@ -411,11 +384,19 @@
       border-right: none;
       border-bottom: 1px solid var(--border);
     }
+    .cards-grid { grid-template-columns: 1fr; }
     main {
       flex: none;
       overflow: visible;
       min-height: auto;
+      padding: 14px;
     }
+    .race-head h2 { font-size: 0.95rem; }
+    .progress { min-width: 80px; }
+    table.lanes .col-split,
+    table.lanes .col-final,
+    table.lanes .col-crew { display: none; }
+    .tracker-actions { flex-wrap: wrap; gap: 6px; }
   }
 </style>
 </head>
@@ -441,6 +422,9 @@
     </a>
     <a class="nav-link" id="nav-analyse-link" href="analyse.html" title="Analyse">
       <span class="nav-icon">📊</span><span class="nav-label" id="nav-analyse-label">Analyse</span>
+    </a>
+    <a class="nav-link" id="nav-nations-link" href="nations.html" title="Nations">
+      <span class="nav-icon">🏅</span><span class="nav-label" id="nav-nations-label">Nations</span>
     </a>
   </nav>
   <div class="header-tools">
@@ -509,7 +493,7 @@ const I18N = {
   en: {
     title_live: "World Rowing — Live",
     subtitle: "Local interface · Official World Rowing API",
-    nav_results: "Results", nav_schedule: "Schedule", nav_live: "Live", nav_analyse: "Analyse",
+    nav_results: "Results", nav_schedule: "Schedule", nav_live: "Live", nav_analyse: "Analyse", nav_nations: "Nations",
     hdr_notifs: "Notifs",
     tt_home: "Home", tt_notifs: "Notifications", tt_theme: "Toggle theme",
     tt_more: "More", tt_lang: "Language", tt_refresh: "Live status",
@@ -578,7 +562,7 @@ const I18N = {
   fr: {
     title_live: "World Rowing — Live",
     subtitle: "Interface locale · API officielle World Rowing",
-    nav_results: "Résultats", nav_schedule: "Programme", nav_live: "Live", nav_analyse: "Analyse",
+    nav_results: "Résultats", nav_schedule: "Programme", nav_live: "Live", nav_analyse: "Analyse", nav_nations: "Nations",
     hdr_notifs: "Notifs",
     tt_home: "Accueil", tt_notifs: "Notifications", tt_theme: "Changer le thème",
     tt_more: "Plus", tt_lang: "Langue", tt_refresh: "Statut live",
@@ -675,12 +659,14 @@ function applyStaticI18n() {
   setText("nav-schedule-label", "nav_schedule");
   setText("nav-live-label",     "nav_live");
   setText("nav-analyse-label",  "nav_analyse");
+  setText("nav-nations-label",  "nav_nations");
   setText("btn-notifs-label",   "hdr_notifs");
   setAttr("brand-link", "title", "tt_home");
   setAttr("nav-results-link",  "title", "nav_results");
   setAttr("nav-schedule-link", "title", "nav_schedule");
   setAttr("nav-live-link",     "title", "nav_live");
   setAttr("nav-analyse-link",  "title", "nav_analyse");
+  setAttr("nav-nations-link",  "title", "nav_nations");
   setAttr("btn-notif", "title", "tt_notifs");
   setAttr("btn-theme", "title", "tt_theme");
   setAttr("btn-more",  "title", "tt_more");
@@ -774,6 +760,27 @@ function fmtDate(d){
   return dt.toLocaleDateString(getLocale(),{day:"2-digit",month:"short",year:"numeric"});
 }
 function renderLoading(msg){ return `<div class="loading"><div class="spinner"></div>${esc(msg)}</div>`; }
+
+// ── Tri des classes de bateau : Open → Light → Para → Mix, M → W → Mix ──
+function boatClassSortKey(name) {
+  const s = String(name || "").trim();
+  let cat = 3, gender = 2;
+  if (/^PR\d?\s*M/i.test(s))      { cat = 2; gender = 0; }
+  else if (/^PR\d?\s*W/i.test(s)) { cat = 2; gender = 1; }
+  else if (/^PR/i.test(s))        { cat = 2; gender = 2; }
+  else if (/^LM/i.test(s))        { cat = 1; gender = 0; }
+  else if (/^LW/i.test(s))        { cat = 1; gender = 1; }
+  else if (/^M(?!ix)/i.test(s))   { cat = 0; gender = 0; }
+  else if (/^W/i.test(s))         { cat = 0; gender = 1; }
+  else if (/^Mix/i.test(s))       { cat = 0; gender = 2; }
+  return [cat, gender, s];
+}
+function sortClasses(arr) {
+  return [...arr].sort((a, b) => {
+    const ka = boatClassSortKey(a), kb = boatClassSortKey(b);
+    return ka[0] - kb[0] || ka[1] - kb[1] || ka[2].localeCompare(kb[2]);
+  });
+}
 
 // ── live tracker fetch & render ────────────────────────────────────────
 async function fetchTracker(raceId, trackerType){
@@ -1122,7 +1129,7 @@ function renderRaceList(){
   if(state.loadingRaces) return html + renderLoading(t("loading_races"));
   if(!state.races.length) return html + `<div class="empty">${t("no_races")}</div>`;
 
-  const classes = [...new Set(state.races.map(r => r.event?.boatClass?.DisplayName || "—"))];
+  const classes = sortClasses([...new Set(state.races.map(r => r.event?.boatClass?.DisplayName || "Autre"))]);
   html += `<div><div class="section-title">${esc(t("races_count",{n:state.races.length}))}</div></div>`;
   if(classes.length > 1){
     html += `<div class="class-filters">

@@ -834,7 +834,8 @@
   }
 }
 
-@media (max-width: 720px) {
+@media (max-width: 720px),
+       (orientation: landscape) and (max-width: 1366px) and (hover: none) and (pointer: coarse) {
   .results-page {
     flex-direction: column;
   }

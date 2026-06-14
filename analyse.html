@@ -47,7 +47,7 @@
   .brand-text h1 { font-size: 1.05rem; font-weight: 600; line-height: 1.2; }
   .brand-text p  { font-size: 0.72rem; color: var(--text-muted); line-height: 1.2; margin-top: 2px; }
 
-  .header-nav { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
+  .header-nav { display: flex; gap: 4px; align-items: center; }
   .nav-link {
     display: inline-flex; align-items: center; gap: 6px;
     padding: 6px 11px; border-radius: var(--radius);
@@ -67,18 +67,11 @@
   .header-tools {
     margin-left: auto;
     display: flex; align-items: center; gap: 6px;
-    flex-shrink: 0;
   }
   .refresh-status {
     font-size: 0.7rem; color: var(--text-muted);
     padding: 0 4px; white-space: nowrap;
     display: inline-flex; align-items: center; gap: 5px;
-    max-width: min(220px, 35vw);
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .refresh-status .lbl-text {
-    overflow: hidden; text-overflow: ellipsis;
   }
   .hdr-btn {
     display: inline-flex; align-items: center; gap: 5px;
@@ -160,44 +153,14 @@
     header { padding: 9px 12px; gap: 8px; }
     .brand-text { display: none; }
     .nav-label, .hdr-lbl { display: none; }
-    .nav-link { padding: 6px 9px; }
-    .refresh-status { max-width: 120px; font-size: 0.65rem; }
+    .refresh-status .lbl-text { display: none; }
     .hdr-btn { padding: 6px 9px; }
+    .nav-link { padding: 6px 9px; }
   }
   @media (max-width: 560px) {
     .hdr-btn#btn-notif,
     .refresh-status { display: none; }
     .hdr-more { display: inline-flex; align-items: center; justify-content: center; }
-  }
-
-  @media (max-width: 720px) {
-    .layout {
-      flex-direction: column;
-      overflow-y: auto;
-      overflow-x: hidden;
-      -webkit-overflow-scrolling: touch;
-    }
-    aside {
-      width: 100%;
-      flex-shrink: 0;
-      overflow: visible;
-      border-right: none;
-      border-bottom: 1px solid var(--border);
-    }
-    .cards-grid { grid-template-columns: 1fr; }
-    main {
-      flex: none;
-      overflow: visible;
-      padding: 14px;
-    }
-    .analyse-toolbar { flex-direction: column; align-items: stretch; }
-    .toolbar-group { width: 100%; }
-    .nation-pills {
-      flex-wrap: nowrap;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-      padding-bottom: 4px;
-    }
   }
 
   /* ── Layout ── */
@@ -228,7 +191,12 @@
   aside hr{border:none;border-top:1px solid var(--border)}
   aside code{background:var(--surface2);padding:2px 5px;border-radius:4px;font-size:0.8rem}
 
-  main{flex:1;overflow-y:auto;padding:22px;display:flex;flex-direction:column;gap:20px}
+  main{flex:1;overflow-y:auto;padding:22px;display:flex;flex-direction:column;gap:20px;align-items:stretch}
+  main > .breadcrumb,
+  main > .race-head,
+  main > .analyse-toolbar,
+  main > #pace-table-section,
+  main > .plot-grid{flex-shrink:0}
 
   .section-title{
     font-size:0.72rem;font-weight:700;text-transform:uppercase;
@@ -321,9 +289,16 @@
   .nation-pill .swatch{width:9px;height:9px;border-radius:50%}
   .switch{display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-size:0.82rem;color:var(--text)}
   .switch input{cursor:pointer}
+  .toolbar-btn{
+    padding:6px 14px;background:var(--accent);color:#fff;
+    border:none;border-radius:var(--radius);font-size:0.82rem;
+    font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;
+  }
+  .toolbar-btn:hover{background:var(--accent-hover)}
+  .toolbar-btn:disabled{opacity:.45;cursor:not-allowed}
 
   /* Charts grid */
-  .plot-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .plot-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;width:100%;position:relative;z-index:1}
   @media (max-width:1100px){ .plot-grid{grid-template-columns:1fr} }
   @media (max-width:480px){
     .plot{height:280px}
@@ -332,7 +307,7 @@
     .plot-card.fullscreen .plot,
     .plot-card.fullscreen .plot.tall{height:calc(100vh - 120px)}
   }
-  .plot-card{background:#ffffff;border:1px solid var(--border);border-radius:var(--radius);padding:10px;position:relative}
+  .plot-card{background:#ffffff;border:1px solid var(--border);border-radius:var(--radius);padding:10px;position:relative;overflow:hidden}
   .plot-card .plot-title{font-size:0.82rem;font-weight:600;color:#1a1d27;margin-bottom:4px}
   .plot-card .plot-sub{font-size:0.72rem;color:#64748b;margin-bottom:6px}
   .plot-card .plot-tools{color:#64748b}
@@ -350,12 +325,20 @@
   }
   .plot-card .btn-expand:hover{background:#e2e8f0;color:#1a1d27}
   .plot-card.fullscreen{
-    position:fixed;inset:20px;z-index:9999;padding:20px;margin:0;
+    position:fixed;inset:20px;z-index:10002;padding:20px;margin:0;
     box-shadow:0 20px 60px rgba(0,0,0,.5);
+  }
+  .plot-card.fullscreen .btn-expand{
+    z-index:10003;top:12px;right:12px;
+    width:32px;height:32px;font-size:18px;
+    background:#fff;border-color:var(--accent);color:var(--accent);
   }
   .plot-card.fullscreen .plot,
   .plot-card.fullscreen .plot.tall{height:calc(100vh - 160px)}
   body.has-fullscreen{overflow:hidden}
+  body.has-fullscreen header{z-index:1}
+  body.has-fullscreen main{z-index:10000;position:relative}
+  body.has-fullscreen #pace-table-section{z-index:1}
 
   .splits-strip{
     display:flex;gap:8px;flex-wrap:wrap;font-size:0.78rem;color:var(--text-muted);
@@ -364,14 +347,15 @@
   .splits-strip b{color:var(--text);font-variant-numeric:tabular-nums}
 
   .splits-table{
-    width:100%;border-collapse:collapse;margin:8px 0 12px 0;
+    width:auto;max-width:100%;border-collapse:collapse;margin:0;
     font-size:0.82rem;background:var(--surface2);
     border:1px solid var(--border);border-radius:6px;overflow:hidden;
   }
   .splits-table th,.splits-table td{
-    padding:5px 9px;text-align:right;
+    padding:5px 9px;text-align:center;
     font-variant-numeric:tabular-nums;
     border-bottom:1px solid var(--border);
+    white-space:nowrap;
   }
   .splits-table th{
     background:rgba(255,255,255,0.04);color:var(--text-muted);
@@ -379,14 +363,164 @@
   }
   .splits-table td.nation,.splits-table th.nation{text-align:left}
   .splits-table tr:last-child td{border-bottom:none}
-  .splits-table td.rank{color:var(--text-muted);width:32px;text-align:center}
+  .splits-table td.rank,.splits-table th.rank{
+    color:var(--text-muted);width:32px;min-width:32px;text-align:center;
+  }
   .splits-table .swatch-mini{
     display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;
     vertical-align:middle;
   }
   .splits-table td.best{color:#7fd1a3;font-weight:600}
   .splits-table td.total{color:var(--text);font-weight:600}
+  /* WBT & WR styles */
+  .wbt-banner{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:6px 14px;margin-bottom:10px;
+    background:color-mix(in srgb,var(--gold) 14%,var(--surface));
+    border:1px solid color-mix(in srgb,var(--gold) 40%,var(--border));
+    border-radius:var(--radius);font-size:0.8rem;font-weight:600;
+    color:var(--gold);
+  }
+  .wr-badge{
+    display:inline-block;background:var(--gold);color:#1a1d27;
+    border-radius:3px;padding:1px 5px;font-size:0.68rem;
+    font-weight:800;margin-left:5px;vertical-align:middle;
+    animation:wr-glow 1.6s ease-in-out infinite alternate;
+  }
+  @keyframes wr-glow{
+    from{box-shadow:0 0 4px var(--gold)}
+    to{box-shadow:0 0 10px var(--gold),0 0 20px rgba(245,158,11,0.4)}
+  }
+  .splits-table tr.wr-row td{background:color-mix(in srgb,var(--gold) 8%,var(--surface2))}
+  .splits-table td.wr-cell .pace-cum{color:var(--gold);font-weight:700}
+  .splits-table td.pct-wbt-cell,.splits-table th.pct-wbt{
+    white-space:nowrap;font-weight:600;min-width:72px;
+    border-left:2px solid var(--border);
+  }
+  /* Boutons Tout / Aucun */
+  .toolbar-btn-sm{
+    padding:3px 10px;background:var(--surface2);border:1px solid var(--border);
+    color:var(--text-muted);border-radius:var(--radius);font-size:0.75rem;
+    font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;
+    transition:border-color .15s,color .15s;
+  }
+  .toolbar-btn-sm:hover{border-color:var(--accent);color:var(--text)}
 
+  /* Compare mode */
+  .compare-toggle-btn{
+    padding:6px 14px;background:var(--surface2);border:1px solid var(--border);
+    color:var(--text-muted);border-radius:var(--radius);font-size:0.82rem;
+    font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;
+    transition:border-color .15s,color .15s,background .15s;
+  }
+  .compare-toggle-btn:hover{border-color:var(--accent);color:var(--text)}
+  .compare-toggle-btn.active{
+    border-color:var(--green);color:var(--green);
+    background:color-mix(in srgb,var(--green) 12%,var(--surface2));
+  }
+  .compare-panel{
+    display:grid;grid-template-columns:1fr 1fr;gap:10px;
+    background:var(--surface);border:1px solid var(--border);
+    border-radius:var(--radius);padding:12px;margin-bottom:10px;
+  }
+  .compare-slot{
+    background:var(--surface2);border:1px solid var(--border);
+    border-radius:var(--radius);padding:10px;
+  }
+  .compare-slot h4{
+    font-size:0.75rem;font-weight:700;text-transform:uppercase;
+    letter-spacing:.05em;color:var(--text-muted);margin-bottom:8px;
+  }
+  .compare-slot .slot-row{
+    display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:8px;
+  }
+  .compare-slot select{
+    flex:1;min-width:0;background:var(--surface);border:1px solid var(--border);
+    color:var(--text);padding:4px 8px;border-radius:4px;font-family:inherit;
+    font-size:0.8rem;
+  }
+  .compare-slot .cmp-search-btn{
+    padding:4px 12px;background:var(--accent);color:#fff;border:none;
+    border-radius:4px;font-size:0.8rem;font-weight:600;cursor:pointer;font-family:inherit;
+  }
+  .compare-slot .cmp-search-btn:hover{background:var(--accent-hover)}
+  .compare-slot .cmp-race-list{
+    max-height:200px;overflow-y:auto;display:flex;flex-direction:column;gap:4px;
+  }
+  .compare-slot .cmp-comp-item,.compare-slot .cmp-race-item{
+    padding:5px 8px;border-radius:4px;cursor:pointer;font-size:0.78rem;
+    border:1px solid var(--border);background:var(--surface);
+    color:var(--text);transition:border-color .12s;
+  }
+  .compare-slot .cmp-comp-item:hover,.compare-slot .cmp-race-item:hover{
+    border-color:var(--accent);
+  }
+  .compare-slot .cmp-comp-item.selected,.compare-slot .cmp-race-item.selected{
+    border-color:var(--accent);color:var(--accent);
+    background:color-mix(in srgb,var(--accent) 10%,var(--surface));
+  }
+  .compare-slot .cmp-lane-pills{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+  .compare-slot .nation-pill{font-size:0.72rem;padding:3px 8px}
+  .compare-slot-label{
+    display:inline-block;padding:2px 7px;border-radius:3px;font-size:0.68rem;
+    font-weight:700;vertical-align:middle;margin-left:4px;
+  }
+  .slot-a-label{background:color-mix(in srgb,var(--accent) 20%,transparent);color:var(--accent)}
+  .slot-b-label{background:color-mix(in srgb,var(--gold) 20%,transparent);color:var(--gold)}
+  body.compare-mode .layout aside{display:none}
+  body.compare-mode .layout main{width:100%}
+  .compare-panel-header{
+    display:flex;align-items:center;justify-content:flex-end;gap:8px;
+    margin-bottom:10px;grid-column:1/-1;
+  }
+  .compare-pace-block{margin-bottom:16px}
+  .compare-pace-block:last-child{margin-bottom:0}
+  .compare-pace-grid{
+    display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:12px;align-items:start;
+  }
+  .compare-pace-grid .compare-pace-block{margin-bottom:0;min-width:0}
+  .compare-pace-grid .splits-table-wrap{overflow-x:auto}
+  .compare-pace-grid .splits-table{font-size:0.8rem}
+  .compare-pace-grid .splits-table th.dist,
+  .compare-pace-grid .splits-table td.pace-cell{
+    width:auto;min-width:148px;max-width:none;
+  }
+  @media(max-width:1100px){
+    .compare-pace-grid{grid-template-columns:1fr}
+  }
+  .compare-class-hint{
+    font-size:0.72rem;color:var(--text-muted);margin-bottom:6px;
+  }
+  .compare-slot-actions{display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap}
+  #pace-table-section{
+    display:block;flex-shrink:0;width:100%;
+    position:relative;z-index:2;
+    background:var(--surface);
+    border:1px solid var(--border);border-radius:var(--radius);
+    padding:12px 14px;
+  }
+  .splits-table-wrap{
+    overflow-x:auto;margin:0;
+    -webkit-overflow-scrolling:touch;
+    width:100%;
+  }
+  .splits-table{margin-left:auto;margin-right:auto}
+  .splits-table th.dist,.splits-table td.pace-cell{
+    width:184px;min-width:176px;max-width:208px;
+  }
+  .splits-table th.pace-legend{
+    font-size:0.66rem;color:var(--text-muted);font-weight:500;
+    border-top:1px solid var(--border);text-transform:none;letter-spacing:normal;
+  }
+  .splits-table td.pace-cell{
+    vertical-align:top;padding:8px 13px;font-family:monospace;text-align:center;
+  }
+  .splits-table td.pace-cell .pace-cum{font-weight:600;color:var(--text)}
+  .splits-table td.pace-cell .pace-split{
+    margin-top:3px;padding-top:3px;border-top:1px solid var(--border);
+    color:var(--text-muted);
+  }
   /* Hover bubble unified : on masque uniquement la pastille de couleur.
      Le nom de la nation (text.legendtext) reste affiché à côté de la valeur. */
   .hoverlayer .legend g.traces .legendsymbols,
@@ -418,8 +552,9 @@
     color:var(--accent);font-weight:600;
   }
 
-  /* Mobile layout — après règles desktop pour gagner en cascade */
-  @media (max-width: 720px) {
+  /* Mobile / tablette paysage : sidebar en haut (comme mobile portrait) */
+  @media (max-width: 720px),
+         (orientation: landscape) and (max-width: 1366px) and (hover: none) and (pointer: coarse) {
     .layout {
       flex-direction: column;
       overflow-y: auto;
@@ -473,6 +608,9 @@
     </a>
     <a class="nav-link active" id="nav-analyse-link" href="analyse.html" title="Analyse">
       <span class="nav-icon">📊</span><span class="nav-label" id="nav-analyse-label">Analyse</span>
+    </a>
+    <a class="nav-link" id="nav-nations-link" href="nations.html" title="Nations">
+      <span class="nav-icon">🏅</span><span class="nav-label" id="nav-nations-label">Nations</span>
     </a>
   </nav>
   <div class="header-tools">
@@ -556,7 +694,7 @@ const I18N = {
   en: {
     title_analyse: "World Rowing — Analyse",
     subtitle: "Per-boat analysis · splits & correlations",
-    nav_results: "Results", nav_schedule: "Schedule", nav_live: "Live", nav_analyse: "Analyse",
+    nav_results: "Results", nav_schedule: "Schedule", nav_live: "Live", nav_analyse: "Analyse", nav_nations: "Nations",
     hdr_notifs: "Notifs",
     tt_home: "Home", tt_notifs: "Notifications", tt_theme: "Toggle theme",
     tt_more: "More", tt_lang: "Language", tt_status: "API status",
@@ -565,17 +703,111 @@ const I18N = {
     menu_no_fav: "No favorite nation", menu_fav: "Favorite: {nation}",
     menu_status_idle: "Ready — run a search",
     lbl_year: "Year", lbl_category: "Category", btn_search: "Search",
+    all: "All",
     welcome: "Welcome — run a search to list competitions.",
-    sidebar_help: "Pick a competition and race, then select a boat for detailed analysis (speed, cadence, rank, gap, cadence/speed correlation).",
+    sidebar_help: "Pick a competition and race, then select a boat for detailed analysis (speed, cadence, split times, gap, cadence/speed correlation).",
     proxy_label: "Use local proxy (port 8765)",
     notif_title: "🚣 {nation} — race in 5 min",
     notif_no_browser: "Your browser does not support notifications.",
     status_ready: "ready",
+    btn_export_html: "Export HTML report",
+    export_html_busy: "Generating report…",
+    export_no_data: "No analysis data to export. Open a race with tracker data first.",
+    export_compare_need_b: "Select race B before exporting the comparison.",
+    report_title: "World Rowing — Analysis report",
+    report_intermediates: "Intermediates",
+    report_boats: "Boats analysed",
+    report_exported: "Exported",
+    report_chart_speed: "Speed vs distance",
+    report_chart_cadence: "Cadence vs distance",
+    report_chart_time: "Split times vs distance",
+    report_chart_gap: "Gap to leader vs distance",
+    report_chart_dps: "Distance per stroke vs distance",
+    // render
+    err_proxy: "Error — activate the local proxy and run <code>python proxy.py</code>.",
+    loading_comps: "Searching competitions…",
+    empty_no_comps: "No competition found for this selection.",
+    loading_race: "Loading race data…",
+    breadcrumb_comps: "Competitions",
+    // renderCompList / renderRaceList
+    section_comps: "Competitions",
+    count_comps: "{n} competition(s)",
+    count_races: "Races ({n})",
+    loading_races: "Loading races…",
+    empty_no_races: "No race found.",
+    // renderAnalyseHTML
+    err_no_data: "No data available for this race.",
+    lbl_boat: "Boat",
+    lbl_select_all: "All",
+    lbl_deselect_all: "None",
+    lbl_size_dps: "Size = DPS (m/stroke)",
+    lbl_smoothing: "Smoothing",
+    lbl_kalman: "Kalman + RTS (official gates)",
+    tt_kalman: "Kalman filter + RTS smoother anchored on 500/1000/1500/2000m gates. Optimal method.",
+    tt_sigma_a: "Acceleration model noise. Higher = more flexible model.",
+    tt_r_gps: "GPS noise variance. Higher = less trust in GPS.",
+    tt_r_gate: "Gate noise variance. Lower = tighter anchoring.",
+    lbl_sigma_a: "σ_a", lbl_r_gps: "R_gps", lbl_r_gate: "R_gate",
+    lbl_color_curves: "Curve colour (1 boat):",
+    lbl_color_cadence: "cadence", lbl_color_speed: "speed",
+    lbl_intermediates: "Intermediates",
+    err_table_display: "Table display error:",
+    tt_fullscreen: "Fullscreen", tt_exit_fullscreen: "Exit fullscreen",
+    // Chart card titles
+    chart_speed_title: "Speed vs distance",
+    chart_speed_sub: "Y = speed (m/s) · colour = cadence (spm) · 500m splits annotated",
+    chart_cadence_title: "Cadence vs distance",
+    chart_cadence_sub: "Y = cadence (spm, higher is better) · colour = speed (m/s)",
+    chart_time_title: "Split times vs distance",
+    chart_time_sub: "Y = split time per segment (faster = higher) · hover = segment end time only",
+    chart_gap_title: "Gap to leader (m) vs distance",
+    chart_gap_sub: "Y = gap (0 = leader, values increase downward) · colour = speed (m/s)",
+    chart_dps_title: "Distance per stroke vs distance",
+    chart_dps_sub: "Y = DPS (m/stroke) = speed × 60 / cadence · X = distance (m)",
+    // WBT
+    wbt_label: "WBT — {cls}: {time}",
+    wbt_unknown: "WBT unknown for this class",
+    // Table headers
+    tbl_team: "Team",
+    tbl_legend: "cumul · split · gap",
+    tbl_no_boats: "No boats in this race.",
+    tbl_no_inters: "No intermediate data for this race.",
+    tbl_pct_wbt: "% WBT",
+    tbl_wr_badge: "WR",
+    // Axis labels
+    axis_distance: "Distance (m)",
+    axis_speed: "Speed (m/s)",
+    axis_cadence: "Cadence (spm)",
+    axis_time: "Split time (min:s)",
+    axis_gap: "Gap to leader (m)",
+    axis_dps: "Distance per stroke (m/stroke)",
+    // Color bar
+    color_speed: "Speed (m/s)", color_cadence: "Cadence (spm)",
+    // Annotations & hovers
+    annot_vmax: "Peak speed",
+    hover_speed: "Speed", hover_cadence: "Cadence", hover_gap: "Gap",
+    hover_dps: "DPS", hover_spm: "SPM", hover_ms: "m/s",
+    // Plot tools
+    scale_y: "Y", scale_x: "X", scale_color: "Color",
+    // Compare mode
+    btn_compare: "Compare 2 races",
+    btn_compare_close: "Close comparison",
+    compare_race1: "Race 1 (current)",
+    compare_race2: "Race 2 — pick a race",
+    compare_search: "Search",
+    compare_no_race: "No race selected",
+    compare_loading: "Loading…",
+    compare_select_hint: "Pick a competition, then a race",
+    compare_class_filter: "Filtered by class: {cls}",
+    compare_table_a: "Race A — split times",
+    compare_table_b: "Race B — split times",
+    compare_from_a: "Year & competition from race A",
+    report_title_compare: "World Rowing — Comparison report",
   },
   fr: {
     title_analyse: "World Rowing — Analyse",
     subtitle: "Lecture par bateau · scatter colorés · splits & corrélations",
-    nav_results: "Résultats", nav_schedule: "Programme", nav_live: "Live", nav_analyse: "Analyse",
+    nav_results: "Résultats", nav_schedule: "Programme", nav_live: "Live", nav_analyse: "Analyse", nav_nations: "Nations",
     hdr_notifs: "Notifs",
     tt_home: "Accueil", tt_notifs: "Notifications", tt_theme: "Changer le thème",
     tt_more: "Plus", tt_lang: "Langue", tt_status: "Statut API",
@@ -584,12 +816,106 @@ const I18N = {
     menu_no_fav: "Aucune nation favorite", menu_fav: "Favori : {nation}",
     menu_status_idle: "Prêt — lancez une recherche",
     lbl_year: "Année", lbl_category: "Catégorie", btn_search: "Rechercher",
+    all: "Toutes",
     welcome: "Bienvenue — lancez une recherche pour afficher les compétitions.",
-    sidebar_help: "Choisissez compétition + course, puis sélectionnez un bateau pour analyser sa course en détail (vitesse, cadence, rang, écart, corrélation cadence/vitesse).",
+    sidebar_help: "Choisissez compétition + course, puis sélectionnez un bateau pour analyser sa course en détail (vitesse, cadence, temps de passage, écart, corrélation cadence/vitesse).",
     proxy_label: "Utiliser proxy local (port 8765)",
     notif_title: "🚣 {nation} — course dans 5 min",
     notif_no_browser: "Votre navigateur ne supporte pas les notifications.",
     status_ready: "prêt",
+    btn_export_html: "Exporter rapport HTML",
+    export_html_busy: "Génération du rapport…",
+    export_no_data: "Aucune donnée à exporter. Ouvrez d'abord une course avec tracker.",
+    export_compare_need_b: "Sélectionnez la course B avant d'exporter la comparaison.",
+    report_title: "World Rowing — Rapport d'analyse",
+    report_intermediates: "Intermédiaires",
+    report_boats: "Bateaux analysés",
+    report_exported: "Exporté",
+    report_chart_speed: "Vitesse vs distance",
+    report_chart_cadence: "Cadence vs distance",
+    report_chart_time: "Temps de passage vs distance",
+    report_chart_gap: "Écart au leader vs distance",
+    report_chart_dps: "Distance par coup vs distance",
+    // render
+    err_proxy: "Erreur — activez le proxy local et lancez <code>python proxy.py</code>.",
+    loading_comps: "Recherche des compétitions…",
+    empty_no_comps: "Aucune compétition trouvée pour cette sélection.",
+    loading_race: "Chargement des données de course…",
+    breadcrumb_comps: "Compétitions",
+    // renderCompList / renderRaceList
+    section_comps: "Compétitions",
+    count_comps: "{n} compétition(s)",
+    count_races: "Courses ({n})",
+    loading_races: "Chargement des courses…",
+    empty_no_races: "Aucune course trouvée.",
+    // renderAnalyseHTML
+    err_no_data: "Pas de données disponibles pour cette course.",
+    lbl_boat: "Bateau",
+    lbl_select_all: "Tout",
+    lbl_deselect_all: "Aucun",
+    lbl_size_dps: "Taille = DPS (distance/coup)",
+    lbl_smoothing: "Lissage",
+    lbl_kalman: "Kalman + RTS (portes officielles)",
+    tt_kalman: "Filtre de Kalman + lissage RTS ancré sur les portes 500/1000/1500/2000m. Méthode optimale.",
+    tt_sigma_a: "Bruit du modèle d'accélération. Plus haut = modèle plus souple.",
+    tt_r_gps: "Variance bruit GPS. Plus haut = moins de confiance au GPS.",
+    tt_r_gate: "Variance bruit porte. Plus bas = ancrage plus rigide.",
+    lbl_sigma_a: "σ_a", lbl_r_gps: "R_gps", lbl_r_gate: "R_porte",
+    lbl_color_curves: "Couleur des courbes (1 bateau) :",
+    lbl_color_cadence: "cadence", lbl_color_speed: "vitesse",
+    lbl_intermediates: "Intermédiaires",
+    err_table_display: "Erreur affichage tableau :",
+    tt_fullscreen: "Plein écran", tt_exit_fullscreen: "Quitter le plein écran",
+    // Chart card titles
+    chart_speed_title: "Vitesse vs distance",
+    chart_speed_sub: "Y = vitesse (m/s) · couleur = cadence (spm) · splits 500m annotés",
+    chart_cadence_title: "Cadence vs distance",
+    chart_cadence_sub: "Y = cadence (spm, le plus haut en haut) · couleur = vitesse (m/s)",
+    chart_time_title: "Temps de passage vs distance",
+    chart_time_sub: "Y = temps de passage par segment (rapide en haut) · survol = temps de fin de segment uniquement",
+    chart_gap_title: "Écart au leader (m) vs distance",
+    chart_gap_sub: "Y = écart (0 en haut = leader, valeurs grandes en bas) · couleur = vitesse (m/s)",
+    chart_dps_title: "Distance par coup vs distance",
+    chart_dps_sub: "Y = DPS (m/coup) = vitesse × 60 / cadence · X = distance (m)",
+    // WBT
+    wbt_label: "WBT — {cls} : {time}",
+    wbt_unknown: "WBT inconnu pour cette catégorie",
+    // Table headers
+    tbl_team: "Équipe",
+    tbl_legend: "cumulé · split · écart",
+    tbl_no_boats: "Aucun bateau dans cette course.",
+    tbl_no_inters: "Aucune donnée d'intermédiaires pour cette course.",
+    tbl_pct_wbt: "% WBT",
+    tbl_wr_badge: "WR",
+    // Axis labels
+    axis_distance: "Distance (m)",
+    axis_speed: "Vitesse (m/s)",
+    axis_cadence: "Cadence (coups/min)",
+    axis_time: "Temps de passage (min:s)",
+    axis_gap: "Écart au leader (m)",
+    axis_dps: "Distance par coup (m/coup)",
+    // Color bar
+    color_speed: "Vitesse (m/s)", color_cadence: "Cadence (spm)",
+    // Annotations & hovers
+    annot_vmax: "V max finale",
+    hover_speed: "Vitesse", hover_cadence: "Cadence", hover_gap: "Écart",
+    hover_dps: "DPS", hover_spm: "SPM", hover_ms: "m/s",
+    // Plot tools
+    scale_y: "Y", scale_x: "X", scale_color: "Couleur",
+    // Compare mode
+    btn_compare: "Comparer 2 courses",
+    btn_compare_close: "Fermer comparaison",
+    compare_race1: "Course 1 (courante)",
+    compare_race2: "Course 2 — choisir une course",
+    compare_search: "Rechercher",
+    compare_no_race: "Aucune course sélectionnée",
+    compare_loading: "Chargement…",
+    compare_select_hint: "Sélectionnez une compétition puis une course",
+    compare_class_filter: "Filtré sur la catégorie : {cls}",
+    compare_table_a: "Course A — temps de passage",
+    compare_table_b: "Course B — temps de passage",
+    compare_from_a: "Année et compétition reprises de la course A",
+    report_title_compare: "World Rowing — Rapport de comparaison",
   },
 };
 const getLang = () => localStorage.getItem("wr-lang") || "en";
@@ -621,6 +947,7 @@ function applyStaticI18n() {
   setText("nav-schedule-label", "nav_schedule");
   setText("nav-live-label", "nav_live");
   setText("nav-analyse-label", "nav_analyse");
+  setText("nav-nations-label", "nav_nations");
   setText("btn-notifs-label", "hdr_notifs");
   setText("menu-notifs-label", "menu_notifs");
   setAttr("brand-link", "title", "tt_home");
@@ -628,6 +955,7 @@ function applyStaticI18n() {
   setAttr("nav-schedule-link", "title", "nav_schedule");
   setAttr("nav-live-link", "title", "nav_live");
   setAttr("nav-analyse-link", "title", "nav_analyse");
+  setAttr("nav-nations-link", "title", "nav_nations");
   setAttr("btn-notif", "title", "tt_notifs");
   setAttr("btn-theme", "title", "tt_theme");
   setAttr("btn-lang", "title", "tt_lang");
@@ -822,11 +1150,22 @@ const state = {
   yScales:{},                 // {plotId: {min, max}} user overrides
   xScales:{},                 // {plotId: {min, max}} user overrides (currently dual only)
   cScales:{},                 // {plotId: {min, max}} colorbar overrides
+  fullscreenCardId: null,     // id de la carte graphe en plein écran (persiste au re-render)
   // Échelles globales (s'appliquent à tous les axes/couleurs concernés
   // sauf si un override par graphe existe déjà dans yScales/xScales/cScales)
   globalScales:{
     speed:   { min:null, max:null },
     cadence: { min:null, max:null },
+  },
+  // Compare mode
+  compareMode: false,
+  cmp: {                           // slot 2 state
+    year: new Date().getFullYear(), category: "World Rowing Cup",
+    searched: false, loadingComps: false,
+    competitions: [], selectedComp: null,
+    races: [], loadingRaces: false,
+    selectedRace: null, lastData: null,
+    selectedLaneIds: [],
   },
 };
 
@@ -834,7 +1173,7 @@ const state = {
 const Y_DEFAULTS = {
   speed:   { min: 4.5, max: 6.5 },
   cadence: { min: 37,  max: 49 },     // axis is inverted in layout
-  rank:    { min: null, max: null },
+  time:    { min: null, max: null },
   gap:     { min: 0,   max: null },
   dps:     { min: 6,   max: 10 },     // mètres par coup
 };
@@ -846,6 +1185,116 @@ const C_DEFAULTS = {
   speed:   { min: 37, max: 49 },      // cadence colorbar (mode color=cadence)
   cadence: { min: 4.5, max: null },   // speed colorbar (mode color=speed)
 };
+
+// ── Échelles de vitesse par classe de bateau ────────────────────────────
+const SPEED_DEFAULTS_BY_CLASS = {
+  "M8+":   { min: 5.0, max: 6.8 },  "W8+":   { min: 4.4, max: 5.8 },
+  "M4-":   { min: 4.5, max: 6.2 },  "W4-":   { min: 4.0, max: 5.6 },
+  "M4x":   { min: 4.5, max: 6.2 },  "W4x":   { min: 4.2, max: 5.6 },
+  "LM4-":  { min: 4.3, max: 5.9 },
+  "M2x":   { min: 4.4, max: 6.0 },  "W2x":   { min: 4.0, max: 5.4 },
+  "LM2x":  { min: 4.3, max: 5.8 },  "LW2x":  { min: 3.8, max: 5.1 },
+  "M2-":   { min: 4.4, max: 6.0 },  "W2-":   { min: 4.0, max: 5.5 },
+  "LM2-":  { min: 4.3, max: 5.8 },  "LW2-":  { min: 3.8, max: 5.1 },
+  "M1x":   { min: 4.2, max: 5.8 },  "W1x":   { min: 3.8, max: 5.2 },
+  "LM1x":  { min: 4.0, max: 5.5 },  "LW1x":  { min: 3.6, max: 5.0 },
+  "PR3M4+":{ min: 3.5, max: 5.0 },  "PR3W4+":{ min: 3.2, max: 4.6 },
+  "PR1M1x":{ min: 2.8, max: 4.2 },  "PR1W1x":{ min: 2.6, max: 4.0 },
+  "PR2M1x":{ min: 3.0, max: 4.5 },  "PR2W1x":{ min: 2.8, max: 4.3 },
+  "_default": { min: 4.5, max: 6.5 },
+};
+
+// Mapping noms complets API → codes abrégés
+const BOAT_CLASS_NAME_MAP = {
+  "men's single sculls": "M1x",      "men single sculls": "M1x",
+  "women's single sculls": "W1x",    "women single sculls": "W1x",
+  "lightweight men's single sculls": "LM1x",
+  "lightweight women's single sculls": "LW1x",
+  "men's double sculls": "M2x",      "men double sculls": "M2x",
+  "women's double sculls": "W2x",    "women double sculls": "W2x",
+  "lightweight men's double sculls": "LM2x",
+  "lightweight women's double sculls": "LW2x",
+  "men's pair": "M2-",               "men pair": "M2-",
+  "women's pair": "W2-",             "women pair": "W2-",
+  "lightweight men's pair": "LM2-",
+  "lightweight women's pair": "LW2-",
+  "men's quadruple sculls": "M4x",   "men quadruple sculls": "M4x",
+  "women's quadruple sculls": "W4x", "women quadruple sculls": "W4x",
+  "men's four": "M4-",               "men four": "M4-",
+  "women's four": "W4-",             "women four": "W4-",
+  "lightweight men's four": "LM4-",
+  "men's eight": "M8+",              "men eight": "M8+",
+  "women's eight": "W8+",            "women eight": "W8+",
+};
+
+function normalizeBoatClass(displayName) {
+  if (!displayName) return null;
+  // Try direct lookup (e.g. "M1x", "W8+")
+  if (SPEED_DEFAULTS_BY_CLASS[displayName]) return displayName;
+  // Try lowercase full-name map
+  const key = String(displayName).toLowerCase().trim();
+  return BOAT_CLASS_NAME_MAP[key] || null;
+}
+
+function getBoatClassDisplayName(data) {
+  const race = data?.config?.race || state.selectedRace || {};
+  return race.event?.boatClass?.DisplayName
+    || state.selectedRace?.event?.boatClass?.DisplayName
+    || race.event?.DisplayName
+    || state.selectedRace?.event?.DisplayName
+    || "";
+}
+
+function getCompareClassFilter() {
+  if (!state.compareMode || !state.lastData) return null;
+  return state.selectedRace?.event?.boatClass?.DisplayName
+    || normalizeBoatClass(getBoatClassDisplayName(state.lastData))
+    || null;
+}
+
+function getSpeedDefaults(boatClassDisplayName) {
+  const code = normalizeBoatClass(boatClassDisplayName);
+  return (code && SPEED_DEFAULTS_BY_CLASS[code]) || SPEED_DEFAULTS_BY_CLASS["_default"];
+}
+
+// ── WBT — World Best Times (source : worldrowing.com/athletes/best-times/) ─
+// Open water racing · 2000 m · mis à jour selon le guide officiel WR 2025
+const WBT_TABLE = {
+  "M1x":   { time: "6:30.74", sec: 390.74 },
+  "LM1x":  { time: "6:39.56", sec: 399.56 },
+  "W1x":   { time: "7:07.71", sec: 427.71 },
+  "LW1x":  { time: "7:23.36", sec: 443.36 },
+  "M2x":   { time: "5:59.72", sec: 359.72 },
+  "LM2x":  { time: "6:05.33", sec: 365.33 },
+  "W2x":   { time: "6:37.31", sec: 397.31 },
+  "LW2x":  { time: "6:40.47", sec: 400.47 },
+  "M2-":   { time: "6:08.50", sec: 368.50 },
+  "LM2-":  { time: "6:22.91", sec: 382.91 },
+  "W2-":   { time: "6:47.41", sec: 407.41 },
+  "LW2-":  { time: "7:18.32", sec: 438.32 },
+  "M4x":   { time: "5:32.03", sec: 332.03 },
+  "W4x":   { time: "6:05.13", sec: 365.13 },
+  "M4-":   { time: "5:37.86", sec: 337.86 },
+  "W4-":   { time: "6:14.36", sec: 374.36 },
+  "LM4-":  { time: "5:43.16", sec: 343.16 },
+  "M8+":   { time: "5:18.68", sec: 318.68 },
+  "W8+":   { time: "5:52.99", sec: 352.99 },
+  "PR1M1x": { time: "8:50.38", sec: 530.38 },
+  "PR2M1x": { time: "8:20.61", sec: 500.61 },
+  "PR3M2-": { time: "6:52.08", sec: 412.08 },
+  "PR1W1x": { time: "9:47.83", sec: 587.83 },
+  "PR2W1x": { time: "9:14.65", sec: 554.65 },
+  "PR3W2-": { time: "7:39.30", sec: 459.30 },
+};
+
+function getWbt(boatClassDisplayName) {
+  const code = normalizeBoatClass(boatClassDisplayName);
+  return code ? (WBT_TABLE[code] || null) : null;
+}
+
+function getWbtCode(boatClassDisplayName) {
+  return normalizeBoatClass(boatClassDisplayName);
+}
 
 // Custom Spectral colorscale (matches the reference screenshot)
 // Low value → dark purple/blue; high value → dark red.
@@ -896,6 +1345,41 @@ async function apiCompetitions(year, category){
   const data = Array.isArray(payload.data) ? payload.data : [];
   return data.filter(c => String(c.StartDate||"").startsWith(String(year)));
 }
+
+// Catégories pour le filtre course B (valeurs API + libellés affichés)
+const COMPARE_CATEGORIES = [
+  { value: "World Rowing Cup" },
+  { value: "World Rowing Championships" },
+  { value: "World Rowing Under 19 Championships" },
+  { value: "World Rowing Under 23 Championships" },
+  { value: "Olympics" },
+  { value: "Paralympics" },
+  { value: "European Rowing Championships", apiCategory: "Continental Championships", europeanOnly: true },
+  { value: "Continental Championships" },
+  { value: "International Regattas" },
+];
+
+function getCompareCategoryDef(category){
+  return COMPARE_CATEGORIES.find(c => c.value === category)
+    || { value: category, apiCategory: category };
+}
+
+function getCompareCategoryLabel(category){
+  return getCompareCategoryDef(category).value || category;
+}
+
+async function fetchCompareCompetitions(year, category){
+  const def = getCompareCategoryDef(category);
+  let comps = await apiCompetitions(year, def.apiCategory || def.value);
+  if(def.europeanOnly){
+    comps = comps.filter(c => {
+      const n = c.DisplayName || c.CompetitionCode || "";
+      return /European Rowing Championships/i.test(n) && !/Under|Indoor|U19|U23|Junior/i.test(n);
+    });
+  }
+  return comps;
+}
+
 async function apiRaces(competitionId){
   const url = buildUrl("/race/", {
     "include": "raceStatus,racePhase,event.boatClass",
@@ -922,46 +1406,119 @@ function fmtDate(d){
   if(isNaN(dt)) return String(d).slice(0,10);
   return dt.toLocaleDateString("fr-FR",{day:"2-digit",month:"short",year:"numeric"});
 }
-function fmtTime(t){ if(!t) return "—"; return t.replace(/^00:/,""); }
+function fmtTime(t){
+  if(!t) return "—";
+  let s = String(t).trim().replace(/^00:/,"");
+  const dot = s.lastIndexOf(".");
+  if(dot >= 0){
+    const head = s.slice(0, dot);
+    const frac = s.slice(dot + 1).replace(/\D/g, "").slice(0, 2).padEnd(2, "0");
+    s = `${head}.${frac}`;
+  }
+  return s;
+}
+function formatRacePhaseLabel(r){
+  const cls = r?.event?.boatClass?.DisplayName || "";
+  const phase = r?.racePhase?.DisplayName || "";
+  const full = String(r?.DisplayName || "");
+  if(phase){
+    const escPhase = phase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const m = full.match(new RegExp(escPhase + "\\s+([A-Z0-9]+)\\b", "i"));
+    if(m) return `${phase} ${m[1]}`;
+    const patterns = [
+      /\b(final\s+[a-e])\b/i,
+      /\b(heat\s+\d+)\b/i,
+      /\b(semi[- ]?final\s+[a-z0-9]+)\b/i,
+      /\b(quarter[- ]?final\s+[a-z0-9]+)\b/i,
+      /\b(repechage\s*\d*)\b/i,
+    ];
+    for(const p of patterns){
+      const mm = full.match(p);
+      if(mm) return mm[1].replace(/\s+/g, " ");
+    }
+    return phase;
+  }
+  if(full){
+    const after = cls && full.startsWith(cls) ? full.slice(cls.length).trim() : full;
+    return after || full;
+  }
+  return "—";
+}
+function formatRaceListLabel(r){
+  const cls = r?.event?.boatClass?.DisplayName || "";
+  const phaseLabel = formatRacePhaseLabel(r);
+  return cls ? `${cls} · ${phaseLabel}` : phaseLabel;
+}
+function fmtPaceSec(sec){
+  if(sec == null || isNaN(sec) || sec < 0) return "—";
+  const m = Math.floor(sec / 60);
+  const s = sec - m * 60;
+  return `${m}:${s.toFixed(2).padStart(5,"0")}`;
+}
 function renderLoading(msg){ return `<div class="loading"><div class="spinner"></div>${esc(msg)}</div>`; }
+
+// ── Tri des classes de bateau : Open → Light → Para → Mix, M → W → Mix ──
+function boatClassSortKey(name) {
+  const s = String(name || "").trim();
+  let cat = 3, gender = 2;
+  if (/^PR\d?\s*M/i.test(s))      { cat = 2; gender = 0; }
+  else if (/^PR\d?\s*W/i.test(s)) { cat = 2; gender = 1; }
+  else if (/^PR/i.test(s))        { cat = 2; gender = 2; }
+  else if (/^LM/i.test(s))        { cat = 1; gender = 0; }
+  else if (/^LW/i.test(s))        { cat = 1; gender = 1; }
+  else if (/^M(?!ix)/i.test(s))   { cat = 0; gender = 0; }
+  else if (/^W/i.test(s))         { cat = 0; gender = 1; }
+  else if (/^Mix/i.test(s))       { cat = 0; gender = 2; }
+  return [cat, gender, s];
+}
+function sortClasses(arr) {
+  return [...arr].sort((a, b) => {
+    const ka = boatClassSortKey(a), kb = boatClassSortKey(b);
+    return ka[0] - kb[0] || ka[1] - kb[1] || ka[2].localeCompare(kb[2]);
+  });
+}
 
 // ── render flow ────────────────────────────────────────────────────────
 function render(){
   const m = $("main-area");
   if(state.error){
-    m.innerHTML = `<div class="error-box"><strong>Erreur</strong> — ${esc(state.error)}<br/><br/>
-      Activez « Utiliser proxy local » et lancez <code>python proxy.py</code>.</div>`;
+    m.innerHTML = `<div class="error-box"><strong>${t("breadcrumb_comps")}</strong> — ${esc(state.error)}<br/><br/>
+      ${t("err_proxy")}</div>`;
     return;
   }
-  if(state.loadingComps){ m.innerHTML = renderLoading("Recherche des compétitions…"); return; }
+  if(state.loadingComps){ m.innerHTML = renderLoading(t("loading_comps")); return; }
   if(!state.searched){
-    m.innerHTML = `<div class="empty">Bienvenue — lancez une recherche pour afficher les compétitions.</div>`;
+    m.innerHTML = `<div class="empty">${t("welcome")}</div>`;
     return;
   }
   if(!state.competitions.length){
-    m.innerHTML = `<div class="empty">Aucune compétition trouvée pour cette sélection.</div>`;
+    m.innerHTML = `<div class="empty">${t("empty_no_comps")}</div>`;
     return;
   }
   if(!state.selectedComp){ m.innerHTML = renderCompList(); return; }
   if(!state.selectedRace){ m.innerHTML = renderRaceList(); return; }
 
   let html = `<div class="breadcrumb">
-    <a onclick="backToComps()">Compétitions</a>
+    <a onclick="backToComps()">${t("breadcrumb_comps")}</a>
     <span class="sep">›</span>
     <a onclick="backToRaces()">${esc(state.selectedComp.DisplayName||"")}</a>
     <span class="sep">›</span>
     <span>${esc(state.selectedRace.DisplayName||"")}</span>
   </div>`;
-  if(!state.lastData) html += renderLoading("Chargement des données de course…");
+  if(!state.lastData) html += renderLoading(t("loading_race"));
   else html += renderAnalyseHTML(state.lastData);
+  const _fsBefore = document.querySelector(".plot-card.fullscreen");
+  if (_fsBefore) state.fullscreenCardId = _fsBefore.id;
+  document.body.classList.toggle("compare-mode", !!(state.compareMode && state.lastData));
   m.innerHTML = html;
   if(state.lastData) drawAllPlots(state.lastData);
+  restoreFullscreenIfNeeded();
 }
 
 function renderCompList(){
   let html = `<div>
-    <div class="section-title">Compétitions · ${state.year} · ${esc(state.category)}</div>
-    <div style="font-size:0.78rem;color:var(--text-muted);margin-top:2px;">${state.competitions.length} compétition(s)</div>
+    <div class="section-title">${t("section_comps")} · ${state.year} · ${esc(state.category)}</div>
+    <div style="font-size:0.78rem;color:var(--text-muted);margin-top:2px;">${t("count_comps",{n:state.competitions.length})}</div>
   </div>
   <div class="cards-grid">`;
   for(const c of state.competitions){
@@ -982,18 +1539,18 @@ function renderCompList(){
 
 function renderRaceList(){
   let html = `<div class="breadcrumb">
-    <a onclick="backToComps()">Compétitions</a>
+    <a onclick="backToComps()">${t("breadcrumb_comps")}</a>
     <span class="sep">›</span>
     <span>${esc(state.selectedComp.DisplayName||"")}</span>
   </div>`;
-  if(state.loadingRaces) return html + renderLoading("Chargement des courses…");
-  if(!state.races.length) return html + `<div class="empty">Aucune course trouvée.</div>`;
+  if(state.loadingRaces) return html + renderLoading(t("loading_races"));
+  if(!state.races.length) return html + `<div class="empty">${t("empty_no_races")}</div>`;
 
-  const classes = [...new Set(state.races.map(r => r.event?.boatClass?.DisplayName || "Autre"))];
-  html += `<div><div class="section-title">Courses (${state.races.length})</div></div>`;
+  const classes = sortClasses([...new Set(state.races.map(r => r.event?.boatClass?.DisplayName || "Autre"))]);
+  html += `<div><div class="section-title">${t("count_races",{n:state.races.length})}</div></div>`;
   if(classes.length > 1){
     html += `<div class="class-filters">
-      <div class="pill ${!state.classFilter?'active':''}" onclick="setClassFilter(null)">Toutes</div>
+      <div class="pill ${!state.classFilter?'active':''}" onclick="setClassFilter(null)">${t("all")}</div>
       ${classes.map(c => `<div class="pill ${state.classFilter===c?'active':''}" onclick="setClassFilter('${esc(c)}')">${esc(c)}</div>`).join("")}
     </div>`;
   }
@@ -1007,22 +1564,11 @@ function renderRaceList(){
   for(const date of Object.keys(byDate).sort()){
     html += `<div class="group-label">${fmtDate(date)}</div>`;
     for(const r of byDate[date]){
-      const cls = r.event?.boatClass?.DisplayName || "";
-      const phase = r.racePhase?.DisplayName || "";
-      let phaseLabel = phase;
-      const full = r.DisplayName || "";
-      if(phase){
-        const m = full.match(new RegExp(phase.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + "\\s+([A-Z0-9]+)\\b", "i"));
-        if(m) phaseLabel = `${phase} ${m[1]}`;
-      } else if(full){
-        const after = cls && full.startsWith(cls) ? full.slice(cls.length).trim() : full;
-        phaseLabel = after;
-      }
       const st = r.raceStatus?.DisplayName || "—";
       const stClass = /live/i.test(st)?"live":/finished|official/i.test(st)?"replay":"scheduled";
       const time = (r.DateString||"").slice(11,16);
       html += `<div class="race-item" onclick="selectRace('${r.id}')">
-        <span class="race-item-name">${esc(cls)} · ${esc(phaseLabel)}</span>
+        <span class="race-item-name">${esc(formatRaceListLabel(r))}</span>
         <span class="race-item-meta">${time}</span>
         <span class="badge ${stClass}">${esc(st)}</span>
       </div>`;
@@ -1038,6 +1584,256 @@ function laneColor(lane, idx){ return LANE_COLORS[((lane.Lane||idx+1)-1) % LANE_
 function getLanes(data){
   const cfg = data?.config || {};
   return (cfg.lanes||[]).slice().sort((a,b)=>(a.Lane||99)-(b.Lane||99));
+}
+
+function renderPaceTableBlock(title, lanes, wbt, wbtCode){
+  let html = `<div class="compare-pace-block">`;
+  html += `<div class="section-title" style="margin-bottom:8px">${esc(title)}</div>`;
+  if(wbt){
+    html += `<div class="wbt-banner">${t("wbt_label",{cls:esc(wbtCode),time:esc(wbt.time)})}</div>`;
+  } else if(wbtCode){
+    html += `<div class="wbt-banner" style="color:var(--text-muted);border-color:var(--border);background:var(--surface2)">${t("wbt_unknown")}</div>`;
+  }
+  html += `<div class="splits-table-wrap">`;
+  try {
+    html += renderPaceTable(lanes, wbt);
+  } catch(err){
+    html += `<div class="error-box">${t("err_table_display")} ${esc(String(err.message||err))}</div>`;
+  }
+  html += `</div></div>`;
+  return html;
+}
+
+function laneInters(lane){
+  return lane?.intermediates || lane?.raceBoatIntermediates || [];
+}
+function parseSec(t){
+  if(!t) return null;
+  const parts = String(t).trim().split(":");
+  if(parts.length === 3) return +parts[0]*3600 + +parts[1]*60 + parseFloat(parts[2]);
+  if(parts.length === 2) return +parts[0]*60 + parseFloat(parts[1]);
+  return parseFloat(t) || null;
+}
+function secToSplit(sec){
+  return fmtPaceSec(sec);
+}
+function fmtDist(raw){
+  if(!raw) return raw;
+  const m = String(raw).match(/^d?(\d+)m?$/i);
+  return m ? m[1] + " M" : raw;
+}
+function interDistKey(inter){
+  if(inter?.distance?.DisplayName) return inter.distance.DisplayName;
+  const v = inter?.raceConfig?.value;
+  if(v != null && String(v).trim() !== "") return `d${v}m`;
+  return null;
+}
+function renderPaceTable(lanes, wbt){
+  if(!lanes.length){
+    return `<div class="empty" style="padding:16px">${t("tbl_no_boats")}</div>`;
+  }
+  const sorted = [...lanes].sort((a,b) => (a.Rank||99) - (b.Rank||99));
+
+  const distMap = new Map();
+  for(const l of sorted){
+    for(const i of laneInters(l)){
+      let key = interDistKey(i);
+      if(!key){
+        const n = parseInt(String(i.distance?.DisplayName || i.raceConfig?.value || "").replace(/\D/g,""), 10);
+        if(Number.isFinite(n) && n > 0) key = `d${n}m`;
+      }
+      if(key && !distMap.has(key)) distMap.set(key, fmtDist(key));
+    }
+  }
+  if(!distMap.size){
+    return `<div class="empty" style="padding:16px">${t("tbl_no_inters")}</div>`;
+  }
+
+  const dists = [...distMap.keys()].sort(
+    (a,b) => parseInt(a.replace(/\D/g,""),10) - parseInt(b.replace(/\D/g,""),10),
+  );
+
+  const laneIdx = new Map();
+  for(const l of sorted){
+    const key = l.id || l.boatId || l.DisplayName;
+    const dm = new Map();
+    for(const i of laneInters(l)){
+      let dkey = interDistKey(i);
+      if(!dkey){
+        const n = parseInt(String(i.distance?.DisplayName || i.raceConfig?.value || "").replace(/\D/g,""), 10);
+        if(Number.isFinite(n) && n > 0) dkey = `d${n}m`;
+      }
+      if(dkey) dm.set(dkey, i);
+    }
+    laneIdx.set(key, dm);
+  }
+
+  const stats = {};
+  for(let di = 0; di < dists.length; di++){
+    const d = dists[di];
+    const prev = di > 0 ? dists[di-1] : null;
+    const cumBySeat = new Map();
+    const splitBySeat = new Map();
+
+    for(const l of sorted){
+      const key = l.id || l.boatId || l.DisplayName;
+      const inter = laneIdx.get(key)?.get(d);
+      const cum = parseSec(inter?.ResultTime);
+      cumBySeat.set(key, cum);
+      if(prev == null){
+        splitBySeat.set(key, cum);
+      } else {
+        const prevInter = laneIdx.get(key)?.get(prev);
+        const prevCum = parseSec(prevInter?.ResultTime);
+        splitBySeat.set(key, cum != null && prevCum != null ? cum - prevCum : null);
+      }
+    }
+
+    const validCums = [...cumBySeat.values()].filter(v => v != null);
+    const leaderCum = validCums.length ? Math.min(...validCums) : null;
+    const splitEntries = [...splitBySeat.entries()]
+      .filter(([,v]) => v != null)
+      .sort(([,a],[,b]) => a - b);
+    const splitRank = new Map(splitEntries.map(([k], idx) => [k, idx + 1]));
+    stats[d] = { cumBySeat, splitBySeat, splitRank, leaderCum };
+  }
+
+  const hasWbt = wbt != null;
+  let html = `<table class="splits-table"><thead><tr>
+    <th rowspan="2" class="rank">#</th>
+    <th rowspan="2" class="nation">${t("tbl_team")}</th>`;
+  for(const d of dists) html += `<th class="dist">${esc(distMap.get(d))}</th>`;
+  if(hasWbt) html += `<th rowspan="2" class="pct-wbt">${t("tbl_pct_wbt")}</th>`;
+  html += `</tr><tr>`;
+  for(const d of dists){
+    html += `<th class="pace-legend">${t("tbl_legend")}</th>`;
+  }
+  html += `</tr></thead><tbody>`;
+
+  // Dernière distance = distance finale (ex. 2000m)
+  const lastDist = dists[dists.length - 1];
+
+  for(let li = 0; li < sorted.length; li++){
+    const l = sorted[li];
+    const key = l.id || l.boatId || l.DisplayName;
+    const col = laneColor(l, li);
+    const rankTxt = l.Rank != null ? l.Rank : "—";
+
+    // WR check : temps final vs WBT
+    const finalResultSec = parseSec(l.ResultTime);
+    const isWR = hasWbt && finalResultSec != null && finalResultSec < wbt.sec;
+    const pctWbt = hasWbt && finalResultSec != null
+      ? ((wbt.sec / finalResultSec) * 100).toFixed(1)
+      : null;
+
+    html += `<tr${isWR ? ' class="wr-row"' : ''}>
+      <td class="rank">${rankTxt}</td>
+      <td class="nation"><span class="swatch-mini" style="background:${col}"></span><strong>${esc(l.DisplayName||"?")}</strong></td>`;
+
+    for(const d of dists){
+      const st = stats[d];
+      const inter = laneIdx.get(key)?.get(d);
+      if(!inter){
+        html += `<td class="pace-cell" style="color:var(--text-muted)">—</td>`;
+        continue;
+      }
+
+      const cum = st.cumBySeat.get(key);
+      const split = st.splitBySeat.get(key);
+      const sRank = st.splitRank.get(key);
+      const cumGap = cum != null && st.leaderCum != null ? cum - st.leaderCum : null;
+      const isLeader = cumGap != null && cumGap < 0.005;
+
+      // WR sur la cellule de temps final
+      const isFinalDist = d === lastDist;
+      const wrBadge = isWR && isFinalDist
+        ? ` <span class="wr-badge">${t("tbl_wr_badge")}</span>` : "";
+
+      const cumRankStr = inter.Rank
+        ? `<small style="color:var(--text-muted);margin-left:2px;">(${inter.Rank})</small>` : "";
+      const sRankStr = sRank
+        ? `<small style="color:var(--text-muted);margin-left:2px;">(${sRank})</small>` : "";
+      const gapStr = isLeader
+        ? `<small style="color:var(--green);margin-left:4px;">—</small>`
+        : cumGap != null
+          ? `<small style="color:var(--red);margin-left:4px;">+${cumGap.toFixed(1)}</small>`
+          : "";
+
+      html += `<td class="pace-cell${isWR && isFinalDist ? ' wr-cell' : ''}">
+        <div class="pace-cum">${esc(fmtTime(inter.ResultTime))}${cumRankStr}${wrBadge}</div>
+        <div class="pace-split">${esc(secToSplit(split))}${sRankStr}${gapStr}</div>
+      </td>`;
+    }
+
+    // Colonne % WBT
+    if(hasWbt){
+      if(pctWbt != null){
+        const pctVal = parseFloat(pctWbt);
+        const pctColor = isWR ? "var(--gold)" : pctVal >= 99 ? "var(--green)" : pctVal >= 97 ? "var(--accent)" : "var(--text-muted)";
+        html += `<td class="pct-wbt-cell" style="color:${pctColor};font-weight:600">${pctWbt}%${isWR?" ★":""}</td>`;
+      } else {
+        html += `<td class="pct-wbt-cell" style="color:var(--text-muted)">—</td>`;
+      }
+    }
+
+    html += `</tr>`;
+  }
+  return html + `</tbody></table>`;
+}
+
+// Temps de passage officiels par segment (ex. 0–500 m, 500–1000 m…).
+function buildOfficialSplitSeries(lane, totalLength){
+  const cumGates = [];
+  for(const it of (lane.intermediates||[])){
+    const d = parseInt((it.distance?.DisplayName||"").replace(/\D/g,""));
+    const t = parseTime(it.ResultTime);
+    if(isFinite(d) && t != null){
+      cumGates.push({ d, t, rank: it.Rank ?? null });
+    }
+  }
+  cumGates.sort((a,b)=>a.d-b.d);
+
+  const finishD = totalLength > 0 ? totalLength : null;
+  if(finishD != null){
+    const finalT = parseTime(lane.ResultTime);
+    if(finalT != null){
+      const idx = cumGates.findIndex(g => g.d >= finishD - 1);
+      const finish = { d: finishD, t: finalT, rank: lane.Rank ?? null };
+      if(idx >= 0) cumGates[idx] = finish;
+      else cumGates.push(finish);
+      cumGates.sort((a,b)=>a.d-b.d);
+    }
+  }
+  if(!cumGates.length) return null;
+
+  const splits = [];
+  let prevD = 0, prevT = 0;
+  for(const g of cumGates){
+    const segT = g.t - prevT;
+    if(segT > 0) splits.push({ startD: prevD, endD: g.d, segT });
+    prevD = g.d;
+    prevT = g.t;
+  }
+  if(!splits.length) return null;
+
+  // Points interpolés le long de chaque portion (0→500 horizontal, puis diagonales).
+  // Survol : toujours le temps de la FIN du segment (ex. « 1000 m » sur tout 500–1000 m).
+  const PTS = 24;
+  const xs = [], times = [], hovers = [], markerSizes = [];
+  for(let i = 0; i < splits.length; i++){
+    const s = splits[i];
+    const hover = `${s.endD} m : ${formatSec(s.segT)}`;
+    const yStart = i === 0 ? s.segT : splits[i-1].segT;
+    const xStart = s.startD;
+    for(let j = 0; j <= PTS; j++){
+      const f = j / PTS;
+      xs.push(xStart + f * (s.endD - xStart));
+      times.push(yStart + f * (s.segT - yStart));
+      hovers.push(hover);
+      markerSizes.push(j === PTS ? 5 : 0);
+    }
+  }
+  return { xs, times, hovers, markerSizes };
 }
 
 // série pour un bateau, renvoie {x,speed,cadence,rank,gap,dps}
@@ -1110,36 +1906,22 @@ function laneSeries(lane, totalLength){
     }
   }
 
-  // ── A-conditionnel : suppression du dernier tick s'il est clippé ───────
-  // Le dernier tick où d atteint totalLength correspond souvent à un
-  // franchissement de ligne survenu AU MILIEU de l'intervalle d'échantil-
-  // lonnage : l'API clippe distanceTravelled à totalLength alors que le
-  // boat est physiquement au-delà. → Δd enregistré < Δd réel sur ce
-  // dernier intervalle → vitesse calculée artificiellement basse → le
-  // RTS propage cette valeur basse en arrière (queue qui plonge).
+  // ── Détection du dernier tick clippé (franchissement de ligne) ─────────
+  // Le tick où `distanceTravelled` atteint `totalLength` pour la première
+  // fois correspond au franchissement, qui s'est produit AU MILIEU de
+  // l'intervalle d'échantillonnage. L'API clippe la position à totalLength
+  // alors que le bateau est physiquement au-delà : Δd enregistré < Δd réel
+  // → vitesse calculée artificiellement basse → le RTS propage cette
+  // valeur basse en arrière (queue qui plonge de plusieurs m/s).
   //
-  // Heuristique : on compare le Δd du dernier intervalle au Δd attendu
-  // extrapolé des 3 ticks précédents. Si Δd_last < 0.7 × Δd_attendu, on
-  // considère le tick comme clippé et on le supprime.
-  // Effet : ~1 tick perdu sur les courses 1 s/tick (négligeable) ; aucun
-  // tick perdu sur les courses sparses (Olympics, 4-5 s/tick) si la
-  // vitesse moyenne reste cohérente.
-  if(best.length >= 5){
-    const last = best[best.length-1];
-    const prev = best[best.length-2];
-    const dd_last = last.x - prev.x;
-    // Δd attendu = moyenne des 3 derniers Δd avant le dernier intervalle
-    let sumDd = 0, nDd = 0;
-    for(let i = best.length-4; i < best.length-1; i++){
-      if(i >= 1){ sumDd += best[i].x - best[i-1].x; nDd++; }
-    }
-    if(nDd > 0){
-      const dd_expected = sumDd / nDd;
-      if(dd_expected > 0 && dd_last < 0.7 * dd_expected){
-        best = best.slice(0, best.length - 1);
-      }
-    }
-  }
+  // Stratégie (validée vs splits officiels 1500-2000m) : on détecte le
+  // tick clippé (dernier point ≥ totalLength alors que l'avant-dernier
+  // était < totalLength) et on le supprime APRÈS calibration du pas
+  // temporel. On évite aussi d'ancrer ce tick comme gate 2000m, sinon le
+  // Kalman réinjecte la contrainte (cf. buildGateAnchors).
+  const lastClipped = best.length >= 2
+                   && best[best.length-1].x >= totalLength
+                   && best[best.length-2].x <  totalLength;
 
   // ── Calibration du pas temporel (secondes par tick) ─────────────────────
   // L'API garantit `trackCount` strictement monotone (+1), MAIS le pas réel
@@ -1167,12 +1949,15 @@ function laneSeries(lane, totalLength){
   if(secondsPerTick !== 1){
     for(const p of best) p.t = p.t * secondsPerTick;
   }
+  // Suppression du tick de franchissement clippé (voir explication ci-dessus).
+  if(lastClipped){ best = best.slice(0, best.length - 1); }
   return best;
 }
 
 function plotToolsHTML(plotId, unit, xOpts, cOpts){
   const cur = state.yScales[plotId] || {};
-  const def = Y_DEFAULTS[plotId] || {};
+  const cls = getBoatClassDisplayName(state.lastData);
+  const def = plotId === "speed" ? getSpeedDefaults(cls) : (Y_DEFAULTS[plotId] || {});
   // Affiche les bornes par défaut dans les champs (les valeurs effectives
   // si pas d'override) plutôt qu'un placeholder "auto" vide. Cadence
   // bénéficie d'un pas d'incrément de 1 ; les autres d'un pas de 0.1.
@@ -1181,7 +1966,7 @@ function plotToolsHTML(plotId, unit, xOpts, cOpts){
   const mx = cur.max!=null ? cur.max : (def.max!=null ? def.max : "");
   const hasOverride = (cur.min!=null && cur.min!==def.min) || (cur.max!=null && cur.max!==def.max);
   let html = `<div class="plot-tools">
-    <span class="scale-edit">Y (${unit}) :
+    <span class="scale-edit">${t("scale_y")} (${unit}) :
       <input type="number" step="${step}" value="${mn}"
         oninput="setYScale('${plotId}','min',this.value)"/>
       →
@@ -1195,7 +1980,7 @@ function plotToolsHTML(plotId, unit, xOpts, cOpts){
     const xmn = xcur.min!=null ? xcur.min : (xdef.min!=null ? xdef.min : "");
     const xmx = xcur.max!=null ? xcur.max : (xdef.max!=null ? xdef.max : "");
     const hasX = (xcur.min!=null && xcur.min!==xdef.min) || (xcur.max!=null && xcur.max!==xdef.max);
-    html += `<span class="scale-edit">X (${xOpts.unit}) :
+    html += `<span class="scale-edit">${t("scale_x")} (${xOpts.unit}) :
       <input type="number" step="1" value="${xmn}" placeholder="auto"
         oninput="setXScale('${plotId}','min',this.value)"/>
       →
@@ -1210,7 +1995,7 @@ function plotToolsHTML(plotId, unit, xOpts, cOpts){
     const cmn = ccur.min!=null ? ccur.min : (cdef.min!=null ? cdef.min : "");
     const cmx = ccur.max!=null ? ccur.max : (cdef.max!=null ? cdef.max : "");
     const hasC = (ccur.min!=null && ccur.min!==cdef.min) || (ccur.max!=null && ccur.max!==cdef.max);
-    html += `<span class="scale-edit">Couleur ${cOpts.label} (${cOpts.unit}) :
+    html += `<span class="scale-edit">${t("scale_color")} ${cOpts.label} (${cOpts.unit}) :
       <input type="number" step="1" value="${cmn}" placeholder="auto"
         oninput="setCScale('${plotId}','min',this.value)"/>
       →
@@ -1223,7 +2008,7 @@ function plotToolsHTML(plotId, unit, xOpts, cOpts){
 }
 
 function renderAnalyseHTML(data){
-  if(!data || !data.config) return '<div class="error-box">Pas de données disponibles pour cette course.</div>';
+  if(!data || !data.config) return `<div class="error-box">${t("err_no_data")}</div>`;
   const cfg = data.config;
   const race = cfg.race || {};
   const lanes = getLanes(data);
@@ -1242,7 +2027,11 @@ function renderAnalyseHTML(data){
 
   const statusName = race.raceStatus?.DisplayName || "—";
   const statusClass = /live/i.test(statusName) ? "live" : /finished|official/i.test(statusName) ? "replay" : "scheduled";
-  const cls = race.event?.boatClass?.DisplayName || race.event?.DisplayName || "";
+  const cls = getBoatClassDisplayName(data);
+
+  // WBT pour cette catégorie
+  const wbt = getWbt(cls);
+  const wbtCode = getWbtCode(cls) || cls;
 
   // Header
   let html = `
@@ -1253,179 +2042,129 @@ function renderAnalyseHTML(data){
       <span class="meta">${(race.DateString||"").slice(0,16).replace("T"," ")}</span>
     </div>`;
 
-  // Toolbar
-  html += `<div class="analyse-toolbar">
+  if(state.compareMode){
+    html += renderComparePanel();
+  } else {
+    html += `<div class="analyse-toolbar">
     <div class="toolbar-group">
-      <span class="lbl">Bateau</span>
+      <span class="lbl">${t("lbl_boat")}</span>
+      <button class="toolbar-btn-sm" onclick="selectAllLanes()" title="${t("lbl_select_all")}">${t("lbl_select_all")}</button>
+      <button class="toolbar-btn-sm" onclick="deselectAllLanes()" title="${t("lbl_deselect_all")}">${t("lbl_deselect_all")}</button>
       <div class="nation-pills">`;
-  for(const l of lanes){
-    const col = laneColor(l,0);
-    const checked = state.selectedLaneIds.includes(l.id);
-    const act = checked ? "active":"";
-    html += `<label class="nation-pill ${act}" style="cursor:pointer">
-      <input type="checkbox" ${checked?"checked":""} onchange="toggleLane('${l.id}')"
-        style="margin-right:6px;vertical-align:middle"/>
-      <span class="swatch" style="background:${col}"></span>${esc(l.DisplayName||"?")}
-    </label>`;
-  }
-  html += `</div></div>
+    for(const l of lanes){
+      const col = laneColor(l,0);
+      const checked = state.selectedLaneIds.includes(l.id);
+      const act = checked ? "active":"";
+      html += `<label class="nation-pill ${act}" style="cursor:pointer">
+        <input type="checkbox" ${checked?"checked":""} onchange="toggleLane('${l.id}')"
+          style="margin-right:6px;vertical-align:middle"/>
+        <span class="swatch" style="background:${col}"></span>${esc(l.DisplayName||"?")}
+      </label>`;
+    }
+    html += `</div></div>
     <div class="toolbar-group">
       <label class="switch">
         <input type="checkbox" id="opt-size-dps" ${state.sizeByDps?"checked":""}/>
-        Taille = DPS (distance/coup)
+        ${t("lbl_size_dps")}
       </label>
     </div>
     <div class="toolbar-group">
-      <span class="lbl">Lissage</span>
+      <span class="lbl">${t("lbl_smoothing")}</span>
       <div class="smooth-ctrl">
         <input type="range" id="opt-smooth" min="0" max="15" step="1" value="${state.smoothing}"/>
         <span class="smooth-val" id="smooth-val">${state.smoothing}</span>
       </div>
     </div>
     <div class="toolbar-group">
-      <label class="switch" title="Filtre de Kalman + lissage RTS ancré sur les portes 500/1000/1500/2000m. Méthode optimale.">
+      <label class="switch" title="${t("tt_kalman")}">
         <input type="checkbox" id="opt-rts" ${state.rtsEnabled?"checked":""}/>
-        Kalman + RTS (portes officielles)
+        ${t("lbl_kalman")}
       </label>
-      <span style="font-size:11px;color:var(--text-muted)" title="Bruit du modèle d'accélération. Plus haut = modèle plus souple.">σ_a</span>
+      <span style="font-size:11px;color:var(--text-muted)" title="${t("tt_sigma_a")}">${t("lbl_sigma_a")}</span>
       <input type="number" id="opt-rts-sa" min="0.05" max="0.5" step="0.01"
         value="${state.rtsSigmaA}"
         style="width:54px;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:2px 4px;border-radius:4px;font-family:inherit;font-size:12px"/>
       <span style="font-size:11px;color:var(--text-muted)">m/s²</span>
-      <span style="font-size:11px;color:var(--text-muted);margin-left:8px" title="Variance bruit GPS. Plus haut = moins de confiance au GPS.">R_gps</span>
+      <span style="font-size:11px;color:var(--text-muted);margin-left:8px" title="${t("tt_r_gps")}">${t("lbl_r_gps")}</span>
       <input type="number" id="opt-rts-rgps" min="1" max="100" step="1"
         value="${state.rtsRgps}"
         style="width:48px;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:2px 4px;border-radius:4px;font-family:inherit;font-size:12px"/>
-      <span style="font-size:11px;color:var(--text-muted);margin-left:8px" title="Variance bruit porte. Plus bas = ancrage plus rigide.">R_porte</span>
+      <span style="font-size:11px;color:var(--text-muted);margin-left:8px" title="${t("tt_r_gate")}">${t("lbl_r_gate")}</span>
       <input type="number" id="opt-rts-rgate" min="0.01" max="10" step="0.05"
         value="${state.rtsRgate}"
         style="width:54px;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:2px 4px;border-radius:4px;font-family:inherit;font-size:12px"/>
     </div>
     <div class="toolbar-group">
-      <span style="font-size:11px;color:var(--text-muted)">Couleur des courbes (1 bateau) :</span>
+      <span style="font-size:11px;color:var(--text-muted)">${t("lbl_color_curves")}</span>
       <label class="switch" style="font-size:12px">
         <input type="radio" name="colorby" value="cadence" id="opt-colorby-cad" ${state.colorBy==="cadence"?"checked":""}/>
-        cadence
+        ${t("lbl_color_cadence")}
       </label>
       <label class="switch" style="font-size:12px">
         <input type="radio" name="colorby" value="speed" id="opt-colorby-spd" ${state.colorBy==="speed"?"checked":""}/>
-        vitesse
+        ${t("lbl_color_speed")}
       </label>
     </div>
+    <div class="toolbar-group" style="margin-left:auto">
+      <button type="button" class="compare-toggle-btn" onclick="toggleCompareMode()">${t("btn_compare")}</button>
+      <button type="button" class="toolbar-btn btn-export-report" onclick="exportHtmlReport()" title="${esc(t("btn_export_html"))}">${esc(t("btn_export_html"))}</button>
+    </div>
   </div>`;
-
-  // Splits table — toutes nations, triées par Rank final (1 en haut)
-  // Colonnes : Rang · Nation · 0-500 · 500-1000 · 1000-1500 · 1500-2000 · Total
-  {
-    // Construire la map { laneId -> {500: seg, 1000: seg, ...} }
-    const rowsRaw = [];
-    for(const l of lanes){
-      const inters = (l.intermediates||[]).slice()
-        .map(i => ({
-          d: parseInt((i.distance?.DisplayName||"").replace(/\D/g,"")),
-          t: parseTime(i.ResultTime),
-        }))
-        .filter(i => isFinite(i.d) && i.t!=null)
-        .sort((a,b)=>a.d-b.d);
-      const segs = {};
-      let prev = 0;
-      for(const i of inters){
-        segs[i.d] = i.t - prev;
-        prev = i.t;
-      }
-      const total = parseTime(l.ResultTime);
-      rowsRaw.push({ lane:l, segs, total });
-    }
-    // Distances présentes (union), triées
-    const allDists = new Set();
-    for(const r of rowsRaw) for(const k of Object.keys(r.segs)) allDists.add(+k);
-    const dists = [...allDists].sort((a,b)=>a-b);
-
-    if(dists.length){
-      // Tri par Rank final (1 en haut). Rangs absents -> en bas.
-      rowsRaw.sort((a,b)=>{
-        const ra = a.lane.Rank ?? 999, rb = b.lane.Rank ?? 999;
-        if(ra !== rb) return ra - rb;
-        return (a.total ?? Infinity) - (b.total ?? Infinity);
-      });
-
-      // Best par colonne (segment) pour mise en évidence
-      const bestSeg = {};
-      for(const d of dists){
-        let best = Infinity;
-        for(const r of rowsRaw){
-          const v = r.segs[d];
-          if(v!=null && v < best) best = v;
-        }
-        bestSeg[d] = best;
-      }
-      let bestTotal = Infinity;
-      for(const r of rowsRaw) if(r.total!=null && r.total < bestTotal) bestTotal = r.total;
-
-      // Libellés colonnes : segments 0→d1, d1→d2, ...
-      const segLabels = [];
-      let p = 0;
-      for(const d of dists){ segLabels.push(`${p}–${d} m`); p = d; }
-
-      html += `<table class="splits-table"><thead><tr>
-        <th class="rank">#</th>
-        <th class="nation">Nation</th>`;
-      for(const lab of segLabels) html += `<th>${lab}</th>`;
-      html += `<th>Total</th></tr></thead><tbody>`;
-
-      for(const r of rowsRaw){
-        const col = laneColor(r.lane, 0);
-        const rankTxt = r.lane.Rank!=null ? r.lane.Rank : "—";
-        html += `<tr>
-          <td class="rank">${rankTxt}</td>
-          <td class="nation"><span class="swatch-mini" style="background:${col}"></span>${esc(r.lane.DisplayName||"?")}</td>`;
-        for(const d of dists){
-          const v = r.segs[d];
-          const cls = (v!=null && v === bestSeg[d]) ? "best" : "";
-          html += `<td class="${cls}">${v!=null?formatSec(v):"—"}</td>`;
-        }
-        const tCls = (r.total!=null && r.total === bestTotal) ? "best total" : "total";
-        html += `<td class="${tCls}">${r.total!=null?formatSec(r.total):"—"}</td>`;
-        html += `</tr>`;
-      }
-      html += `</tbody></table>`;
-    }
   }
 
+  html += `<section id="pace-table-section">`;
+  if(state.compareMode){
+    const blockA = renderPaceTableBlock(t("compare_table_a"), lanes, wbt, wbtCode);
+    if(state.cmp.lastData){
+      const lanesB = getLanes(state.cmp.lastData);
+      const clsB = getBoatClassDisplayName(state.cmp.lastData);
+      const wbtB = getWbt(clsB);
+      const wbtCodeB = getWbtCode(clsB) || clsB;
+      const blockB = renderPaceTableBlock(t("compare_table_b"), lanesB, wbtB, wbtCodeB);
+      html += `<div class="compare-pace-grid">${blockA}${blockB}</div>`;
+    } else {
+      html += blockA;
+    }
+  } else {
+    html += renderPaceTableBlock(t("lbl_intermediates"), lanes, wbt, wbtCode);
+  }
+  html += `</section>`;
+
   // 5 plots — chaque carte a un bouton plein écran
-  const exp = id => `<button class="btn-expand" title="Plein écran" onclick="toggleFullscreen('${id}')">⛶</button>`;
+  const exp = id => `<button class="btn-expand" title="${t("tt_fullscreen")}" onclick="toggleFullscreen('${id}')">⛶</button>`;
   html += `<div class="plot-grid">
     <div class="plot-card" id="card-speed">
       ${exp("card-speed")}
-      <div class="plot-title">Vitesse vs distance</div>
-      <div class="plot-sub">Y = vitesse (m/s) · couleur = cadence (spm) · splits 500m annotés</div>
-      ${plotToolsHTML("speed","m/s",null,{label:"cadence",unit:"spm",def:C_DEFAULTS.speed})}
+      <div class="plot-title">${t("chart_speed_title")}</div>
+      <div class="plot-sub">${t("chart_speed_sub")}</div>
+      ${plotToolsHTML("speed","m/s",null,{label:t("lbl_color_cadence"),unit:"spm",def:C_DEFAULTS.speed})}
       <div id="plot-speed" class="plot"></div>
     </div>
     <div class="plot-card" id="card-cadence">
       ${exp("card-cadence")}
-      <div class="plot-title">Cadence vs distance</div>
-      <div class="plot-sub">Y = cadence (spm, le plus haut en haut) · couleur = vitesse (m/s)</div>
+      <div class="plot-title">${t("chart_cadence_title")}</div>
+      <div class="plot-sub">${t("chart_cadence_sub")}</div>
       ${plotToolsHTML("cadence","spm")}
       <div id="plot-cadence" class="plot"></div>
     </div>
     <div class="plot-card" id="card-rank">
       ${exp("card-rank")}
-      <div class="plot-title">Classement (rang) vs distance</div>
-      <div class="plot-sub">Y = rang (1 en haut) · couleur = vitesse (m/s)</div>
+      <div class="plot-title">${t("chart_time_title")}</div>
+      <div class="plot-sub">${t("chart_time_sub")}</div>
+      ${plotToolsHTML("time","min:s")}
       <div id="plot-rank" class="plot"></div>
     </div>
     <div class="plot-card" id="card-gap">
       ${exp("card-gap")}
-      <div class="plot-title">Écart au leader (m) vs distance</div>
-      <div class="plot-sub">Y = écart (0 en haut = leader, valeurs grandes en bas) · couleur = vitesse (m/s)</div>
+      <div class="plot-title">${t("chart_gap_title")}</div>
+      <div class="plot-sub">${t("chart_gap_sub")}</div>
       ${plotToolsHTML("gap","m")}
       <div id="plot-gap" class="plot"></div>
     </div>
     <div class="plot-card" id="card-dps" style="grid-column:1/-1">
       ${exp("card-dps")}
-      <div class="plot-title">Distance par coup vs distance</div>
-      <div class="plot-sub">Y = DPS (m/coup) = vitesse × 60 / cadence · X = distance (m)</div>
+      <div class="plot-title">${t("chart_dps_title")}</div>
+      <div class="plot-sub">${t("chart_dps_sub")}</div>
       ${plotToolsHTML("dps","m/coup")}
       <div id="plot-dps" class="plot tall"></div>
     </div>
@@ -1684,13 +2423,19 @@ function rtsSmooth1D(distances, gates, opts, times){
 // Extrait les portes (intermediates officiels) en les rattachant au tick
 // dont la distance est la plus proche. Cette association est robuste car
 // les portes 500/1000/1500/2000 m sont en général hors zone de pont.
-function buildGateAnchors(lane, pts){
+function buildGateAnchors(lane, pts, totalLength){
   const inters = lane.intermediates || [];
   const gates = [];
   for(const it of inters){
     const dStr = (it.distance?.DisplayName||"").replace(/\D/g,"");
     const dGate = parseInt(dStr);
     if(!isFinite(dGate)) continue;
+    // Skip la gate de fin de course : le dernier point GPS conservé est
+    // celui qui précède le franchissement, ResultTime correspond à un
+    // moment intermédiaire entre ce tick et le tick clippé (supprimé en
+    // amont). Forcer la gate à totalLength = dernier tick injecterait
+    // une vitesse moyenne tronquée qui plonge la queue de courbe.
+    if(totalLength && dGate >= totalLength) continue;
     let bestI = -1, bestErr = Infinity;
     for(let i=0;i<pts.length;i++){
       const e = Math.abs(pts[i].d - dGate);
@@ -1756,6 +2501,20 @@ function formatSec(s){
   const sec = s - m*60;
   return `${m}:${sec.toFixed(1).padStart(4,"0")}`;
 }
+function formatSecAxis(s){
+  if(s==null || !isFinite(s)) return "—";
+  const m = Math.floor(s/60);
+  const sec = Math.round(s - m*60);
+  return `${m}:${String(sec).padStart(2,"0")}`;
+}
+function buildTimeYTicks(yLo, yHi){
+  const span = yHi - yLo;
+  const step = span > 90 ? 15 : span > 45 ? 10 : span > 20 ? 5 : 2;
+  const start = Math.ceil(yLo / step) * step;
+  const tickvals = [];
+  for(let v = start; v <= yHi + step * 0.01; v += step) tickvals.push(v);
+  return { tickvals, ticktext: tickvals.map(formatSecAxis) };
+}
 
 // ── Construction d'une "série" pour une lane : application de la cascade
 // (Kalman + RTS / Δd/Δt / DPS / lissage) et calcul des statistiques.
@@ -1769,7 +2528,7 @@ function buildLaneSeries(lane, totalLength){
   const ranks   = pts.map(p=>p.rank);
   // Niveau 0 : Kalman + RTS (seule méthode de correction conservée)
   if(state.rtsEnabled){
-    const gates = buildGateAnchors(lane, pts);
+    const gates = buildGateAnchors(lane, pts, totalLength);
     if(gates.length >= 1){
       const dists = pts.map(p => p.d);
       const tsec = pts.map(p => p.t);
@@ -1819,8 +2578,27 @@ function drawAllPlots(data){
     .map(id => lanes.find(l => l.id === id))
     .filter(Boolean);
   if(!selected.length) return;
-  const series = selected.map(l => buildLaneSeries(l, totalLength)).filter(Boolean);
-  if(!series.length) return;
+  const seriesSlot1 = selected.map(l => buildLaneSeries(l, totalLength)).filter(Boolean);
+  if(!seriesSlot1.length) return;
+
+  // Mode comparaison : ajoute les lanes du slot 2
+  let series = seriesSlot1;
+  if(state.compareMode && state.cmp.lastData){
+    const lanes2 = getLanes(state.cmp.lastData);
+    const totalLength2 = (state.cmp.lastData?.config?.plot?.totalLength) || 2000;
+    const selected2 = state.cmp.selectedLaneIds
+      .map(id => lanes2.find(l => l.id === id))
+      .filter(Boolean);
+    const seriesSlot2 = selected2.map((l, i) => {
+      const s = buildLaneSeries(l, totalLength2);
+      if(!s) return null;
+      // Différencie visuellement les bateaux du slot B avec des tirets dans le nom
+      s.slot = "B";
+      s.lane = { ...s.lane, DisplayName: (s.lane.DisplayName || "?") + " (B)" };
+      return s;
+    }).filter(Boolean);
+    if(seriesSlot2.length) series = [...seriesSlot1, ...seriesSlot2];
+  }
   // Référence pour splits + annotations Vmax (= première lane sélectionnée)
   const ref = series[0];
   const lane = ref.lane;
@@ -1926,7 +2704,6 @@ function drawAllPlots(data){
     }
     prevD = i.d; prevT = i.t;
   }
-  const totalTime = inters.length ? formatSec(inters[inters.length-1].t) : null;
 
   // Mapping plotId/axe -> dimension globale (vitesse ou cadence)
   function globalFor(plotId, axis){
@@ -1953,7 +2730,10 @@ function drawAllPlots(data){
   // Apply user scale override or default to a plot's Y axis spec
   function yAxisSpec(plotId, baseSpec={}){
     const cur = state.yScales[plotId] || {};
-    const def = Y_DEFAULTS[plotId] || {};
+    const cls = getBoatClassDisplayName(data);
+    const def = plotId === "speed"
+      ? getSpeedDefaults(cls)
+      : (Y_DEFAULTS[plotId] || {});
     const glob = globalFor(plotId,"y") || {};
     const mn = cur.min!=null ? cur.min : (glob.min!=null ? glob.min : def.min);
     const mx = cur.max!=null ? cur.max : (glob.max!=null ? glob.max : def.max);
@@ -1995,9 +2775,9 @@ function drawAllPlots(data){
     paper_bgcolor: "#ffffff",
     plot_bgcolor: "#ffffff",
     font: { color: "#1a1d27", family: "Segoe UI,system-ui,sans-serif", size: 11 },
-    margin: { l:55, r:75, t:28, b:42 },
+    margin: { l:55, r:75, t:36, b:42 },
     xaxis: {
-      title: "Distance (m)", gridcolor: "#e2e8f0", zerolinecolor:"#cbd5e1",
+      title: t("axis_distance"), gridcolor: "#e2e8f0", zerolinecolor:"#cbd5e1",
       range:[0,2000], linecolor:"#cbd5e1",
       showspikes: true, spikemode: "across", spikesnap: "cursor",
       spikecolor: "#94a3b8", spikethickness: 1, spikedash: "dot",
@@ -2019,17 +2799,12 @@ function drawAllPlots(data){
   // Helper to build split annotations (text above plot area)
   function buildSplitAnnots(yrefTop=true){
     return splitAnnotations.map(s => ({
-      x: s.x, y: 1, xref:"x", yref:"paper",
+      x: s.x, y: 0.98, xref:"x", yref:"paper",
       text: s.text, showarrow:false,
       font: { size: 11, color: "#e2e8f0" },
       bgcolor: "rgba(35,39,58,0.65)", bordercolor:"#2e3347", borderwidth:1, borderpad:3,
       yanchor: "bottom",
-    })).concat(totalTime ? [{
-      x: 1000, y: 1.12, xref:"x", yref:"paper",
-      text: `Temps final : <b>${totalTime}</b>`,
-      showarrow: false, font:{size:12, color:"#5da7f7"},
-      yanchor: "bottom",
-    }] : []);
+    }));
   }
 
   function buildSplitShapes(){
@@ -2078,7 +2853,10 @@ function drawAllPlots(data){
     const s = series[0];
     const useSpeed = (colorMode === "speed") || (colorMode === "auto" && state.colorBy === "speed");
     const colorArr = useSpeed ? s.speeds : s.cads;
-    const colorTitle = useSpeed ? "Vitesse (m/s)" : "Cadence (spm)";
+    const colorTitle = useSpeed ? t("color_speed") : t("color_cadence");
+    let hoverColorLabel = colorTitle;
+    if (plotId === "speed" && !useSpeed) hoverColorLabel = t("hover_spm");
+    else if ((plotId === "cadence" || plotId === "gap") && useSpeed) hoverColorLabel = t("hover_ms");
     const cDefKey = useSpeed ? "cadence" : "speed";   // C_DEFAULTS index
     const cr = cRange(plotId, colorArr, C_DEFAULTS[cDefKey] || {});
     const safeColor = colorArr.map(v => (v!=null && isFinite(v)) ? v : cr.cmin);
@@ -2093,23 +2871,23 @@ function drawAllPlots(data){
         line: { width:0.4, color:"rgba(0,0,0,0.4)" },
       },
       name: s.lane.DisplayName || ("Lane "+s.lane.Lane),
-      hovertemplate: `<b>%{fullData.name}</b> : ${hovY}${yUnit?" "+yUnit:""} · ${colorTitle}: %{marker.color:.2f}<extra></extra>`,
+      hovertemplate: `<b>%{fullData.name}</b> : ${hovY}${yUnit?" "+yUnit:""} · ${hoverColorLabel}: %{marker.color:.2f}<extra></extra>`,
     }];
   }
 
   // ── Plot 1: Vitesse vs Distance ──────────────────────────────────────
   {
     const traces = buildTraces("speed", "speeds",
-      { colorMode:"auto", hovY:"%{y:.2f}", hovYLabel:"Vitesse", yUnit:"m/s" });
+      { colorMode:"auto", hovY:"%{y:.2f}", hovYLabel:t("hover_speed"), yUnit:"m/s" });
     const layout = {...layoutBase,
-      yaxis: yAxisSpec("speed", {title:"Vitesse (m/s)"}),
+      yaxis: yAxisSpec("speed", {title:t("axis_speed")}),
       showlegend: multi,
       annotations: [
         ...buildSplitAnnots(),
         ...(!multi && peakStats ? [{
           x: (peakStats.dStart + peakStats.dEnd)/2, y: 0.97,
           xref:"x", yref:"paper",
-          text: `<b>V max finale</b> (${peakStats.dStart|0}-${peakStats.dEnd|0}m) : <b>${peakStats.max.toFixed(2)}</b> m/s · moy ${peakStats.avg.toFixed(2)}`,
+          text: `<b>${t("annot_vmax")}</b> (${peakStats.dStart|0}-${peakStats.dEnd|0}m) : <b>${peakStats.max.toFixed(2)}</b> m/s · moy ${peakStats.avg.toFixed(2)}`,
           showarrow:false,
           font:{size:11, color:"#9e0142"},
           bgcolor:"rgba(254,235,235,0.92)",
@@ -2125,9 +2903,9 @@ function drawAllPlots(data){
   // ── Plot 2: Cadence vs Distance ─────────────────────────────────────
   {
     const traces = buildTraces("cadence", "cads",
-      { colorMode:"speed", hovY:"%{y:.0f}", hovYLabel:"Cadence", yUnit:"spm" });
+      { colorMode:"speed", hovY:"%{y:.0f}", hovYLabel:t("hover_cadence"), yUnit:"spm" });
     const layout = {...layoutBase,
-      yaxis: yAxisSpec("cadence", {title:"Cadence (coups/min)"}),
+      yaxis: yAxisSpec("cadence", {title:t("axis_cadence")}),
       showlegend: multi,
       annotations: buildSplitAnnots(),
       shapes: buildSplitShapes(),
@@ -2135,26 +2913,49 @@ function drawAllPlots(data){
     Plotly.react("plot-cadence", traces, layout, config).then(()=>attachCursorHover("plot-cadence"));
   }
 
-  // ── Plot 3: Rang vs Distance (Y inversé) ────────────────────────────
+  // ── Plot 3: Temps de passage vs Distance ────────────────────────────
   {
-    const nLanes = lanes.length;
-    const traces = buildTraces("rank", "ranks",
-      { colorMode:"speed", hovY:"%{y}", hovYLabel:"Rang" });
+    const timeTraces = series.map((s, idx) => {
+      const split = buildOfficialSplitSeries(s.lane, totalLength);
+      if(!split) return null;
+      const col = laneColor(s.lane, idx);
+      return {
+        x: split.xs, y: split.times, customdata: split.hovers,
+        mode: "lines+markers", type: "scattergl",
+        name: s.lane.DisplayName || ("Lane "+s.lane.Lane),
+        marker: { size: split.markerSizes, color: col },
+        line: { width: 1.5, color: col },
+        hovertemplate: "<b>%{fullData.name}</b><br>%{customdata}<extra></extra>",
+      };
+    }).filter(Boolean);
+    const allTimes = timeTraces.flatMap(tr => tr.y).filter(v => v != null && isFinite(v));
+    const tMin = allTimes.length ? Math.min(...allTimes) : 0;
+    const tMax = allTimes.length ? Math.max(...allTimes) : 1;
+    const pad = Math.max(2, (tMax - tMin) * 0.08);
+    const yLo = Math.max(0, tMin - pad);
+    const yHi = tMax + pad;
+    const yTicks = buildTimeYTicks(yLo, yHi);
     const layout = {...layoutBase,
-      yaxis: {...layoutBase.yaxis, title:"Rang", autorange:"reversed", dtick:1, range:[nLanes+0.5,0.5]},
+      yaxis: yAxisSpec("time", {
+        title: t("axis_time"),
+        autorange: "reversed",
+        range: [yHi, yLo],
+        tickvals: yTicks.tickvals,
+        ticktext: yTicks.ticktext,
+      }),
       showlegend: multi,
       annotations: buildSplitAnnots(),
       shapes: buildSplitShapes(),
     };
-    Plotly.react("plot-rank", traces, layout, config).then(()=>attachCursorHover("plot-rank"));
+    Plotly.react("plot-rank", timeTraces, layout, config).then(()=>attachCursorHover("plot-rank"));
   }
 
   // ── Plot 4: Écart au leader vs Distance (Y inversé) ─────────────────
   {
     const traces = buildTraces("gap", "gaps",
-      { colorMode:"speed", hovY:"%{y:.1f}", hovYLabel:"Écart", yUnit:"m" });
+      { colorMode:"speed", hovY:"%{y:.1f}", hovYLabel:t("hover_gap"), yUnit:"m" });
     const layout = {...layoutBase,
-      yaxis: yAxisSpec("gap", {title:"Écart au leader (m)", autorange:"reversed", rangemode:"tozero"}),
+      yaxis: yAxisSpec("gap", {title:t("axis_gap"), autorange:"reversed", rangemode:"tozero"}),
       showlegend: multi,
       annotations: buildSplitAnnots(),
       shapes: buildSplitShapes(),
@@ -2165,10 +2966,10 @@ function drawAllPlots(data){
   // ── Plot 5: Distance par coup (DPS) vs Distance ─────────────────────
   {
     const traces = buildTraces("dps", "dpsArr",
-      { colorMode:"auto", hovY:"%{y:.2f}", hovYLabel:"DPS", yUnit:"m/coup" });
+      { colorMode:"auto", hovY:"%{y:.2f}", hovYLabel:t("hover_dps"), yUnit:"m/coup" });
     const layout = {...layoutBase,
       margin: { l:55, r:75, t:18, b:50 },
-      yaxis: yAxisSpec("dps", {title:"Distance par coup (m/coup)"}),
+      yaxis: yAxisSpec("dps", {title:t("axis_dps")}),
       showlegend: multi,
       annotations: buildSplitAnnots(),
       shapes: buildSplitShapes(),
@@ -2266,16 +3067,341 @@ function resetCScale(plotId){
   delete state.cScales[plotId];
   render();
 }
+function updateExpandButton(card, isFull){
+  const btn = card?.querySelector(".btn-expand");
+  if(!btn) return;
+  btn.textContent = isFull ? "✕" : "⛶";
+  btn.title = isFull ? t("tt_exit_fullscreen") : t("tt_fullscreen");
+}
+
+function exitFullscreen(){
+  const card = state.fullscreenCardId
+    ? document.getElementById(state.fullscreenCardId)
+    : document.querySelector(".plot-card.fullscreen");
+  if(card){
+    card.classList.remove("fullscreen");
+    updateExpandButton(card, false);
+    const plotEl = card.querySelector(".plot");
+    if(plotEl && window.Plotly) requestAnimationFrame(() => Plotly.Plots.resize(plotEl));
+  }
+  state.fullscreenCardId = null;
+  document.body.classList.remove("has-fullscreen");
+}
+
+function restoreFullscreenIfNeeded(){
+  if(!state.fullscreenCardId) {
+    document.body.classList.remove("has-fullscreen");
+    return;
+  }
+  const card = document.getElementById(state.fullscreenCardId);
+  if(!card){
+    state.fullscreenCardId = null;
+    document.body.classList.remove("has-fullscreen");
+    return;
+  }
+  card.classList.add("fullscreen");
+  document.body.classList.add("has-fullscreen");
+  updateExpandButton(card, true);
+  const plotEl = card.querySelector(".plot");
+  if(plotEl && window.Plotly) requestAnimationFrame(() => Plotly.Plots.resize(plotEl));
+}
+
 // Plein écran d'une carte de graphe
 function toggleFullscreen(cardId){
   const card = document.getElementById(cardId);
   if(!card) return;
-  const isFull = card.classList.toggle("fullscreen");
-  document.body.classList.toggle("has-fullscreen", isFull);
-  // Re-layout Plotly après changement de taille
+  const wasFull = card.classList.contains("fullscreen");
+  if(wasFull){
+    exitFullscreen();
+  } else {
+    exitFullscreen();
+    card.classList.add("fullscreen");
+    state.fullscreenCardId = cardId;
+    document.body.classList.add("has-fullscreen");
+    updateExpandButton(card, true);
+  }
   const plotEl = card.querySelector(".plot");
   if(plotEl && window.Plotly) {
     requestAnimationFrame(() => Plotly.Plots.resize(plotEl));
+  }
+}
+
+// ── Export rapport HTML statique ───────────────────────────────────────
+function reportSlugPart(s){
+  return String(s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-zA-Z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 48) || "rapport";
+}
+
+function reportFilename(){
+  const parts = [
+    reportSlugPart(state.selectedComp?.DisplayName || state.selectedComp?.CompetitionCode),
+    reportSlugPart(state.selectedRace?.DisplayName),
+  ];
+  if(state.compareMode && state.cmp.selectedRace){
+    parts.push(reportSlugPart(state.cmp.selectedRace.DisplayName));
+    return (parts.filter(Boolean).join("_") || "world-rowing-compare") + "_comparaison.html";
+  }
+  return (parts.filter(Boolean).join("_") || "world-rowing-analyse") + "_rapport.html";
+}
+
+function buildRaceExportMeta({ comp, race, cls, date, boats }){
+  const isFr = getLang() === "fr";
+  return `<div class="meta" style="margin-bottom:12px">
+    <p><strong>${isFr ? "Compétition :" : "Competition:"}</strong> ${esc(comp)}</p>
+    <p><strong>${isFr ? "Course :" : "Race:"}</strong> ${esc(race)}</p>
+    ${cls ? `<p><strong>${isFr ? "Classe :" : "Class:"}</strong> ${esc(cls)}</p>` : ""}
+    ${date ? `<p><strong>${isFr ? "Date :" : "Date:"}</strong> ${esc(date)}</p>` : ""}
+    <p><strong>${t("report_boats")} :</strong> ${esc(boats)}</p>
+  </div>`;
+}
+
+function renderPaceTableExportHtml(lanes, wbt, wbtCode){
+  let html = "";
+  if(wbt){
+    html += `<p style="margin:0 0 10px;color:#b45309;font-weight:600">${esc(t("wbt_label",{cls:esc(wbtCode),time:esc(wbt.time)}))}</p>`;
+  }
+  html += renderPaceTable(lanes, wbt);
+  return html;
+}
+
+function buildExportPaceSection(data, selectedRace, selectedComp, selectedLaneIds, title){
+  const race = data?.config?.race || selectedRace || {};
+  const lanes = getLanes(data);
+  const selected = selectedLaneIds
+    .map(id => lanes.find(l => l.id === id))
+    .filter(Boolean);
+  const cls = getBoatClassDisplayName(data);
+  const wbt = getWbt(cls);
+  const wbtCode = getWbtCode(cls) || cls;
+  return {
+    title,
+    raceMeta: buildRaceExportMeta({
+      comp: selectedComp?.DisplayName || "—",
+      race: race.DisplayName || selectedRace?.DisplayName || "—",
+      cls,
+      date: (race.DateString || selectedRace?.DateString || "").slice(0, 16).replace("T", " "),
+      boats: selected.map(l => l.DisplayName || "?").join(", ") || "—",
+    }),
+    paceTableHtml: renderPaceTableExportHtml(lanes, wbt, wbtCode),
+  };
+}
+
+function setExportButtonsBusy(busy, label){
+  document.querySelectorAll(".btn-export-report").forEach(btn => {
+    if(busy){
+      if(!btn.dataset.prevLabel) btn.dataset.prevLabel = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = label;
+    } else {
+      btn.disabled = false;
+      btn.textContent = btn.dataset.prevLabel || t("btn_export_html");
+      delete btn.dataset.prevLabel;
+    }
+  });
+}
+
+function downloadBlob(blob, filename){
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+async function plotToPngDataUrl(plotId, width, height){
+  const el = document.getElementById(plotId);
+  if(!el || !window.Plotly || !el.data || !el.data.length) return null;
+  return Plotly.toImage(el, { format: "png", width, height, scale: 2 });
+}
+
+function buildReportHtml({ meta, paceSections, charts }){
+  // Graphiques interactifs : div + données JSON + initialisation Plotly
+  const chartBlocks = charts.map((c, idx) => `
+    <section class="report-chart">
+      <h2>${esc(c.title)}</h2>
+      <div id="chart-${idx}" style="width:100%;height:${c.height}px"></div>
+    </section>`).join("");
+
+  const chartScripts = charts.map((c, idx) => {
+    const tracesJson = JSON.stringify(c.traces || []);
+    const layoutJson = JSON.stringify(c.layout || {});
+    const configJson = JSON.stringify({ displaylogo:false, responsive:true, modeBarButtonsToRemove:["lasso2d","select2d"] });
+    return `Plotly.newPlot('chart-${idx}', ${tracesJson}, ${layoutJson}, ${configJson});`;
+  }).join("\n");
+
+  const isComparePace = (paceSections || []).length > 1;
+
+  const paceBlocks = isComparePace
+    ? `<section class="compare-pace-export">
+        <div class="compare-pace-grid">
+          ${(paceSections || []).map(sec => `
+          <div class="compare-pace-col">
+            <h2>${esc(sec.title)}</h2>
+            ${sec.raceMeta || ""}
+            <div class="table-wrap">${sec.paceTableHtml}</div>
+          </div>`).join("")}
+        </div>
+      </section>`
+    : (paceSections || []).map(sec => `
+  <section>
+    <h2>${esc(sec.title)}</h2>
+    ${sec.raceMeta || ""}
+    <div class="table-wrap">${sec.paceTableHtml}</div>
+  </section>`).join("");
+
+  const headerMeta = meta.headerMeta || "";
+  const wrapClass = isComparePace ? "wrap compare-report" : "wrap";
+
+  return `<!DOCTYPE html>
+<html lang="${getLang()}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${esc(meta.title)}</title>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"><\/script>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',system-ui,sans-serif;background:#f1f5f9;color:#1e293b;line-height:1.45;padding:24px}
+  .wrap{max-width:1200px;margin:0 auto}
+  .wrap.compare-report{max-width:1680px}
+  h1{font-size:1.35rem;margin-bottom:6px}
+  .meta{color:#64748b;font-size:0.88rem;margin-bottom:18px}
+  .meta p{margin:3px 0}
+  .meta strong{color:#334155}
+  section{background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:16px;margin-bottom:20px}
+  .compare-pace-export{background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:16px;margin-bottom:20px}
+  .compare-pace-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:start}
+  .compare-pace-col{min-width:0}
+  .compare-pace-col h2{font-size:0.92rem;margin-bottom:8px;color:#334155}
+  .compare-pace-col .meta{margin-bottom:10px}
+  .compare-pace-col .table-wrap{overflow-x:auto}
+  .compare-pace-grid .splits-table{font-size:0.76rem}
+  h2{font-size:0.95rem;margin-bottom:10px;color:#334155}
+  .splits-table{width:auto;max-width:100%;border-collapse:collapse;margin:0 auto;font-size:0.82rem;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;overflow:visible}
+  .splits-table th,.splits-table td{padding:5px 9px;text-align:center;font-variant-numeric:tabular-nums;border-bottom:1px solid #e2e8f0;white-space:nowrap}
+  .splits-table th{background:#f1f5f9;color:#64748b;font-weight:600;font-size:0.75rem;text-transform:uppercase;letter-spacing:.03em}
+  .splits-table td.nation,.splits-table th.nation{text-align:left}
+  .splits-table tr:last-child td{border-bottom:none}
+  .splits-table td.rank,.splits-table th.rank{color:#64748b;width:32px}
+  .splits-table .swatch-mini{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:middle}
+  .splits-table td.best{color:#059669;font-weight:600}
+  .splits-table td.total{color:#1e293b;font-weight:600}
+  .splits-table td.pace-cell .pace-cum{font-weight:600;color:#1e293b}
+  .splits-table td.pace-cell .pace-split{font-size:0.72rem;color:#64748b}
+  .splits-table .wr-badge{display:inline-block;background:#f59e0b;color:#fff;border-radius:3px;padding:0 4px;font-size:0.68rem;font-weight:700;margin-left:4px;vertical-align:middle}
+  .splits-table tr.wr-row td{background:rgba(245,158,11,0.08)}
+  .splits-table td.wr-cell .pace-cum{color:#b45309;font-weight:700}
+  .splits-table td.pct-wbt-cell,.splits-table th.pct-wbt{white-space:nowrap;font-weight:600}
+  .table-wrap{overflow:visible;width:100%}
+  @media(max-width:1100px){
+    .compare-pace-grid{grid-template-columns:1fr}
+  }
+  @media print{
+    body{padding:0;background:#fff}
+    section{break-inside:avoid;box-shadow:none}
+    .compare-pace-export{break-inside:avoid}
+    .compare-pace-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .report-chart .js-plotly-plot{max-height:95vh}
+  }
+</style>
+</head>
+<body>
+<div class="${wrapClass}">
+  <h1>${esc(meta.title)}</h1>
+  ${headerMeta}
+  <div class="meta">
+    <p><strong>${esc(meta.exportedLabel)}</strong> ${esc(meta.exported)}</p>
+  </div>
+  ${paceBlocks}
+  ${chartBlocks}
+</div>
+<script>
+window.addEventListener('DOMContentLoaded', function(){
+  ${chartScripts}
+});
+<\/script>
+</body>
+</html>`;
+}
+
+async function exportHtmlReport(){
+  if(!state.lastData?.config){
+    alert(t("export_no_data"));
+    return;
+  }
+  if(state.compareMode && !state.cmp.lastData){
+    alert(t("export_compare_need_b"));
+    return;
+  }
+  setExportButtonsBusy(true, t("export_html_busy"));
+  try {
+    if(state.fullscreenCardId) exitFullscreen();
+
+    const paceSections = [
+      buildExportPaceSection(
+        state.lastData,
+        state.selectedRace,
+        state.selectedComp,
+        state.selectedLaneIds,
+        state.compareMode ? t("compare_table_a") : t("report_intermediates"),
+      ),
+    ];
+    if(state.compareMode && state.cmp.lastData){
+      paceSections.push(buildExportPaceSection(
+        state.cmp.lastData,
+        state.cmp.selectedRace,
+        state.cmp.selectedComp,
+        state.cmp.selectedLaneIds,
+        t("compare_table_b"),
+      ));
+    }
+
+    const chartDefs = [
+      { id: "plot-speed", titleKey: "report_chart_speed", height: 520 },
+      { id: "plot-cadence", titleKey: "report_chart_cadence", height: 520 },
+      { id: "plot-rank", titleKey: "report_chart_time", height: 520 },
+      { id: "plot-gap", titleKey: "report_chart_gap", height: 520 },
+      { id: "plot-dps", titleKey: "report_chart_dps", height: 640 },
+    ];
+    const charts = [];
+    for(const def of chartDefs){
+      const el = document.getElementById(def.id);
+      if(!el || !window.Plotly || !el.data || !el.data.length) continue;
+      // Sérialise les données Plotly pour l'export interactif
+      const tracesRaw = el.data;
+      const layoutRaw = el.layout || {};
+      // Nettoie le layout : retire les références internes Plotly (_*)
+      const layout = JSON.parse(JSON.stringify(layoutRaw, (k, v) => (k.startsWith("_") ? undefined : v)));
+      charts.push({
+        title: t(def.titleKey),
+        traces: tracesRaw,
+        layout,
+        height: def.height,
+      });
+    }
+    if(!charts.length){
+      alert(t("export_no_data"));
+      return;
+    }
+
+    const locale = getLang() === "fr" ? "fr-FR" : "en-GB";
+    const isCompare = state.compareMode && state.cmp.lastData;
+    const html = buildReportHtml({
+      meta: {
+        title: isCompare ? t("report_title_compare") : t("report_title"),
+        exportedLabel: t("report_exported") + " :",
+        exported: new Date().toLocaleString(locale),
+      },
+      paceSections,
+      charts,
+    });
+
+    downloadBlob(new Blob([html], { type: "text/html;charset=utf-8" }), reportFilename());
+  } catch(err){
+    console.error(err);
+    alert(t("export_no_data"));
+  } finally {
+    setExportButtonsBusy(false);
   }
 }
 
@@ -2310,6 +3436,8 @@ async function selectRace(id){
   state.selectedRace = r;
   state.lastData = null;
   state.selectedLaneIds = [];
+  // Réinitialise l'échelle vitesse pour appliquer les defaults de la nouvelle classe
+  delete state.yScales["speed"];
   render();
   try {
     state.lastData = await fetchTracker(id);
@@ -2333,6 +3461,264 @@ function toggleLane(laneId){
     return;
   }
   state.selectedLaneIds = ids;
+  render();
+}
+
+function selectAllLanes(){
+  if(!state.lastData) return;
+  const lanes = getLanes(state.lastData);
+  state.selectedLaneIds = lanes.map(l => l.id).filter(Boolean);
+  render();
+}
+
+function deselectAllLanes(){
+  if(!state.lastData) return;
+  const lanes = getLanes(state.lastData);
+  // Garde au minimum le leader
+  const leader = lanes.find(l => l.currentPoint?.raceBoatTracker?.currentPosition === 1)
+              || lanes.find(l => l.Rank === 1)
+              || lanes[0];
+  state.selectedLaneIds = leader ? [leader.id] : (lanes[0] ? [lanes[0].id] : []);
+  render();
+}
+
+// ── Mode comparaison (analyses croisées 2 courses) ────────────────────
+function syncCmpFromRaceA(){
+  state.cmp = {
+    year: state.year,
+    category: state.category,
+    searched: !!state.selectedComp,
+    loadingComps: false,
+    competitions: state.competitions.length ? [...state.competitions] : [],
+    selectedComp: state.selectedComp,
+    races: filterCompareRaces(state.races),
+    loadingRaces: false,
+    selectedRace: null,
+    lastData: null,
+    selectedLaneIds: [],
+  };
+}
+
+function toggleCompareMode(){
+  state.compareMode = !state.compareMode;
+  document.body.classList.toggle("compare-mode", state.compareMode && !!state.lastData);
+  if(state.compareMode){
+    syncCmpFromRaceA();
+  } else {
+    state.cmp = {
+      year: new Date().getFullYear(), category: "World Rowing Cup",
+      searched: false, loadingComps: false,
+      competitions: [], selectedComp: null,
+      races: [], loadingRaces: false,
+      selectedRace: null, lastData: null,
+      selectedLaneIds: [],
+    };
+  }
+  render();
+}
+
+function renderComparePanel(){
+  const cmp = state.cmp;
+  const years = [];
+  const curYear = new Date().getFullYear();
+  for(let y = curYear; y >= 2010; y--) years.push(y);
+
+  const classFilter = getCompareClassFilter();
+
+  let html = `<div class="compare-panel">`;
+  html += `<div class="compare-panel-header">
+    <button type="button" class="compare-toggle-btn active" onclick="toggleCompareMode()">${t("btn_compare_close")}</button>
+    <button type="button" class="toolbar-btn btn-export-report" onclick="exportHtmlReport()" title="${esc(t("btn_export_html"))}">${esc(t("btn_export_html"))}</button>
+  </div>`;
+
+  let slot1Html = `<div class="compare-slot">
+    <h4>${t("compare_race1")} <span class="compare-slot-label slot-a-label">A</span></h4>
+    <div style="font-size:0.82rem;color:var(--text);padding:4px 0">
+      ${esc(state.selectedRace?.DisplayName || "—")}
+    </div>
+    <div class="compare-slot-actions">
+      <button class="toolbar-btn-sm" onclick="selectAllLanes()">${t("lbl_select_all")}</button>
+      <button class="toolbar-btn-sm" onclick="deselectAllLanes()">${t("lbl_deselect_all")}</button>
+    </div>
+    <div class="cmp-lane-pills">`;
+  if(state.lastData){
+    const lanes1 = getLanes(state.lastData);
+    for(const l of lanes1){
+      const col = laneColor(l, 0);
+      const checked = state.selectedLaneIds.includes(l.id);
+      slot1Html += `<label class="nation-pill ${checked?'active':''}" style="cursor:pointer">
+        <input type="checkbox" ${checked?'checked':''} onchange="toggleLane('${l.id}')"/>
+        <span class="swatch" style="background:${col}"></span>${esc(l.DisplayName||"?")}
+      </label>`;
+    }
+  }
+  slot1Html += `</div></div>`;
+
+  // Slot 2
+  let slot2Html = `<div class="compare-slot">
+    <h4>${t("compare_race2")} <span class="compare-slot-label slot-b-label">B</span></h4>`;
+  if(classFilter){
+    slot2Html += `<div class="compare-class-hint">${t("compare_class_filter",{cls:esc(classFilter)})}</div>`;
+  }
+  if(cmp.selectedComp){
+    slot2Html += `<div class="compare-class-hint">${t("compare_from_a")} · ${esc(cmp.year)} · ${esc(getCompareCategoryLabel(cmp.category))}</div>`;
+  }
+  slot2Html += `<div class="slot-row">
+      <select id="cmp-sel-year" onchange="cmpYearChange()">
+        ${years.map(y => `<option value="${y}"${y===cmp.year?' selected':''}>${y}</option>`).join('')}
+      </select>
+      <select id="cmp-sel-cat" onchange="cmpCatChange()">
+        ${COMPARE_CATEGORIES.map(c => `<option value="${esc(c.value)}"${c.value===cmp.category?' selected':''}>${esc(c.value)}</option>`).join('')}
+      </select>
+      <button class="cmp-search-btn" onclick="cmpSearch()">${t("compare_search")}</button>
+    </div>`;
+
+  if(cmp.loadingComps){
+    slot2Html += `<div style="font-size:0.8rem;color:var(--text-muted);padding:8px">${t("compare_loading")}</div>`;
+  } else if(cmp.competitions.length && !cmp.selectedComp){
+    slot2Html += `<div class="cmp-race-list">
+      ${cmp.competitions.map(c => `<div class="cmp-comp-item" onclick="cmpSelectComp('${c.id}')">${esc(c.DisplayName||c.CompetitionCode||c.id)}</div>`).join('')}
+    </div>`;
+  } else if(cmp.selectedComp && !cmp.selectedRace){
+    slot2Html += `<div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:4px">${esc(cmp.selectedComp.DisplayName||"")}</div>`;
+    if(cmp.loadingRaces){
+      slot2Html += `<div style="font-size:0.8rem;color:var(--text-muted)">${t("compare_loading")}</div>`;
+    } else {
+      const racesB = filterCompareRaces(cmp.races);
+      if(!racesB.length){
+        slot2Html += `<div style="font-size:0.8rem;color:var(--text-muted);padding:8px">${t("empty_no_races")}</div>`;
+      } else {
+        slot2Html += `<div class="cmp-race-list">
+          ${racesB.map(r => {
+            const time = (r.DateString || "").slice(11, 16);
+            return `<div class="cmp-race-item" onclick="cmpSelectRace('${r.id}')">
+              <span>${esc(formatRaceListLabel(r))}</span>
+              ${time ? `<span style="color:var(--text-muted);margin-left:6px">${esc(time)}</span>` : ""}
+            </div>`;
+          }).join("")}
+        </div>`;
+      }
+    }
+  } else if(cmp.selectedRace){
+    slot2Html += `<div style="font-size:0.78rem;color:var(--text);margin-bottom:6px"><strong>${esc(cmp.selectedRace.DisplayName||"")}</strong>
+      <button class="cmp-search-btn" style="margin-left:8px;padding:2px 8px;font-size:0.72rem" onclick="cmpReset()">&larr;</button></div>`;
+    slot2Html += `<div class="compare-slot-actions">
+      <button class="toolbar-btn-sm" onclick="cmpSelectAllLanes()">${t("lbl_select_all")}</button>
+      <button class="toolbar-btn-sm" onclick="cmpDeselectAllLanes()">${t("lbl_deselect_all")}</button>
+    </div>`;
+    if(cmp.loadingRaces){
+      slot2Html += `<div style="font-size:0.8rem;color:var(--text-muted)">${t("compare_loading")}</div>`;
+    } else if(cmp.lastData){
+      const lanes2 = getLanes(cmp.lastData);
+      slot2Html += `<div class="cmp-lane-pills">`;
+      for(const l of lanes2){
+        const col = laneColor(l, 0);
+        const checked = cmp.selectedLaneIds.includes(l.id);
+        slot2Html += `<label class="nation-pill ${checked?'active':''}" style="cursor:pointer">
+          <input type="checkbox" ${checked?'checked':''} onchange="cmpToggleLane('${l.id}')"/>
+          <span class="swatch" style="background:${col}"></span>${esc(l.DisplayName||"?")}
+        </label>`;
+      }
+      slot2Html += `</div>`;
+    }
+  } else {
+    slot2Html += `<div style="font-size:0.8rem;color:var(--text-muted);padding:8px">${t("compare_select_hint")}</div>`;
+  }
+  slot2Html += `</div>`;
+
+  return html + slot1Html + slot2Html + `</div>`;
+}
+
+function filterCompareRaces(races){
+  const classFilter = getCompareClassFilter();
+  const raceAId = state.selectedRace?.id;
+  return (races || []).filter(r => {
+    if(classFilter && (r.event?.boatClass?.DisplayName || "") !== classFilter) return false;
+    if(raceAId && r.id === raceAId) return false;
+    return true;
+  });
+}
+
+function cmpYearChange(){ state.cmp.year = parseInt($("cmp-sel-year")?.value) || state.cmp.year; }
+function cmpCatChange(){ state.cmp.category = $("cmp-sel-cat")?.value || state.cmp.category; }
+function cmpReset(){
+  state.cmp.selectedRace = null;
+  state.cmp.lastData = null;
+  state.cmp.selectedLaneIds = [];
+  state.cmp.year = state.year;
+  state.cmp.category = state.category;
+  state.cmp.selectedComp = state.selectedComp;
+  state.cmp.competitions = state.competitions.length ? [...state.competitions] : [];
+  state.cmp.races = filterCompareRaces(state.races);
+  state.cmp.searched = !!state.selectedComp;
+  render();
+}
+
+async function cmpSearch(){
+  const cmp = state.cmp;
+  cmp.year = parseInt($("cmp-sel-year")?.value) || cmp.year;
+  cmp.category = $("cmp-sel-cat")?.value || cmp.category;
+  cmp.loadingComps = true; cmp.competitions = []; cmp.selectedComp = null;
+  cmp.selectedRace = null; cmp.lastData = null; cmp.selectedLaneIds = [];
+  render();
+  try { cmp.competitions = await fetchCompareCompetitions(cmp.year, cmp.category); }
+  catch(e){ console.error(e); }
+  finally { cmp.loadingComps = false; render(); }
+}
+
+async function cmpSelectComp(id){
+  const cmp = state.cmp;
+  const c = cmp.competitions.find(x => x.id === id); if(!c) return;
+  cmp.selectedComp = c; cmp.races = []; cmp.loadingRaces = true;
+  cmp.selectedRace = null; cmp.lastData = null; cmp.selectedLaneIds = [];
+  render();
+  try {
+    const allRaces = await apiRaces(id);
+    cmp.races = filterCompareRaces(allRaces);
+  }
+  catch(e){ console.error(e); }
+  finally { cmp.loadingRaces = false; render(); }
+}
+
+async function cmpSelectRace(id){
+  const cmp = state.cmp;
+  const r = cmp.races.find(x => x.id === id); if(!r) return;
+  cmp.selectedRace = r; cmp.lastData = null; cmp.selectedLaneIds = [];
+  cmp.loadingRaces = true;
+  render();
+  try {
+    cmp.lastData = await fetchTracker(id);
+    const lanes2 = getLanes(cmp.lastData);
+    // Présélectionne toutes les lanes du slot 2
+    cmp.selectedLaneIds = lanes2.map(l => l.id).filter(Boolean);
+  } catch(e){ console.error(e); }
+  finally { cmp.loadingRaces = false; render(); }
+}
+
+function cmpToggleLane(laneId){
+  const ids = state.cmp.selectedLaneIds.slice();
+  const idx = ids.indexOf(laneId);
+  if(idx >= 0) ids.splice(idx, 1);
+  else ids.push(laneId);
+  if(ids.length === 0) return;
+  state.cmp.selectedLaneIds = ids;
+  render();
+}
+
+function cmpSelectAllLanes(){
+  if(!state.cmp.lastData) return;
+  const lanes = getLanes(state.cmp.lastData);
+  state.cmp.selectedLaneIds = lanes.map(l => l.id).filter(Boolean);
+  render();
+}
+
+function cmpDeselectAllLanes(){
+  if(!state.cmp.lastData) return;
+  const lanes = getLanes(state.cmp.lastData);
+  const leader = lanes.find(l => l.currentPoint?.raceBoatTracker?.currentPosition === 1)
+              || lanes.find(l => l.Rank === 1)
+              || lanes[0];
+  state.cmp.selectedLaneIds = leader ? [leader.id] : (lanes[0] ? [lanes[0].id] : []);
   render();
 }
 // Compat. : ancien sélecteur exclusif (préserve l'API publique si appelé ailleurs).
@@ -2365,6 +3751,10 @@ window.addEventListener("resize", () => {
       try { Plotly.Plots.resize(el); } catch(_) {}
     });
   }, 150);
+});
+
+document.addEventListener("keydown", e => {
+  if(e.key === "Escape" && state.fullscreenCardId) exitFullscreen();
 });
 
 initTheme();

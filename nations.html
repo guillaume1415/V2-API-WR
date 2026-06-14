@@ -1,0 +1,827 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>World Rowing — Nations</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  :root {
+    --bg: #0f1117; --surface: #1a1d27; --surface2: #23273a;
+    --border: #2e3347; --accent: #3b82f6; --accent-hover: #2563eb;
+    --gold: #f59e0b; --silver: #94a3b8; --bronze: #cd7f32;
+    --text: #e2e8f0; --text-muted: #64748b;
+    --green: #10b981; --red: #ef4444; --radius: 8px;
+  }
+  body.light {
+    --bg: #f1f5f9; --surface: #ffffff; --surface2: #f8fafc;
+    --border: #e2e8f0; --text: #1e293b; --text-muted: #64748b;
+    --accent: #2563eb; --accent-hover: #1d4ed8;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;height:100%}
+  body{display:flex;flex-direction:column;min-height:100vh}
+
+  header{
+    background:var(--surface);border-bottom:1px solid var(--border);
+    padding:10px 20px;display:flex;align-items:center;gap:12px;
+    position:sticky;top:0;z-index:100;min-height:58px;
+  }
+  .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit;flex-shrink:0}
+  .brand .logo{width:34px;height:34px;background:var(--accent);border-radius:50%;
+    display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+  .brand-text h1{font-size:1.05rem;font-weight:600;line-height:1.2}
+  .brand-text p{font-size:0.72rem;color:var(--text-muted);line-height:1.2;margin-top:2px}
+  .header-nav{display:flex;gap:4px;align-items:center}
+  .nav-link{
+    display:inline-flex;align-items:center;gap:6px;padding:6px 11px;
+    border-radius:var(--radius);font-size:0.82rem;font-weight:500;
+    border:1px solid var(--border);color:var(--text-muted);
+    cursor:pointer;text-decoration:none;white-space:nowrap;
+    transition:border-color .15s,color .15s,background .15s;
+  }
+  .nav-link:hover{border-color:var(--accent);color:var(--accent)}
+  .nav-link.active{
+    border-color:var(--accent);color:var(--accent);
+    background:color-mix(in srgb,var(--accent) 10%,var(--surface));
+  }
+  .nav-icon{font-size:0.95rem;line-height:1}
+  .header-tools{margin-left:auto;display:flex;align-items:center;gap:6px}
+  .hdr-btn{
+    display:inline-flex;align-items:center;gap:5px;padding:6px 11px;
+    background:var(--surface2);border:1px solid var(--border);
+    color:var(--text-muted);border-radius:var(--radius);
+    font-size:0.8rem;font-weight:600;cursor:pointer;
+    transition:border-color .15s,color .15s,background .15s;
+    white-space:nowrap;font-family:inherit;line-height:1;
+  }
+  .hdr-btn:hover{border-color:var(--accent);color:var(--text)}
+  .hdr-icon{font-size:0.95rem;line-height:1}
+
+  /* Layout */
+  .app-body{display:flex;flex:1;overflow:hidden;height:calc(100vh - 58px)}
+  .sidebar{
+    width:240px;flex-shrink:0;background:var(--surface);
+    border-right:1px solid var(--border);
+    overflow-y:auto;padding:16px 12px;display:flex;flex-direction:column;gap:12px;
+  }
+  .main-area{flex:1;overflow-y:auto;padding:16px}
+
+  /* Sidebar */
+  .sidebar-section{display:flex;flex-direction:column;gap:8px}
+  .sidebar-label{font-size:0.72rem;font-weight:700;text-transform:uppercase;
+    letter-spacing:.06em;color:var(--text-muted);margin-bottom:2px}
+  .sidebar select{
+    width:100%;background:var(--surface2);border:1px solid var(--border);
+    color:var(--text);padding:6px 8px;border-radius:var(--radius);
+    font-family:inherit;font-size:0.82rem;
+  }
+  .btn-primary{
+    width:100%;padding:8px;background:var(--accent);color:#fff;
+    border:none;border-radius:var(--radius);font-size:0.85rem;
+    font-weight:600;cursor:pointer;font-family:inherit;
+  }
+  .btn-primary:hover{background:var(--accent-hover)}
+  .btn-primary:disabled{opacity:.45;cursor:not-allowed}
+
+  /* Filters */
+  .filter-section{border-top:1px solid var(--border);padding-top:12px}
+  .filter-group{display:flex;flex-direction:column;gap:6px}
+  .filter-group label{display:flex;align-items:center;gap:8px;
+    font-size:0.82rem;cursor:pointer;color:var(--text)}
+  .filter-group label input[type=checkbox]{cursor:pointer;width:14px;height:14px}
+  .filter-group label input[type=radio]{cursor:pointer;width:14px;height:14px}
+  .radio-group{display:flex;gap:8px;flex-wrap:wrap}
+  .radio-group label{
+    padding:4px 10px;border:1px solid var(--border);border-radius:99px;
+    font-size:0.78rem;font-weight:600;cursor:pointer;
+    color:var(--text-muted);transition:border-color .12s,color .12s,background .12s;
+    display:inline-flex;align-items:center;gap:5px;
+  }
+  .radio-group label:has(input:checked){
+    border-color:var(--accent);color:var(--accent);
+    background:color-mix(in srgb,var(--accent) 12%,var(--surface2));
+  }
+  .radio-group input[type=radio]{display:none}
+
+  /* Live badge */
+  .live-badge{
+    display:inline-flex;align-items:center;gap:5px;
+    padding:3px 9px;background:color-mix(in srgb,var(--red) 15%,var(--surface2));
+    border:1px solid var(--red);border-radius:99px;
+    font-size:0.72rem;font-weight:700;color:var(--red);margin-left:8px;
+  }
+  .live-dot{width:7px;height:7px;border-radius:50%;background:var(--red);
+    animation:pulse .8s ease-in-out infinite alternate}
+  @keyframes pulse{from{opacity:1}to{opacity:.3}}
+
+  /* Stats bar */
+  .stats-bar{
+    display:flex;gap:16px;align-items:center;flex-wrap:wrap;
+    padding:10px 14px;background:var(--surface);
+    border:1px solid var(--border);border-radius:var(--radius);
+    margin-bottom:14px;font-size:0.82rem;
+  }
+  .stats-bar strong{color:var(--text)}
+  .stats-bar span{color:var(--text-muted)}
+
+  /* Medal table */
+  .medal-table{
+    width:100%;border-collapse:collapse;font-size:0.88rem;
+    background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+    overflow:hidden;
+  }
+  .medal-table thead tr{background:var(--surface2)}
+  .medal-table th{
+    padding:8px 12px;text-align:center;font-weight:700;font-size:0.75rem;
+    text-transform:uppercase;letter-spacing:.04em;color:var(--text-muted);
+    border-bottom:2px solid var(--border);white-space:nowrap;
+  }
+  .medal-table th.nation-col{text-align:left;padding-left:14px}
+  .medal-table th.gold-col{color:var(--gold)}
+  .medal-table th.silver-col{color:var(--silver)}
+  .medal-table th.bronze-col{color:var(--bronze)}
+  .medal-table th.th-sort{cursor:pointer;user-select:none;transition:color .12s}
+  .medal-table th.th-sort:hover{color:var(--text)}
+  .medal-table th.sort-active{color:var(--accent)}
+  .medal-table td{
+    padding:9px 12px;text-align:center;border-bottom:1px solid var(--border);
+    font-variant-numeric:tabular-nums;
+  }
+  .medal-table tr:last-child td{border-bottom:none}
+  .medal-table tr:hover td{background:color-mix(in srgb,var(--accent) 5%,var(--surface))}
+  .medal-table td.nation-col{text-align:left;padding-left:14px;font-weight:600}
+  .flag-code{
+    display:inline-block;width:22px;text-align:center;font-size:1.1rem;
+    margin-right:6px;vertical-align:middle;
+  }
+  .medal-count{font-weight:700;font-size:1rem}
+  .medal-count.gold{color:var(--gold)}
+  .medal-count.silver{color:var(--silver)}
+  .medal-count.bronze{color:var(--bronze)}
+  .total-count{font-weight:700;color:var(--text)}
+  .rank-col{color:var(--text-muted);font-weight:600;width:36px}
+  .medal-icon{font-size:1.1rem}
+  .events-col{font-size:0.8rem;color:var(--text-muted);text-align:left;max-width:320px;line-height:1.45}
+  .events-col .ev-gold{color:var(--gold)}
+  .events-col .ev-silver{color:var(--silver)}
+  .events-col .ev-bronze{color:var(--bronze)}
+
+  /* Loading / empty */
+  .loading{display:flex;align-items:center;gap:12px;padding:32px;
+    color:var(--text-muted);font-size:0.9rem}
+  .spinner{width:20px;height:20px;border:2px solid var(--border);
+    border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .empty{padding:32px;text-align:center;color:var(--text-muted);font-size:0.9rem}
+  .error-box{background:color-mix(in srgb,var(--red) 12%,var(--surface));
+    border:1px solid var(--red);border-radius:var(--radius);
+    padding:14px 16px;color:var(--red);font-size:0.85rem;margin:16px 0}
+
+  /* Section title */
+  .section-title{
+    font-size:0.82rem;font-weight:700;text-transform:uppercase;
+    letter-spacing:.06em;color:var(--text-muted);margin-bottom:10px;
+  }
+  .comp-title{font-size:1rem;font-weight:700;color:var(--text);margin-bottom:4px}
+  .comp-sub{font-size:0.8rem;color:var(--text-muted);margin-bottom:14px}
+  .refresh-info{font-size:0.72rem;color:var(--text-muted);margin-top:8px;text-align:right}
+
+  @media(max-width:920px){
+    .brand-text p{display:none}
+    .brand-text h1{font-size:0.95rem}
+    .nav-link{padding:6px 9px}
+  }
+  @media(max-width:760px){
+    header{padding:9px 12px;gap:8px}
+    .brand-text{display:none}
+    .nav-label{display:none}
+    .hdr-btn{padding:6px 9px}
+    .nav-link{padding:6px 9px}
+  }
+  @media(max-width:700px){
+    .sidebar{width:100%;height:auto;border-right:none;border-bottom:1px solid var(--border)}
+    .app-body{flex-direction:column;height:auto}
+    .medal-table{font-size:0.78rem}
+  }
+</style>
+</head>
+<body>
+<header>
+  <a class="brand" id="brand-link" href="nations.html" title="Nations">
+    <div class="logo">🏅</div>
+    <div class="brand-text">
+      <h1 id="brand-h1">World Rowing — Nations</h1>
+      <p id="brand-p">Nations medal table</p>
+    </div>
+  </a>
+  <nav class="header-nav">
+    <a class="nav-link" id="nav-results-link" href="index.html" title="Results">
+      <span class="nav-icon">🏆</span><span class="nav-label" id="nav-results-label">Results</span>
+    </a>
+    <a class="nav-link" id="nav-schedule-link" href="schedule.html" title="Schedule">
+      <span class="nav-icon">📅</span><span class="nav-label" id="nav-schedule-label">Schedule</span>
+    </a>
+    <a class="nav-link" id="nav-live-link" href="live.html" title="Live">
+      <span class="nav-icon">📡</span><span class="nav-label" id="nav-live-label">Live</span>
+    </a>
+    <a class="nav-link" id="nav-analyse-link" href="analyse.html" title="Analyse">
+      <span class="nav-icon">📊</span><span class="nav-label" id="nav-analyse-label">Analyse</span>
+    </a>
+    <a class="nav-link active" id="nav-nations-link" href="nations.html" title="Nations">
+      <span class="nav-icon">🏅</span><span class="nav-label" id="nav-nations-label">Nations</span>
+    </a>
+  </nav>
+  <div class="header-tools">
+    <button class="hdr-btn" id="btn-theme" onclick="toggleTheme()" title="Toggle theme">
+      <span class="hdr-icon" id="theme-icon">🌙</span>
+    </button>
+    <button class="hdr-btn" id="btn-lang" onclick="toggleLang()" title="Language">
+      <span class="hdr-icon" id="lang-icon">FR</span>
+    </button>
+  </div>
+</header>
+
+<div class="app-body">
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label" id="lbl-year">Year</div>
+      <select id="sel-year"></select>
+      <div class="sidebar-label" id="lbl-category">Category</div>
+      <select id="sel-category">
+        <option value="World Rowing Cup">World Rowing Cup</option>
+        <option value="World Rowing Championships" selected>World Rowing Championships</option>
+        <option value="Olympic Games">Olympic Games</option>
+        <option value="Paralympic Games">Paralympic Games</option>
+        <option value="World Rowing Under 23 Championships">U23 Championships</option>
+        <option value="World Rowing Junior Championships">Junior Championships</option>
+      </select>
+      <button class="btn-primary" id="btn-search" onclick="search()">Search</button>
+    </div>
+
+    <div class="filter-section">
+      <div class="sidebar-label" id="lbl-gender-filter">Gender</div>
+      <div class="radio-group" style="margin-bottom:10px">
+        <label><input type="radio" name="gender" value="all" checked onchange="applyFilters()">
+          <span id="filter-all-label">All</span></label>
+        <label><input type="radio" name="gender" value="M" onchange="applyFilters()">
+          <span id="filter-m-label">Men</span></label>
+        <label><input type="radio" name="gender" value="W" onchange="applyFilters()">
+          <span id="filter-w-label">Women</span></label>
+      </div>
+      <div class="filter-group">
+        <label>
+          <input type="checkbox" id="filter-lw" checked onchange="applyFilters()">
+          <span id="filter-lw-label">Include Lightweights (LM/LW)</span>
+        </label>
+        <label>
+          <input type="checkbox" id="filter-mix" checked onchange="applyFilters()">
+          <span id="filter-mix-label">Include Mixed events</span>
+        </label>
+        <label>
+          <input type="checkbox" id="filter-para" checked onchange="applyFilters()">
+          <span id="filter-para-label">Include Para-rowing (PR)</span>
+        </label>
+        <label>
+          <input type="checkbox" id="filter-olympic-only" onchange="applyFilters()">
+          <span id="filter-olympic-label">Olympic events only</span>
+        </label>
+      </div>
+    </div>
+
+    <div id="sidebar-refresh" class="refresh-info" style="display:none"></div>
+  </aside>
+
+  <main class="main-area" id="main-area">
+    <div class="empty" id="welcome-msg">Welcome — search for a competition to display the medal table.</div>
+  </main>
+</div>
+
+<script>
+const API_BASE = "https://world-rowing-api.soticcloud.net/stats/api";
+
+// Olympic event classes (open weight, non-para, non-mix)
+const OLYMPIC_CLASSES = new Set([
+  "M1x","W1x","M2x","W2x","M2-","W2-","M4x","W4x","M4-","W4-","M8+","W8+",
+  // Full names
+  "Men's Single Sculls","Women's Single Sculls",
+  "Men's Double Sculls","Women's Double Sculls",
+  "Men's Pair","Women's Pair",
+  "Men's Quadruple Sculls","Women's Quadruple Sculls",
+  "Men's Four","Women's Four",
+  "Men's Eight","Women's Eight",
+]);
+
+// ── i18n ──────────────────────────────────────────────────────────────
+const I18N = {
+  en: {
+    title: "World Rowing — Nations", subtitle: "Nations medal table",
+    nav_results:"Results",nav_schedule:"Schedule",nav_live:"Live",
+    nav_analyse:"Analyse",nav_nations:"Nations",
+    tt_theme:"Toggle theme",tt_lang:"Language",
+    lbl_year:"Year",lbl_category:"Category",btn_search:"Search",
+    filter_gender:"Gender",
+    filter_all:"All",filter_m:"Men",filter_w:"Women",
+    filter_lw:"Include Lightweights (LM/LW)",
+    filter_mix:"Include Mixed events",
+    filter_para:"Include Para-rowing (PR)",
+    filter_olympic:"Olympic events only",
+    tbl_rank:"#",tbl_nation:"Nation",tbl_gold:"Gold",tbl_silver:"Silver",
+    tbl_bronze:"Bronze",tbl_total:"Total",tbl_events:"Events",
+    welcome:"Welcome — search for a competition to display the medal table.",
+    loading_comps:"Searching competitions…",
+    loading_races:"Loading races…",
+    empty_no_comps:"No competition found.",
+    empty_no_finals:"No Final A results available yet.",
+    err_generic:"Error loading data.",
+    status_last_update:"Last update:",
+    status_live:"LIVE",
+    comp_label:"Competition:",
+    races_counted:"{n} Final A race(s) counted",
+  },
+  fr: {
+    title: "World Rowing — Nations", subtitle: "Classement des nations",
+    nav_results:"Résultats",nav_schedule:"Programme",nav_live:"Live",
+    nav_analyse:"Analyse",nav_nations:"Nations",
+    tt_theme:"Changer le thème",tt_lang:"Langue",
+    lbl_year:"Année",lbl_category:"Catégorie",btn_search:"Rechercher",
+    filter_gender:"Genre",
+    filter_all:"Tous",filter_m:"Hommes",filter_w:"Femmes",
+    filter_lw:"Inclure poids légers (LM/LW)",
+    filter_mix:"Inclure épreuves mixtes",
+    filter_para:"Inclure para-aviron (PR)",
+    filter_olympic:"Épreuves olympiques uniquement",
+    tbl_rank:"#",tbl_nation:"Nation",tbl_gold:"Or",tbl_silver:"Argent",
+    tbl_bronze:"Bronze",tbl_total:"Total",tbl_events:"Épreuves",
+    welcome:"Bienvenue — lancez une recherche pour afficher le classement.",
+    loading_comps:"Recherche des compétitions…",
+    loading_races:"Chargement des courses…",
+    empty_no_comps:"Aucune compétition trouvée.",
+    empty_no_finals:"Aucun résultat de Finale A disponible.",
+    err_generic:"Erreur lors du chargement des données.",
+    status_last_update:"Dernière mise à jour :",
+    status_live:"EN DIRECT",
+    comp_label:"Compétition :",
+    races_counted:"{n} Finale(s) A comptabilisée(s)",
+  },
+};
+const getLang = () => localStorage.getItem("wr-lang") || "en";
+function t(key, params){
+  const dict = I18N[getLang()] || I18N.en;
+  let s = dict[key] ?? I18N.en[key] ?? key;
+  if(params) for(const [k,v] of Object.entries(params)) s = s.split("{"+k+"}").join(String(v));
+  return s;
+}
+function setLang(lang){
+  localStorage.setItem("wr-lang", lang);
+  applyStaticI18n();
+  render();
+}
+function toggleLang(){ setLang(getLang() === "en" ? "fr" : "en"); }
+
+function applyStaticI18n(){
+  const lang = getLang();
+  document.documentElement.lang = lang;
+  document.title = t("title");
+  const setText = (id,key) => { const el = document.getElementById(id); if(el) el.textContent = t(key); };
+  const setAttr = (id,attr,key) => { const el = document.getElementById(id); if(el) el.setAttribute(attr, t(key)); };
+  setText("brand-h1","title"); setText("brand-p","subtitle");
+  setText("nav-results-label","nav_results"); setText("nav-schedule-label","nav_schedule");
+  setText("nav-live-label","nav_live"); setText("nav-analyse-label","nav_analyse");
+  setText("nav-nations-label","nav_nations");
+  setAttr("brand-link","title","nav_nations");
+  setAttr("nav-results-link","title","nav_results");
+  setAttr("nav-schedule-link","title","nav_schedule");
+  setAttr("nav-live-link","title","nav_live");
+  setAttr("nav-analyse-link","title","nav_analyse");
+  setAttr("nav-nations-link","title","nav_nations");
+  setAttr("btn-theme","title","tt_theme");
+  setAttr("btn-lang","title","tt_lang");
+  setText("lbl-year","lbl_year"); setText("lbl-category","lbl_category");
+  setText("btn-search","btn_search");
+  setText("lbl-gender-filter","filter_gender");
+  setText("filter-all-label","filter_all"); setText("filter-m-label","filter_m");
+  setText("filter-w-label","filter_w"); setText("filter-lw-label","filter_lw");
+  setText("filter-mix-label","filter_mix"); setText("filter-para-label","filter_para");
+  setText("filter-olympic-label","filter_olympic");
+  document.getElementById("lang-icon").textContent = lang.toUpperCase();
+  const we = document.getElementById("welcome-msg");
+  if(we && !state.searched) we.textContent = t("welcome");
+}
+
+// ── Theme ─────────────────────────────────────────────────────────────
+function toggleTheme(){
+  const isLight = document.body.classList.toggle("light");
+  localStorage.setItem("wr-theme", isLight ? "light" : "dark");
+  document.getElementById("theme-icon").textContent = isLight ? "☀️" : "🌙";
+}
+(function initTheme(){
+  const isLight = localStorage.getItem("wr-theme") === "light";
+  if(isLight) document.body.classList.add("light");
+  document.getElementById("theme-icon").textContent = isLight ? "☀️" : "🌙";
+})();
+
+// ── API ───────────────────────────────────────────────────────────────
+const $ = id => document.getElementById(id);
+function basePath(){ return API_BASE; }
+async function apiFetch(url){
+  const r = await fetch(url);
+  if(!r.ok) throw new Error("HTTP "+r.status);
+  return r.json();
+}
+function buildUrl(path, params){
+  const parts = [];
+  if(params) for(const [k,v] of Object.entries(params)) parts.push(`${encodeURIComponent(k)}=${encodeURIComponent(v)}`);
+  return basePath()+path+(parts.length?"?"+parts.join("&"):"");
+}
+
+async function apiCompetitions(year, category){
+  const url = buildUrl("/competition", {
+    "filter[StartDate]": `${year}-12-31T23:59:59.000Z`,
+    "filter[competitionType.competitionCategory.DisplayName]": category,
+    "filterOptions[StartDate]": "lessThanEqualTo",
+    "include": "competitionType,competitionType.competitionCategory,venue,venue.country",
+    "sort[StartDate]": "desc",
+  });
+  const d = await apiFetch(url);
+  const data = Array.isArray(d.data) ? d.data : [];
+  return data.filter(c => String(c.StartDate||"").startsWith(String(year)));
+}
+
+async function apiRaces(compId){
+  const url = buildUrl("/race/", {
+    "filter[event.competitionId]": compId,
+    "include": "raceStatus,racePhase,event.boatClass,raceBoats,raceBoats.country",
+    "sort[date]": "asc",
+    "PageSize": 500,
+  });
+  const d = await apiFetch(url);
+  return Array.isArray(d.data) ? d.data : [];
+}
+
+// ── State ─────────────────────────────────────────────────────────────
+const state = {
+  year: new Date().getFullYear(),
+  category: "World Rowing Championships",
+  searched: false, loading: false, error: null,
+  competitions: [], selectedComp: null,
+  races: [],                // toutes les courses de la compétition
+  medals: [],               // tableau calculé des médailles
+  lastUpdate: null,
+  pollingTimer: null,
+  sortCol: "gold",
+  sortDir: "desc",
+};
+
+// ── Medal logic ───────────────────────────────────────────────────────
+function getBoatClassCode(cls){
+  if(!cls) return "";
+  const s = String(cls).trim();
+  // First 4-5 chars pattern covers M1x, W8+, LM2x, PR3M4+ etc.
+  if(/^(PR[0-9]?[MW]|LM|LW|Mix|M|W)[0-9]*[x\-\+]?/.test(s)){
+    const m = s.match(/^(PR[0-9]?[MW]?|LM|LW|Mix|M|W)[0-9x\-\+]*/);
+    if(m) return m[0];
+  }
+  return s;
+}
+
+function classMatchesFilter(boatClass, filters){
+  const c = String(boatClass || "").trim();
+  const code = c;
+
+  // Gender filter
+  const gender = filters.gender;
+  if(gender !== "all"){
+    const isMen = /^(M|LM|PR\d?M)/i.test(code) || /^men/i.test(code);
+    const isWomen = /^(W|LW|PR\d?W)/i.test(code) || /^women/i.test(code);
+    const isMix = /^mix/i.test(code) || /mix/i.test(code);
+    if(gender === "M" && !isMen) return false;
+    if(gender === "W" && !isWomen) return false;
+  }
+
+  // Lightweight filter
+  if(!filters.includeLW){
+    if(/^(LM|LW)/i.test(code) || /lightweight/i.test(code)) return false;
+  }
+  // Mixed filter
+  if(!filters.includeMix){
+    if(/^mix/i.test(code) || /mix/i.test(code)) return false;
+  }
+  // Para filter
+  if(!filters.includePara){
+    if(/^PR/i.test(code) || /para/i.test(code)) return false;
+  }
+  // Olympic only
+  if(filters.olympicOnly){
+    if(!OLYMPIC_CLASSES.has(code)) return false;
+  }
+
+  return true;
+}
+
+function nationKeyFromBoat(boat){
+  const code = boat?.country?.CountryCode;
+  if(code) return String(code).trim().toUpperCase();
+  const name = String(boat?.DisplayName || "").trim();
+  const m = name.match(/^([A-Z]{3})\s*\d*$/i);
+  return m ? m[1].toUpperCase() : name;
+}
+
+function getFlagEmoji(nationCode){
+  // Convert 3-letter IOC/rowing codes to flag emoji where possible
+  const map = {
+    "AUS":"🇦🇺","NZL":"🇳🇿","GBR":"🇬🇧","USA":"🇺🇸","NED":"🇳🇱",
+    "GER":"🇩🇪","FRA":"🇫🇷","ITA":"🇮🇹","CAN":"🇨🇦","POL":"🇵🇱",
+    "CHN":"🇨🇳","ROU":"🇷🇴","SUI":"🇨🇭","NOR":"🇳🇴","DEN":"🇩🇰",
+    "BEL":"🇧🇪","IRL":"🇮🇪","GRE":"🇬🇷","SWE":"🇸🇪","FIN":"🇫🇮",
+    "HUN":"🇭🇺","CZE":"🇨🇿","SVK":"🇸🇰","BLR":"🇧🇾","UKR":"🇺🇦",
+    "RUS":"🇷🇺","LAT":"🇱🇻","EST":"🇪🇪","LTU":"🇱🇹","CRO":"🇭🇷",
+    "SLO":"🇸🇮","BUL":"🇧🇬","SRB":"🇷🇸","RSA":"🇿🇦","ARG":"🇦🇷",
+    "BRA":"🇧🇷","URU":"🇺🇾","JPN":"🇯🇵","KOR":"🇰🇷","EGY":"🇪🇬",
+    "TUR":"🇹🇷","ESP":"🇪🇸","POR":"🇵🇹","AUT":"🇦🇹","MEX":"🇲🇽",
+    "NGR":"🇳🇬","KEN":"🇰🇪","ETH":"🇪🇹","IND":"🇮🇳",
+  };
+  return map[nationCode] || "";
+}
+
+function racePhaseName(race){
+  const p = race?.racePhase;
+  return (typeof p === "object" ? p?.DisplayName : p) || race?.DisplayName || "";
+}
+
+function raceStatusName(race){
+  const s = race?.raceStatus;
+  return (typeof s === "object" ? s?.DisplayName : s) || "";
+}
+
+// Seules les finales A (ou finales uniques sans lettre B–E) attribuent des médailles.
+// racePhase.DisplayName vaut toujours "Final" même pour B/C/D/E — il faut lire race.DisplayName.
+function isMedalFinalRace(race){
+  const name = String(race?.DisplayName || "").trim();
+  const phase = racePhaseName(race);
+  if(/semi\s*final|quarter\s*final|prelimin|heat|repechage/i.test(name)) return false;
+  if(/\bfinal\s+[b-e]\b/i.test(name)) return false;
+  if(/\bfinal\s+a\b/i.test(name)) return true;
+  if(/\bfinal\s*$/i.test(name)) return true;
+  if(/^final$/i.test(phase) && name && !/\bfinal\s+[b-e]\b/i.test(name)) return true;
+  return false;
+}
+
+function computeMedals(races, filters){
+  const medals = {};
+  let counted = 0;
+  for(const race of races){
+    const cls = race.event?.boatClass?.DisplayName || "";
+    const status = raceStatusName(race);
+
+    const isFinalA = isMedalFinalRace(race);
+    const isOfficial = /official|finished|live/i.test(status);
+    if(!isFinalA || !isOfficial) continue;
+    if(!classMatchesFilter(cls, filters)) continue;
+
+    const boats = race.raceBoats || [];
+    for(const boat of boats){
+      const rank = Number(boat.Rank);
+      if(!Number.isFinite(rank) || rank < 1 || rank > 3) continue;
+      const nation = nationKeyFromBoat(boat);
+      if(!nation) continue;
+      if(!medals[nation]) medals[nation] = { nation, gold:0, silver:0, bronze:0, total:0, events:[] };
+      if(rank === 1) medals[nation].gold++;
+      else if(rank === 2) medals[nation].silver++;
+      else if(rank === 3) medals[nation].bronze++;
+      medals[nation].total++;
+      medals[nation].events.push({ cls, rank, raceName: race.DisplayName });
+      counted++;
+    }
+  }
+  const sorted = Object.values(medals).sort((a,b) =>
+    b.gold - a.gold || b.silver - a.silver || b.bronze - a.bronze || a.nation.localeCompare(b.nation)
+  );
+  return { sorted, counted: Math.round(counted/3) };
+}
+
+// ── Render ─────────────────────────────────────────────────────────────
+function getFilters(){
+  const genderEl = document.querySelector('input[name="gender"]:checked');
+  return {
+    gender: genderEl ? genderEl.value : "all",
+    includeLW: $("filter-lw")?.checked ?? true,
+    includeMix: $("filter-mix")?.checked ?? true,
+    includePara: $("filter-para")?.checked ?? true,
+    olympicOnly: $("filter-olympic-only")?.checked ?? false,
+  };
+}
+
+function render(){
+  const m = $("main-area");
+  if(state.error){
+    m.innerHTML = `<div class="error-box">${t("err_generic")}<br>${esc(state.error)}</div>`;
+    return;
+  }
+  if(state.loading){ m.innerHTML = `<div class="loading"><div class="spinner"></div>${t("loading_races")}</div>`; return; }
+  if(!state.searched){ m.innerHTML = `<div class="empty">${t("welcome")}</div>`; return; }
+  if(!state.competitions.length){ m.innerHTML = `<div class="empty">${t("empty_no_comps")}</div>`; return; }
+  if(!state.selectedComp){ m.innerHTML = renderCompList(); return; }
+
+  const filters = getFilters();
+  const { sorted: rawSorted, counted } = computeMedals(state.races, filters);
+  const sorted = sortMedalRows(rawSorted, state.sortCol, state.sortDir);
+  assignRanks(sorted, state.sortCol);
+
+  // Stats bar
+  const compName = state.selectedComp.DisplayName || "";
+  const hasLive = state.races.some(r => /live/i.test(raceStatusName(r)));
+
+  let html = `<div>
+    <div class="comp-title">${esc(compName)}</div>
+    <div class="comp-sub">${esc(state.selectedComp.venue?.DisplayName||"")} ${esc(state.selectedComp.venue?.country?.DisplayName||"")}</div>
+  </div>
+  <div class="stats-bar">
+    <span>${t("comp_label")} <strong>${esc(compName)}</strong></span>
+    <span>${t("races_counted",{n:counted})}</span>
+    ${hasLive ? `<span class="live-badge"><span class="live-dot"></span>${t("status_live")}</span>` : ""}
+    ${state.lastUpdate ? `<span style="margin-left:auto">${t("status_last_update")} ${esc(state.lastUpdate)}</span>` : ""}
+  </div>`;
+
+  if(!sorted.length){
+    html += `<div class="empty">${t("empty_no_finals")}</div>`;
+    m.innerHTML = html;
+    return;
+  }
+
+  html += `<table class="medal-table">
+    <thead><tr>
+      <th class="rank-col">${t("tbl_rank")}</th>
+      ${sortHeader("nation", t("tbl_nation"), "nation-col")}
+      ${sortHeader("gold", `🥇 ${t("tbl_gold")}`, "gold-col")}
+      ${sortHeader("silver", `🥈 ${t("tbl_silver")}`, "silver-col")}
+      ${sortHeader("bronze", `🥉 ${t("tbl_bronze")}`, "bronze-col")}
+      ${sortHeader("total", t("tbl_total"), "")}
+      ${sortHeader("events", t("tbl_events"), "nation-col")}
+    </tr></thead><tbody>`;
+
+  for(const row of sorted){
+    const flag = getFlagEmoji(row.nation);
+    const eventsHtml = formatEventsList(row.events);
+
+    html += `<tr>
+      <td class="rank-col">${row._rankTxt}</td>
+      <td class="nation-col"><span class="flag-code">${flag}</span>${esc(row.nation)}</td>
+      <td><span class="medal-count gold">${row.gold}</span></td>
+      <td><span class="medal-count silver">${row.silver}</span></td>
+      <td><span class="medal-count bronze">${row.bronze}</span></td>
+      <td><span class="total-count">${row.total}</span></td>
+      <td class="events-col">${eventsHtml}</td>
+    </tr>`;
+  }
+  html += `</tbody></table>`;
+  m.innerHTML = html;
+}
+
+function renderCompList(){
+  let html = `<div class="section-title">${state.competitions.length} ${state.competitions.length > 1 ? (getLang()==='fr'?'compétitions':'competitions') : (getLang()==='fr'?'compétition':'competition')}</div>
+  <div style="display:flex;flex-direction:column;gap:8px">`;
+  for(const c of state.competitions){
+    const venue = c.venue?.DisplayName || "";
+    const country = c.venue?.country?.DisplayName || "";
+    const start = (c.StartDate||"").slice(0,10);
+    const end = (c.EndDate||"").slice(0,10);
+    html += `<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;cursor:pointer;transition:border-color .12s"
+      onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'"
+      onclick="selectComp('${c.id}')">
+      <div style="font-weight:600;margin-bottom:4px">${esc(c.DisplayName||c.CompetitionCode||c.id)}</div>
+      <div style="font-size:0.78rem;color:var(--text-muted)">${esc(venue)}${country?", "+esc(country):""} · ${start}${end&&end!==start?" → "+end:""}</div>
+    </div>`;
+  }
+  return html + "</div>";
+}
+
+function esc(s){
+  return String(s==null?"":s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function applyFilters(){ render(); }
+
+function getSortKey(row, col){
+  if(col === "nation") return String(row.nation || "").toLowerCase();
+  if(col === "events") return row.events.length;
+  return row[col] ?? 0;
+}
+
+function sortMedalRows(rows, col, dir){
+  const mul = dir === "asc" ? 1 : -1;
+  return [...rows].sort((a, b) => {
+    const ka = getSortKey(a, col), kb = getSortKey(b, col);
+    if(col === "nation") return mul * ka.localeCompare(kb);
+    if(ka !== kb) return mul * (ka - kb);
+    return b.gold - a.gold || b.silver - a.silver || b.bronze - a.bronze
+      || String(a.nation).localeCompare(String(b.nation));
+  });
+}
+
+function assignRanks(rows, sortCol){
+  let rank = 0;
+  for(let i = 0; i < rows.length; i++){
+    const row = rows[i];
+    const prev = rows[i - 1];
+    const same = prev && (
+      sortCol === "gold"
+        ? prev.gold === row.gold && prev.silver === row.silver && prev.bronze === row.bronze
+        : getSortKey(prev, sortCol) === getSortKey(row, sortCol)
+    );
+    if(!same) rank = i + 1;
+    row._rankTxt = same ? "=" : String(rank);
+  }
+}
+
+function formatEventsList(events){
+  const medals = ["🥇", "🥈", "🥉"];
+  const cls = ["ev-gold", "ev-silver", "ev-bronze"];
+  return [...events]
+    .sort((a, b) => a.rank - b.rank || String(a.cls).localeCompare(String(b.cls)))
+    .map(e => `<span class="${cls[e.rank - 1] || ""}">${esc(e.cls)} ${medals[e.rank - 1] || ""}</span>`)
+    .join(", ");
+}
+
+function setTableSort(col){
+  if(state.sortCol === col){
+    state.sortDir = state.sortDir === "desc" ? "asc" : "desc";
+  } else {
+    state.sortCol = col;
+    state.sortDir = col === "nation" ? "asc" : "desc";
+  }
+  render();
+}
+
+function sortHeader(col, label, extraClass){
+  const active = state.sortCol === col ? " sort-active" : "";
+  const arrow = state.sortCol === col ? (state.sortDir === "desc" ? " ▾" : " ▴") : "";
+  const cls = ["th-sort", active, extraClass || ""].filter(Boolean).join(" ");
+  return `<th class="${cls}" onclick="setTableSort('${col}')">${label}${arrow}</th>`;
+}
+
+// ── Actions ───────────────────────────────────────────────────────────
+async function search(){
+  state.year = +$("sel-year").value || state.year;
+  state.category = $("sel-category").value;
+  state.searched = true; state.loading = true; state.error = null;
+  state.competitions = []; state.selectedComp = null; state.races = [];
+  stopPolling();
+  $("btn-search").disabled = true;
+  render();
+  try { state.competitions = await apiCompetitions(state.year, state.category); }
+  catch(e){ state.error = e.message; }
+  finally { state.loading = false; $("btn-search").disabled = false; render(); }
+}
+
+async function selectComp(id){
+  const c = state.competitions.find(x => x.id === id); if(!c) return;
+  state.selectedComp = c; state.races = []; state.loading = true;
+  stopPolling();
+  render();
+  try { await loadRaces(id); }
+  catch(e){ state.error = e.message; }
+  finally { state.loading = false; render(); startPolling(id); }
+}
+
+async function loadRaces(compId){
+  state.races = await apiRaces(compId);
+  state.lastUpdate = new Date().toLocaleTimeString(getLang() === "fr" ? "fr-FR" : "en-GB");
+}
+
+// ── Live polling (60s) ────────────────────────────────────────────────
+function startPolling(compId){
+  stopPolling();
+  state.pollingTimer = setInterval(async () => {
+    try {
+      await loadRaces(compId);
+      render();
+      const refreshEl = $("sidebar-refresh");
+      if(refreshEl){ refreshEl.style.display = "block"; refreshEl.textContent = t("status_last_update")+" "+state.lastUpdate; }
+    } catch(e){ /* silencieux */ }
+  }, 60000);
+  const refreshEl = $("sidebar-refresh");
+  if(refreshEl){ refreshEl.style.display = "block"; refreshEl.textContent = t("status_last_update")+" "+(state.lastUpdate||"—"); }
+}
+function stopPolling(){ if(state.pollingTimer){ clearInterval(state.pollingTimer); state.pollingTimer = null; } }
+
+// ── Init ──────────────────────────────────────────────────────────────
+(function init(){
+  // Year selector
+  const sel = $("sel-year");
+  const cur = new Date().getFullYear();
+  for(let y = cur; y >= 2000; y--){
+    const o = document.createElement("option");
+    o.value = y; o.textContent = y;
+    if(y === cur) o.selected = true;
+    sel.appendChild(o);
+  }
+
+  // Select World Rowing Championships as default category
+  $("sel-category").value = "World Rowing Championships";
+
+  applyStaticI18n();
+  render();
+})();
+</script>
+</body>
+</html>

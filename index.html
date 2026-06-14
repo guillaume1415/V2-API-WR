@@ -495,7 +495,8 @@
       .hdr-more { display: inline-flex; align-items: center; justify-content: center; }
     }
 
-    @media (max-width: 720px) {
+    @media (max-width: 720px),
+           (orientation: landscape) and (max-width: 1366px) and (hover: none) and (pointer: coarse) {
       .layout { flex-direction: column; }
       aside { width: 100%; border-right: none; border-bottom: 1px solid var(--border); }
       .cards-grid { grid-template-columns: 1fr; }
@@ -636,6 +637,9 @@
     <a class="nav-link" id="nav-analyse-link" href="analyse.html">
       <span class="nav-icon">📊</span><span class="nav-label" id="nav-analyse-label">Analyse</span>
     </a>
+    <a class="nav-link" id="nav-nations-link" href="nations.html">
+      <span class="nav-icon">🏅</span><span class="nav-label" id="nav-nations-label">Nations</span>
+    </a>
   </nav>
 
   <div class="header-tools">
@@ -719,7 +723,7 @@ const I18N = {
     title_results: "World Rowing — Results",
     title_schedule: "World Rowing — Schedule",
     subtitle: "Local interface · Official World Rowing API",
-    nav_results: "Results", nav_schedule: "Schedule", nav_live: "Live", nav_analyse: "Analyse",
+    nav_results: "Results", nav_schedule: "Schedule", nav_live: "Live", nav_analyse: "Analyse", nav_nations: "Nations",
     hdr_notifs: "Notifs", hdr_compare: "Compare",
     tt_home: "Home", tt_notifs: "Race notifications",
     tt_compare: "Compare two competitions",
@@ -804,7 +808,7 @@ const I18N = {
     title_results: "World Rowing — Résultats",
     title_schedule: "World Rowing — Programme",
     subtitle: "Interface locale · API officielle World Rowing",
-    nav_results: "Résultats", nav_schedule: "Programme", nav_live: "Live", nav_analyse: "Analyse",
+    nav_results: "Résultats", nav_schedule: "Programme", nav_live: "Live", nav_analyse: "Analyse", nav_nations: "Nations",
     hdr_notifs: "Notifs", hdr_compare: "Comparer",
     tt_home: "Accueil", tt_notifs: "Notifications de courses",
     tt_compare: "Comparer deux compétitions",
@@ -909,6 +913,7 @@ function applyStaticI18n() {
   setText("nav-schedule-label", "nav_schedule");
   setText("nav-live-label",     "nav_live");
   setText("nav-analyse-label",  "nav_analyse");
+  setText("nav-nations-label",  "nav_nations");
   setText("btn-notifs-label",   "hdr_notifs");
   setText("btn-compare-label",  "hdr_compare");
   setAttr("brand-link", "title", "tt_home");
@@ -916,6 +921,7 @@ function applyStaticI18n() {
   setAttr("nav-schedule-link", "title", "nav_schedule");
   setAttr("nav-live-link",     "title", "nav_live");
   setAttr("nav-analyse-link",  "title", "nav_analyse");
+  setAttr("nav-nations-link",  "title", "nav_nations");
   setAttr("btn-notif",   "title", "tt_notifs");
   setAttr("btn-compare", "title", "tt_compare");
   setAttr("btn-theme",   "title", "tt_theme");
