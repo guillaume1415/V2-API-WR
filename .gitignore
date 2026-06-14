@@ -2,3 +2,6 @@ node_modules/
 dist/
 .DS_Store
 *.local
+.cursor/Untitled
+.cursor/debug-dae50c.log
+.cursor/debug-3a1f6b.log
