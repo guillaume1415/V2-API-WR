@@ -3229,7 +3229,20 @@ function buildReportHtml({ meta, paceSections, charts }){
     return `Plotly.newPlot('chart-${idx}', ${tracesJson}, ${layoutJson}, ${configJson});`;
   }).join("\n");
 
-  const paceBlocks = (paceSections || []).map(sec => `
+  const isComparePace = (paceSections || []).length > 1;
+
+  const paceBlocks = isComparePace
+    ? `<section class="compare-pace-export">
+        <div class="compare-pace-grid">
+          ${(paceSections || []).map(sec => `
+          <div class="compare-pace-col">
+            <h2>${esc(sec.title)}</h2>
+            ${sec.raceMeta || ""}
+            <div class="table-wrap">${sec.paceTableHtml}</div>
+          </div>`).join("")}
+        </div>
+      </section>`
+    : (paceSections || []).map(sec => `
   <section>
     <h2>${esc(sec.title)}</h2>
     ${sec.raceMeta || ""}
@@ -3237,6 +3250,7 @@ function buildReportHtml({ meta, paceSections, charts }){
   </section>`).join("");
 
   const headerMeta = meta.headerMeta || "";
+  const wrapClass = isComparePace ? "wrap compare-report" : "wrap";
 
   return `<!DOCTYPE html>
 <html lang="${getLang()}">
@@ -3249,11 +3263,19 @@ function buildReportHtml({ meta, paceSections, charts }){
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:'Segoe UI',system-ui,sans-serif;background:#f1f5f9;color:#1e293b;line-height:1.45;padding:24px}
   .wrap{max-width:1200px;margin:0 auto}
+  .wrap.compare-report{max-width:1680px}
   h1{font-size:1.35rem;margin-bottom:6px}
   .meta{color:#64748b;font-size:0.88rem;margin-bottom:18px}
   .meta p{margin:3px 0}
   .meta strong{color:#334155}
   section{background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:16px;margin-bottom:20px}
+  .compare-pace-export{background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:16px;margin-bottom:20px}
+  .compare-pace-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:start}
+  .compare-pace-col{min-width:0}
+  .compare-pace-col h2{font-size:0.92rem;margin-bottom:8px;color:#334155}
+  .compare-pace-col .meta{margin-bottom:10px}
+  .compare-pace-col .table-wrap{overflow-x:auto}
+  .compare-pace-grid .splits-table{font-size:0.76rem}
   h2{font-size:0.95rem;margin-bottom:10px;color:#334155}
   .splits-table{width:auto;max-width:100%;border-collapse:collapse;margin:0 auto;font-size:0.82rem;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;overflow:visible}
   .splits-table th,.splits-table td{padding:5px 9px;text-align:center;font-variant-numeric:tabular-nums;border-bottom:1px solid #e2e8f0;white-space:nowrap}
@@ -3271,15 +3293,20 @@ function buildReportHtml({ meta, paceSections, charts }){
   .splits-table td.wr-cell .pace-cum{color:#b45309;font-weight:700}
   .splits-table td.pct-wbt-cell,.splits-table th.pct-wbt{white-space:nowrap;font-weight:600}
   .table-wrap{overflow:visible;width:100%}
+  @media(max-width:1100px){
+    .compare-pace-grid{grid-template-columns:1fr}
+  }
   @media print{
     body{padding:0;background:#fff}
     section{break-inside:avoid;box-shadow:none}
+    .compare-pace-export{break-inside:avoid}
+    .compare-pace-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
     .report-chart .js-plotly-plot{max-height:95vh}
   }
 </style>
 </head>
 <body>
-<div class="wrap">
+<div class="${wrapClass}">
   <h1>${esc(meta.title)}</h1>
   ${headerMeta}
   <div class="meta">
