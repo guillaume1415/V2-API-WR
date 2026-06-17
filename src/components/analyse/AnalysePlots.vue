@@ -3,7 +3,13 @@ import { computed, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useAnalyseStore } from '@/stores/analyse'
 import { useAppStore } from '@/stores/app'
-import { buildAnalysePlots, getYScaleDefaults, C_DEFAULTS } from '@/lib/analyse/plots'
+import {
+  buildAnalysePlotsMeta,
+  buildAnalyseTraces,
+  buildAnalyseLayouts,
+  getYScaleDefaults,
+  C_DEFAULTS,
+} from '@/lib/analyse/plots'
 import PlotlyChart from '@/components/charts/PlotlyChart.vue'
 import { useI18n } from 'vue-i18n'
 
@@ -23,20 +29,39 @@ const {
   fullscreenCardId,
 } = storeToRefs(store)
 
-const plots = computed(() =>
-  buildAnalysePlots({
+const plotsMeta = computed(() => buildAnalysePlotsMeta({ series: series.value }))
+
+const plotTraces = computed(() =>
+  buildAnalyseTraces({
     series: series.value,
     totalLength: totalLength.value,
-    theme: app.theme,
-    boatClass: boatClass.value,
-    yScales: yScales.value,
-    cScales: cScales.value,
-    globalScales: globalScales.value,
     colorBy: colorBy.value,
     sizeByDps: sizeByDps.value,
+    cScales: cScales.value,
+    globalScales: globalScales.value,
     t,
   }),
 )
+
+const plotLayouts = computed(() =>
+  buildAnalyseLayouts({
+    series: series.value,
+    theme: app.theme,
+    totalLength: totalLength.value,
+    yScales: yScales.value,
+    globalScales: globalScales.value,
+    boatClass: boatClass.value,
+    t,
+  }),
+)
+
+function tracesFor(plotId) {
+  return plotTraces.value[plotId] || []
+}
+
+function layoutFor(plotId) {
+  return plotLayouts.value[plotId] || {}
+}
 
 watch(fullscreenCardId, (id) => {
   document.body.classList.toggle('has-analyse-fullscreen', !!id)
@@ -83,11 +108,11 @@ function stepFor(plotId) {
 
 <template>
   <div
-    v-if="plots.length"
+    v-if="plotsMeta.length"
     class="plot-grid"
   >
     <div
-      v-for="plot in plots"
+      v-for="plot in plotsMeta"
       :key="plot.id"
       :id="plot.cardId"
       class="plot-card"
@@ -170,9 +195,9 @@ function stepFor(plotId) {
         :class="{ tall: plot.tall }"
       >
         <PlotlyChart
-          v-if="plot.traces.length"
-          :data="plot.traces"
-          :layout="plot.layout"
+          v-if="tracesFor(plot.id).length"
+          :data="tracesFor(plot.id)"
+          :layout="layoutFor(plot.id)"
           :height="plot.tall ? '380px' : '340px'"
           cursor-hover
         />

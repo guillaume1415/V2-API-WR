@@ -15,12 +15,57 @@ const app = useAppStore()
 const el = ref(null)
 let ro = null
 let hoverObs = null
+let lastData = null
+let lastLayout = null
+let lastTheme = null
+let initialised = false
 
-async function render() {
+async function fullRender() {
   if (!el.value || !props.data.length) return
   const layout = { ...props.layout, autosize: true }
   await Plotly.react(el.value, props.data, layout, plotConfig)
   if (props.cursorHover) attachCursorHover()
+  lastData = props.data
+  lastLayout = props.layout
+  lastTheme = app.theme
+  initialised = true
+}
+
+async function relayoutOnly() {
+  if (!el.value || !initialised) return
+  const layout = { ...props.layout, autosize: true }
+  await Plotly.relayout(el.value, layout)
+  lastLayout = props.layout
+}
+
+/**
+ * Decide between Plotly.relayout (cheap) and Plotly.react (full re-bind).
+ *
+ * - First render → react.
+ * - Theme change → react (layout colors AND template change).
+ * - Same `data` reference as last render → relayout (axes / annotations /
+ *   shapes update, traces stay bound).
+ * - New `data` reference → react.
+ *
+ * The reference-equality check works because the parent splits per-plot
+ * traces from per-plot layouts via `buildAnalyseTraces` / `buildAnalyseLayouts`,
+ * both wrapped in their own `computed()`. Vue re-uses the same array
+ * reference until the underlying reactive deps change.
+ */
+async function render() {
+  if (!el.value || !props.data.length) {
+    return
+  }
+  if (!initialised || app.theme !== lastTheme) {
+    await fullRender()
+    return
+  }
+  const dataUnchanged = props.data === lastData
+  if (dataUnchanged) {
+    await relayoutOnly()
+  } else {
+    await fullRender()
+  }
 }
 
 function resize() {
@@ -94,13 +139,19 @@ onUnmounted(() => {
     delete el.value._cursorHoverAttached
     Plotly.purge(el.value)
   }
+  lastData = null
+  lastLayout = null
+  initialised = false
 })
 
-watch(
-  () => [props.data, props.layout, app.theme, props.cursorHover],
-  () => render(),
-  { deep: true },
-)
+// Watch `data` and `layout` by reference (NOT deep). Reference stability is
+// guaranteed by upstream `computed()`s in AnalysePlots / LiveTrackerPanel:
+// when only the Y-axis scale moves, `data` ref stays identical and `layout`
+// ref changes → relayout-only path.
+watch(() => props.data, () => render())
+watch(() => props.layout, () => render())
+watch(() => app.theme, () => render())
+watch(() => props.cursorHover, () => render())
 </script>
 
 <template>

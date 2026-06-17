@@ -3,6 +3,28 @@ import { baseLayout } from '@/components/charts/chartTheme'
 import { Y_DEFAULTS, C_DEFAULTS, SPECTRAL, getSpeedDefaults } from './constants'
 import { buildOfficialSplitSeries, buildTimeYTicks, formatSec, parseRaceTime } from './time'
 
+/**
+ * Plots are built in three independent steps so that consumers (and Vue
+ * `computed()`s) can memoise each one on its own reactive dependency set:
+ *
+ *   - `buildAnalysePlotsMeta(...)`   : id/titles/units/layout flags. Stable
+ *                                      for the lifetime of a race.
+ *   - `buildAnalyseTraces(...)`      : `traces[]` per plot. Recomputes only
+ *                                      when `series` / `colorBy` /
+ *                                      `sizeByDps` / `cScales` / `globalScales`
+ *                                      / `totalLength` change.
+ *   - `buildAnalyseLayouts(...)`     : `layout` per plot. Recomputes when
+ *                                      `yScales` / `theme` / `boatClass`
+ *                                      change.
+ *
+ * The legacy `buildAnalysePlots(...)` is kept as a backward-compatible
+ * wrapper that combines the three (used by the HTML report exporter).
+ *
+ * Splitting traces and layout matters because Y-axis scale sliders only need
+ * a `Plotly.relayout` — not a full `Plotly.react`. `PlotlyChart.vue` detects
+ * the unchanged `data` reference and skips the trace re-bind.
+ */
+
 function globalFor(globalScales, plotId, axis) {
   const map = {
     'speed:y': 'speed',
@@ -37,18 +59,32 @@ function cRange(plotId, validVals, cScales, globalScales, defObj) {
   const glob = globalFor(globalScales, plotId, 'c') || {}
   const mn = cCur.min != null ? cCur.min : glob.min != null ? glob.min : cDef.min
   const mx = cCur.max != null ? cCur.max : glob.max != null ? glob.max : cDef.max
-  const v = validVals.filter((x) => x != null && isFinite(x))
-  const autoMin = v.length ? Math.min(...v) : 0
-  const autoMax = v.length ? Math.max(...v) : 1
+  let autoMin = Infinity
+  let autoMax = -Infinity
+  for (let i = 0; i < validVals.length; i++) {
+    const v = validVals[i]
+    if (v == null || !isFinite(v)) continue
+    if (v < autoMin) autoMin = v
+    if (v > autoMax) autoMax = v
+  }
+  if (autoMin === Infinity) {
+    autoMin = 0
+    autoMax = 1
+  }
   return { cmin: mn != null ? mn : autoMin, cmax: mx != null ? mx : autoMax }
 }
 
 function markerSizes(dpsArr, sizeByDps) {
   if (!sizeByDps) return 7
-  const valid = dpsArr.filter((v) => v != null && isFinite(v))
-  if (!valid.length) return 7
-  const mn = Math.min(...valid)
-  const mx = Math.max(...valid)
+  let mn = Infinity
+  let mx = -Infinity
+  for (let i = 0; i < dpsArr.length; i++) {
+    const v = dpsArr[i]
+    if (v == null || !isFinite(v)) continue
+    if (v < mn) mn = v
+    if (v > mx) mx = v
+  }
+  if (mn === Infinity) return 7
   if (mx === mn) return 8
   return dpsArr.map((v) => (v == null ? 4 : 4 + (12 * (v - mn)) / (mx - mn)))
 }
@@ -162,20 +198,180 @@ function buildTraces({
   ]
 }
 
-export function buildAnalysePlots({
+function buildTimeTraces(series, totalLength) {
+  return series
+    .map((s, idx) => {
+      const split = buildOfficialSplitSeries(s.lane, totalLength)
+      if (!split) return null
+      const col = laneColor(s.lane, idx)
+      return {
+        x: split.xs,
+        y: split.times,
+        customdata: split.hovers,
+        mode: 'lines+markers',
+        type: 'scattergl',
+        name: s.lane.DisplayName || `Lane ${s.lane.Lane}`,
+        marker: { size: split.markerSizes, color: col },
+        line: { width: 1.5, color: col },
+        hovertemplate: '<b>%{fullData.name}</b><br>%{customdata}<extra></extra>',
+      }
+    })
+    .filter(Boolean)
+}
+
+function timeRangeFromTraces(traces) {
+  let tMin = Infinity
+  let tMax = -Infinity
+  for (const tr of traces) {
+    for (const v of tr.y) {
+      if (v == null || !isFinite(v)) continue
+      if (v < tMin) tMin = v
+      if (v > tMax) tMax = v
+    }
+  }
+  if (tMin === Infinity) {
+    tMin = 0
+    tMax = 1
+  }
+  const pad = Math.max(2, (tMax - tMin) * 0.08)
+  const yLo = Math.max(0, tMin - pad)
+  const yHi = tMax + pad
+  const yTicks = buildTimeYTicks(yLo, yHi)
+  return { yLo, yHi, yTicks }
+}
+
+/**
+ * Stable per-plot metadata: ids, card ids, i18n keys, units, layout flags.
+ * Depends only on whether the series array is non-empty.
+ */
+export function buildAnalysePlotsMeta({ series }) {
+  if (!series.length) return []
+  return [
+    {
+      id: 'speed',
+      cardId: 'card-speed',
+      titleKey: 'chart_speed_title',
+      subKey: 'chart_speed_sub',
+      unit: 'm/s',
+      tall: false,
+      fullWidth: false,
+      colorOpts: { labelKey: 'lbl_color_cadence', unit: 'spm', def: C_DEFAULTS.speed },
+    },
+    {
+      id: 'cadence',
+      cardId: 'card-cadence',
+      titleKey: 'chart_cadence_title',
+      subKey: 'chart_cadence_sub',
+      unit: 'spm',
+      tall: false,
+      fullWidth: false,
+    },
+    {
+      id: 'time',
+      cardId: 'card-rank',
+      titleKey: 'chart_time_title',
+      subKey: 'chart_time_sub',
+      unit: 'min:s',
+      tall: false,
+      fullWidth: false,
+    },
+    {
+      id: 'gap',
+      cardId: 'card-gap',
+      titleKey: 'chart_gap_title',
+      subKey: 'chart_gap_sub',
+      unit: 'm',
+      tall: false,
+      fullWidth: false,
+    },
+    {
+      id: 'dps',
+      cardId: 'card-dps',
+      titleKey: 'chart_dps_title',
+      subKey: 'chart_dps_sub',
+      unit: 'm/stroke',
+      tall: true,
+      fullWidth: true,
+    },
+  ]
+}
+
+/**
+ * Per-plot traces. Returns a map keyed by plot id so callers can read
+ * `traces[id]` with a stable reference suitable for Plotly.relayout-only
+ * updates downstream.
+ */
+export function buildAnalyseTraces({
   series,
   totalLength,
-  theme,
-  boatClass,
-  yScales,
-  cScales,
-  globalScales,
   colorBy,
   sizeByDps,
+  cScales,
+  globalScales,
   t,
 }) {
-  if (!series.length) return []
+  if (!series.length) return {}
+  const multi = series.length > 1
+  const sharedArgs = {
+    series,
+    multi,
+    colorBy,
+    sizeByDps,
+    cScales,
+    globalScales,
+    t,
+  }
+  return {
+    speed: buildTraces({
+      ...sharedArgs,
+      plotId: 'speed',
+      yKey: 'speeds',
+      colorMode: 'auto',
+      hovY: '%{y:.2f}',
+      yUnit: 'm/s',
+    }),
+    cadence: buildTraces({
+      ...sharedArgs,
+      plotId: 'cadence',
+      yKey: 'cads',
+      colorMode: 'speed',
+      hovY: '%{y:.0f}',
+      yUnit: 'spm',
+    }),
+    time: buildTimeTraces(series, totalLength),
+    gap: buildTraces({
+      ...sharedArgs,
+      plotId: 'gap',
+      yKey: 'gaps',
+      colorMode: 'speed',
+      hovY: '%{y:.1f}',
+      yUnit: 'm',
+    }),
+    dps: buildTraces({
+      ...sharedArgs,
+      plotId: 'dps',
+      yKey: 'dpsArr',
+      colorMode: 'auto',
+      hovY: '%{y:.2f}',
+      yUnit: 'm/stroke',
+    }),
+  }
+}
 
+/**
+ * Per-plot layouts. Cheap to recompute when only a Y-axis slider moves; the
+ * caller can then issue `Plotly.relayout` instead of a full `Plotly.react`.
+ */
+export function buildAnalyseLayouts({
+  series,
+  theme,
+  totalLength,
+  yScales,
+  globalScales,
+  boatClass,
+  t,
+}) {
+  if (!series.length) return {}
   const multi = series.length > 1
   const ref = series[0]
   const lane = ref.lane
@@ -202,30 +398,11 @@ export function buildAnalysePlots({
     shapes: splitShapes,
   }
 
-  const plots = []
+  const timeTraces = buildTimeTraces(series, totalLength)
+  const { yLo, yHi, yTicks } = timeRangeFromTraces(timeTraces)
 
-  plots.push({
-    id: 'speed',
-    cardId: 'card-speed',
-    titleKey: 'chart_speed_title',
-    subKey: 'chart_speed_sub',
-    unit: 'm/s',
-    colorOpts: { labelKey: 'lbl_color_cadence', unit: 'spm', def: C_DEFAULTS.speed },
-    traces: buildTraces({
-      plotId: 'speed',
-      yKey: 'speeds',
-      series,
-      multi,
-      colorBy,
-      sizeByDps,
-      cScales,
-      globalScales,
-      colorMode: 'auto',
-      hovY: '%{y:.2f}',
-      yUnit: 'm/s',
-      t,
-    }),
-    layout: {
+  return {
+    speed: {
       ...layoutCommon,
       yaxis: yAxisSpec('speed', { title: t('axis_speed') }, yScales, globalScales, boatClass),
       annotations: [
@@ -250,71 +427,11 @@ export function buildAnalysePlots({
           : []),
       ],
     },
-    tall: false,
-  })
-
-  plots.push({
-    id: 'cadence',
-    cardId: 'card-cadence',
-    titleKey: 'chart_cadence_title',
-    subKey: 'chart_cadence_sub',
-    unit: 'spm',
-    traces: buildTraces({
-      plotId: 'cadence',
-      yKey: 'cads',
-      series,
-      multi,
-      colorBy,
-      sizeByDps,
-      cScales,
-      globalScales,
-      colorMode: 'speed',
-      hovY: '%{y:.0f}',
-      yUnit: 'spm',
-      t,
-    }),
-    layout: {
+    cadence: {
       ...layoutCommon,
       yaxis: yAxisSpec('cadence', { title: t('axis_cadence') }, yScales, globalScales, boatClass),
     },
-    tall: false,
-  })
-
-  const timeTraces = series
-    .map((s, idx) => {
-      const split = buildOfficialSplitSeries(s.lane, totalLength)
-      if (!split) return null
-      const col = laneColor(s.lane, idx)
-      return {
-        x: split.xs,
-        y: split.times,
-        customdata: split.hovers,
-        mode: 'lines+markers',
-        type: 'scattergl',
-        name: s.lane.DisplayName || `Lane ${s.lane.Lane}`,
-        marker: { size: split.markerSizes, color: col },
-        line: { width: 1.5, color: col },
-        hovertemplate: '<b>%{fullData.name}</b><br>%{customdata}<extra></extra>',
-      }
-    })
-    .filter(Boolean)
-
-  const allTimes = timeTraces.flatMap((tr) => tr.y).filter((v) => v != null && isFinite(v))
-  const tMin = allTimes.length ? Math.min(...allTimes) : 0
-  const tMax = allTimes.length ? Math.max(...allTimes) : 1
-  const pad = Math.max(2, (tMax - tMin) * 0.08)
-  const yLo = Math.max(0, tMin - pad)
-  const yHi = tMax + pad
-  const yTicks = buildTimeYTicks(yLo, yHi)
-
-  plots.push({
-    id: 'time',
-    cardId: 'card-rank',
-    titleKey: 'chart_time_title',
-    subKey: 'chart_time_sub',
-    unit: 'min:s',
-    traces: timeTraces,
-    layout: {
+    time: {
       ...layoutCommon,
       yaxis: yAxisSpec(
         'time',
@@ -330,30 +447,7 @@ export function buildAnalysePlots({
         boatClass,
       ),
     },
-    tall: false,
-  })
-
-  plots.push({
-    id: 'gap',
-    cardId: 'card-gap',
-    titleKey: 'chart_gap_title',
-    subKey: 'chart_gap_sub',
-    unit: 'm',
-    traces: buildTraces({
-      plotId: 'gap',
-      yKey: 'gaps',
-      series,
-      multi,
-      colorBy,
-      sizeByDps,
-      cScales,
-      globalScales,
-      colorMode: 'speed',
-      hovY: '%{y:.1f}',
-      yUnit: 'm',
-      t,
-    }),
-    layout: {
+    gap: {
       ...layoutCommon,
       yaxis: yAxisSpec(
         'gap',
@@ -363,39 +457,28 @@ export function buildAnalysePlots({
         boatClass,
       ),
     },
-    tall: false,
-  })
-
-  plots.push({
-    id: 'dps',
-    cardId: 'card-dps',
-    titleKey: 'chart_dps_title',
-    subKey: 'chart_dps_sub',
-    unit: 'm/stroke',
-    traces: buildTraces({
-      plotId: 'dps',
-      yKey: 'dpsArr',
-      series,
-      multi,
-      colorBy,
-      sizeByDps,
-      cScales,
-      globalScales,
-      colorMode: 'auto',
-      hovY: '%{y:.2f}',
-      yUnit: 'm/stroke',
-      t,
-    }),
-    layout: {
+    dps: {
       ...layoutCommon,
       margin: { l: 48, r: 75, t: 18, b: 50 },
       yaxis: yAxisSpec('dps', { title: t('axis_dps') }, yScales, globalScales, boatClass),
     },
-    tall: true,
-    fullWidth: true,
-  })
+  }
+}
 
-  return plots
+/**
+ * Backward-compatible wrapper: combines meta + traces + layouts into the
+ * legacy `[{ id, cardId, ..., traces, layout, tall, fullWidth, colorOpts }]`
+ * shape. Used by the HTML report exporter and as a convenience in tests.
+ */
+export function buildAnalysePlots(args) {
+  const meta = buildAnalysePlotsMeta(args)
+  const traces = buildAnalyseTraces(args)
+  const layouts = buildAnalyseLayouts(args)
+  return meta.map((m) => ({
+    ...m,
+    traces: traces[m.id] || [],
+    layout: layouts[m.id] || {},
+  }))
 }
 
 export function getYScaleDefaults(plotId, boatClass) {

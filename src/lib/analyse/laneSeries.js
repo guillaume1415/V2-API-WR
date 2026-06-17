@@ -40,10 +40,18 @@ export function extractLaneSeries(lane, totalLength) {
   }
   segments.push(current)
 
+  const maxX = (seg) => {
+    let m = -Infinity
+    for (let i = 0; i < seg.length; i++) {
+      if (seg[i].x > m) m = seg[i].x
+    }
+    return m
+  }
   let best = segments[0]
-  let bestMax = Math.max(...best.map((p) => p.x))
-  for (const seg of segments.slice(1)) {
-    const mx = Math.max(...seg.map((p) => p.x))
+  let bestMax = maxX(best)
+  for (let s = 1; s < segments.length; s++) {
+    const seg = segments[s]
+    const mx = maxX(seg)
     if (mx > bestMax || (mx === bestMax && seg.length > best.length)) {
       best = seg
       bestMax = mx
