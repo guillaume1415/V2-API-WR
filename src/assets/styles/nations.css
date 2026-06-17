@@ -1,0 +1,402 @@
+.nations-page {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  margin: -22px;
+  width: calc(100% + 44px);
+  overflow: hidden;
+}
+
+.nations-sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  padding: 16px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.nations-main {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  min-width: 0;
+}
+
+.nations-sidebar-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.nations-sidebar-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin-bottom: 2px;
+}
+
+.nations-sidebar select {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 6px 8px;
+  border-radius: var(--radius);
+  font-family: inherit;
+  font-size: 0.82rem;
+}
+
+.nations-btn-primary {
+  width: 100%;
+  padding: 8px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.nations-btn-primary:hover {
+  background: var(--accent-hover);
+}
+
+.nations-btn-primary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.nations-filter-section {
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+}
+
+.nations-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.nations-filter-group label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  cursor: pointer;
+  color: var(--text);
+}
+
+.nations-filter-group label input[type='checkbox'],
+.nations-filter-group label input[type='radio'] {
+  cursor: pointer;
+  width: 14px;
+  height: 14px;
+}
+
+.nations-radio-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.nations-radio-group label {
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: border-color 0.12s, color 0.12s, background 0.12s;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.nations-radio-group label:has(input:checked) {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, var(--surface2));
+}
+
+.nations-radio-group input[type='radio'] {
+  display: none;
+}
+
+.nations-live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  background: color-mix(in srgb, var(--red) 15%, var(--surface2));
+  border: 1px solid var(--red);
+  border-radius: 99px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--red);
+  margin-left: 8px;
+}
+
+.nations-live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--red);
+  animation: nations-pulse 0.8s ease-in-out infinite alternate;
+}
+
+@keyframes nations-pulse {
+  from { opacity: 1; }
+  to { opacity: 0.3; }
+}
+
+.nations-stats-bar {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 10px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 14px;
+  font-size: 0.82rem;
+}
+
+.nations-stats-bar strong {
+  color: var(--text);
+}
+
+.nations-stats-bar span {
+  color: var(--text-muted);
+}
+
+.nations-medal-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.nations-medal-table thead tr {
+  background: var(--surface2);
+}
+
+.nations-medal-table th {
+  padding: 8px 12px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  border-bottom: 2px solid var(--border);
+  white-space: nowrap;
+}
+
+.nations-medal-table th.nation-col {
+  text-align: left;
+  padding-left: 14px;
+}
+
+.nations-medal-table th.gold-col {
+  color: var(--gold);
+}
+
+.nations-medal-table th.silver-col {
+  color: var(--silver);
+}
+
+.nations-medal-table th.bronze-col {
+  color: var(--bronze);
+}
+
+.nations-medal-table th.th-sort {
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.12s;
+}
+
+.nations-medal-table th.th-sort:hover {
+  color: var(--text);
+}
+
+.nations-medal-table th.sort-active {
+  color: var(--accent);
+}
+
+.nations-medal-table td {
+  padding: 9px 12px;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+  font-variant-numeric: tabular-nums;
+}
+
+.nations-medal-table tr:last-child td {
+  border-bottom: none;
+}
+
+.nations-medal-table tr:hover td {
+  background: color-mix(in srgb, var(--accent) 5%, var(--surface));
+}
+
+.nations-medal-table td.nation-col {
+  text-align: left;
+  padding-left: 14px;
+  font-weight: 600;
+}
+
+.nations-flag-code {
+  display: inline-block;
+  width: 22px;
+  text-align: center;
+  font-size: 1.1rem;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+.nations-medal-count {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.nations-medal-count.gold {
+  color: var(--gold);
+}
+
+.nations-medal-count.silver {
+  color: var(--silver);
+}
+
+.nations-medal-count.bronze {
+  color: var(--bronze);
+}
+
+.nations-total-count {
+  font-weight: 700;
+  color: var(--text);
+}
+
+.nations-rank-col {
+  color: var(--text-muted);
+  font-weight: 600;
+  width: 36px;
+}
+
+.nations-events-col {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-align: left;
+  max-width: 320px;
+  line-height: 1.45;
+}
+
+.nations-events-col .ev-gold {
+  color: var(--gold);
+}
+
+.nations-events-col .ev-silver {
+  color: var(--silver);
+}
+
+.nations-events-col .ev-bronze {
+  color: var(--bronze);
+}
+
+.nations-section-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+.nations-comp-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.nations-comp-sub {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 14px;
+}
+
+.nations-comp-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.nations-comp-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: border-color 0.12s;
+}
+
+.nations-comp-card:hover {
+  border-color: var(--accent);
+}
+
+.nations-comp-card-name {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.nations-comp-card-meta {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.nations-refresh-info {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-top: 8px;
+  text-align: right;
+}
+
+.nations-error-box {
+  background: color-mix(in srgb, var(--red) 12%, var(--surface));
+  border: 1px solid var(--red);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  color: var(--red);
+  font-size: 0.85rem;
+  margin: 16px 0;
+}
+
+@media (max-width: 700px) {
+  .nations-page {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .nations-sidebar {
+    width: 100%;
+    height: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nations-medal-table {
+    font-size: 0.78rem;
+  }
+}

@@ -13,6 +13,7 @@ export { apiCompetitions } from './competitions'
 
 export {
   apiOfficialRaces,
+  apiNationsRaces,
   apiRaces,
   apiSchedule,
   apiAllRaces,

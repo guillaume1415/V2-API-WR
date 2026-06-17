@@ -90,6 +90,19 @@ export const plotConfig = {
   modeBarButtonsToRemove: ['lasso2d', 'select2d'],
 }
 
+export const SPECTRAL = [
+  [0.0, '#5e4fa2'],
+  [0.111, '#3288bd'],
+  [0.222, '#66c2a5'],
+  [0.333, '#abdda4'],
+  [0.444, '#e6f598'],
+  [0.555, '#fee08b'],
+  [0.666, '#fdae61'],
+  [0.777, '#f46d43'],
+  [0.888, '#d53e4f'],
+  [1.0, '#9e0142'],
+]
+
 /** Bornes en valeurs de données (bas → haut), pour les champs d'échelle */
 export function yRangeBounds(spec, userScale, values) {
   const ys = values.filter((v) => v != null && isFinite(v))

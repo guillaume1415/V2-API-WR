@@ -18,6 +18,18 @@ export async function apiOfficialRaces(competitionId) {
   return data.filter((r) => raceStatusName(r) === 'Official')
 }
 
+/** Courses avec pays des équipages (classement nations) */
+export async function apiNationsRaces(competitionId) {
+  const url = buildUrl('/race/', {
+    include: 'raceStatus,racePhase,event.boatClass,raceBoats,raceBoats.country',
+    'filter[event.competitionId]': competitionId,
+    'sort[date]': 'asc',
+    PageSize: 500,
+  })
+  const payload = await apiFetch(url)
+  return Array.isArray(payload.data) ? payload.data : []
+}
+
 /** Toutes les courses d'une compétition (live, analyse) */
 export async function apiRaces(competitionId) {
   const url = buildUrl('/race/', {

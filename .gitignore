@@ -2,12 +2,7 @@ node_modules/
 dist/
 .DS_Store
 *.local
-<<<<<<< HEAD
-.cursor/Untitled
-.cursor/debug-dae50c.log
-.cursor/debug-3a1f6b.log
-=======
 .cursor/
->>>>>>> main
 .cursor/debug-36811a.log
 /.cursor
+race_data_by_race_20260616_231437/

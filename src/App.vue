@@ -3,6 +3,7 @@ import { watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import AppLayout from '@/components/layout/AppLayout.vue'
+import LoadingSpinner from '@/components/shared/LoadingSpinner.vue'
 import { useAppStore } from '@/stores/app'
 
 const route = useRoute()
@@ -22,6 +23,15 @@ watch(
 
 <template>
   <AppLayout>
-    <RouterView />
+    <RouterView v-slot="{ Component }">
+      <component
+        :is="Component"
+        v-if="Component"
+      />
+      <LoadingSpinner
+        v-else
+        :message="t('loading')"
+      />
+    </RouterView>
   </AppLayout>
 </template>

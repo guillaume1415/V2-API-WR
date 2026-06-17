@@ -1,12 +1,22 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import ResultsView from '@/views/ResultsView.vue'
+import ScheduleView from '@/views/ScheduleView.vue'
+import LiveView from '@/views/LiveView.vue'
+import AnalyseView from '@/views/AnalyseView.vue'
+import NationsView from '@/views/NationsView.vue'
 
 const router = createRouter({
   history: createWebHistory(),
   routes: [
+    { path: '/index.html', redirect: '/' },
+    { path: '/schedule.html', redirect: '/schedule' },
+    { path: '/live.html', redirect: '/live' },
+    { path: '/analyse.html', redirect: '/analyse' },
+    { path: '/nations.html', redirect: '/nations' },
     {
       path: '/',
       name: 'results',
-      component: () => import('@/views/ResultsView.vue'),
+      component: ResultsView,
       meta: {
         titleKey: 'title_results',
         subtitleKey: 'subtitle',
@@ -19,7 +29,7 @@ const router = createRouter({
     {
       path: '/schedule',
       name: 'schedule',
-      component: () => import('@/views/ScheduleView.vue'),
+      component: ScheduleView,
       meta: {
         titleKey: 'title_schedule',
         subtitleKey: 'subtitle',
@@ -32,7 +42,7 @@ const router = createRouter({
     {
       path: '/live',
       name: 'live',
-      component: () => import('@/views/LiveView.vue'),
+      component: LiveView,
       meta: {
         titleKey: 'title_live',
         subtitleKey: 'subtitle',
@@ -46,7 +56,7 @@ const router = createRouter({
     {
       path: '/analyse',
       name: 'analyse',
-      component: () => import('@/views/AnalyseView.vue'),
+      component: AnalyseView,
       meta: {
         titleKey: 'title_analyse',
         subtitleKey: 'subtitle_analyse',
@@ -54,6 +64,21 @@ const router = createRouter({
         nav: 'analyse',
         refreshKey: 'status_ready',
         refreshTitleKey: 'tt_status',
+      },
+    },
+    {
+      path: '/nations',
+      name: 'nations',
+      component: NationsView,
+      meta: {
+        titleKey: 'title_nations',
+        subtitleKey: 'subtitle_nations',
+        welcomeKey: 'welcome_nations',
+        nav: 'nations',
+        brandIcon: '🏅',
+        brandTo: '/nations',
+        refreshKey: 'status_last_update',
+        refreshTitleKey: 'tt_refresh',
       },
     },
   ],

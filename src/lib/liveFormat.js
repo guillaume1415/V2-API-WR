@@ -14,6 +14,12 @@ export function fmtSplit(metrePerSecond) {
   return `${m}:${s.toFixed(1).padStart(4, '0')}/500`
 }
 
+export function raceListLabel(r) {
+  const cls = r?.event?.boatClass?.DisplayName || ''
+  const phaseLabel = racePhaseLabel(r)
+  return cls ? `${cls} · ${phaseLabel}` : phaseLabel
+}
+
 export function racePhaseLabel(race) {
   const phase = race.racePhase?.DisplayName || ''
   const cls = race.event?.boatClass?.DisplayName || ''

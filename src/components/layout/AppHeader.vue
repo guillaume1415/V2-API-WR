@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useAppStore } from '@/stores/app'
 import { useLiveStore } from '@/stores/live'
+import { useNationsStore } from '@/stores/nations'
 import { fmtRelative, fmtTime } from '@/lib/format'
 import MoreMenu from './MoreMenu.vue'
 
@@ -11,6 +12,7 @@ const route = useRoute()
 const { t, locale } = useI18n()
 const app = useAppStore()
 const live = useLiveStore()
+const nations = useNationsStore()
 
 const moreOpen = ref(false)
 
@@ -19,16 +21,24 @@ const navItems = [
   { name: 'schedule', to: '/schedule', icon: '📅', labelKey: 'nav_schedule' },
   { name: 'live', to: '/live', icon: '📡', labelKey: 'nav_live' },
   { name: 'analyse', to: '/analyse', icon: '📊', labelKey: 'nav_analyse' },
+  { name: 'nations', to: '/nations', icon: '🏅', labelKey: 'nav_nations' },
 ]
 
 const pageTitleKey = computed(() => route.meta.titleKey || 'title_results')
 const subtitleKey = computed(() => route.meta.subtitleKey || 'subtitle')
 const refreshTitleKey = computed(() => route.meta.refreshTitleKey || 'tt_refresh')
+const brandIcon = computed(() => route.meta.brandIcon || '🚣')
+const brandTo = computed(() => route.meta.brandTo || '/')
 
 const themeIcon = computed(() => (app.theme === 'light' ? '☀️' : '🌙'))
 const langIcon = computed(() => locale.value.toUpperCase())
 
 const refreshLabel = computed(() => {
+  if (route.meta.nav === 'nations') {
+    return nations.lastUpdate
+      ? `${t('status_last_update')} ${nations.lastUpdate}`
+      : t('refresh_label_nations')
+  }
   if (route.meta.nav === 'live') {
     if (!live.selectedRace) return t('status_ready')
     if (live.lastError) return t('status_error')
@@ -42,6 +52,9 @@ const refreshLabel = computed(() => {
 })
 
 const refreshDotClass = computed(() => {
+  if (route.meta.nav === 'nations') {
+    return { on: !!nations.lastUpdate }
+  }
   if (route.meta.nav !== 'live') {
     return { on: !!app.lastRefreshAt || route.meta.nav !== 'analyse' }
   }
@@ -70,10 +83,10 @@ function isActive(name) {
   <header>
     <RouterLink
       class="brand"
-      to="/"
-      :title="t('tt_home')"
+      :to="brandTo"
+      :title="t(route.meta.nav === 'nations' ? 'nav_nations' : 'tt_home')"
     >
-      <div class="logo">🚣</div>
+      <div class="logo">{{ brandIcon }}</div>
       <div class="brand-text">
         <h1>{{ t(pageTitleKey) }}</h1>
         <p>{{ t(subtitleKey) }}</p>
