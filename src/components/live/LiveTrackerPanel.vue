@@ -1,14 +1,16 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, defineAsyncComponent } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useLiveStore } from '@/stores/live'
 import { fmtResultTime } from '@/lib/format'
 import { fmtMS, fmtSplit, isRaceFinished, tableLanes } from '@/lib/liveFormat'
 import { useI18n } from 'vue-i18n'
-import LiveCharts from './LiveCharts.vue'
+import LiveReplaySimBar from './LiveReplaySimBar.vue'
+
+const LiveCharts = defineAsyncComponent(() => import('./LiveCharts.vue'))
 
 const store = useLiveStore()
-const { lanes, totalLength, trackerConfig } = storeToRefs(store)
+const { lanes, totalLength, trackerConfig, showCharts } = storeToRefs(store)
 const { t } = useI18n()
 
 const race = computed(() => trackerConfig.value?.race || {})
@@ -66,6 +68,8 @@ function formatGap(gap) {
       >{{ statusName }}</span>
       <span class="meta">{{ raceDate }}</span>
     </div>
+
+    <LiveReplaySimBar />
 
     <div class="tracker-actions">
       <button
@@ -237,6 +241,24 @@ function formatGap(gap) {
       </table>
     </details>
 
-    <LiveCharts />
+    <LiveCharts v-if="showCharts" />
+    <p
+      v-else-if="store.isLiveTracker"
+      class="charts-hidden-hint"
+    >
+      {{ t('charts_hidden_live') }}
+    </p>
   </div>
 </template>
+
+<style scoped>
+.charts-hidden-hint {
+  margin-top: 16px;
+  padding: 12px 14px;
+  font-size: 0.84rem;
+  color: var(--text-muted);
+  background: var(--surface2);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+}
+</style>

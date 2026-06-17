@@ -42,6 +42,7 @@ const refreshLabel = computed(() => {
   if (route.meta.nav === 'live') {
     if (!live.selectedRace) return t('status_ready')
     if (live.lastError) return t('status_error')
+    if (live.simActive) return t('status_sim')
     const time = live.lastUpdate
       ? fmtTime(new Date(live.lastUpdate), locale.value)
       : '—'

@@ -8,7 +8,7 @@ import LiveMain from '@/components/live/LiveMain.vue'
 import '@/assets/styles/live.css'
 
 const store = useLiveStore()
-const { selectedRace } = storeToRefs(store)
+const { selectedRace, simActive } = storeToRefs(store)
 
 const POLL_MS = 3000
 
@@ -22,11 +22,16 @@ const { start, stop } = usePolling(() => store.refreshTracker(), POLL_MS, {
 watch(
   selectedRace,
   (race) => {
-    if (race) start()
+    if (race && !simActive.value) start()
     else stop()
   },
   { immediate: true },
 )
+
+watch(simActive, (active) => {
+  if (active) stop()
+  else if (selectedRace.value) start()
+})
 
 onMounted(() => {
   store.search()

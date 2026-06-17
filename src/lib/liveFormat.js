@@ -45,6 +45,10 @@ export function isRaceFinished(statusName) {
   return /finished|official/i.test(statusName || '')
 }
 
+export function isRaceScheduled(statusName) {
+  return !/live|finished|official/i.test(statusName || '')
+}
+
 /** Ordre des lignes : position live, ou classement final (temps) si course terminée */
 export function tableLanes(lanes, statusName) {
   if (!isRaceFinished(statusName)) return rankedLanes(lanes)

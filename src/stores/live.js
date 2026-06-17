@@ -1,13 +1,23 @@
 import { defineStore } from 'pinia'
-import { computed, reactive, ref } from 'vue'
+import { computed, reactive, ref, toRaw } from 'vue'
 import { apiCompetitions, apiRaces, fetchTracker } from '@/services/api'
 import { getSelectedComp, setSelectedComp } from '@/services/storage'
 import { useAppStore } from '@/stores/app'
 import { sortClasses } from '@/lib/boatClass'
 import { isOngoingComp } from '@/lib/schedule'
 import { exportLiveCsv } from '@/lib/liveExport'
+import {
+  buildSimTimeline,
+  canSimulate,
+  sliceTrackerSnapshot,
+} from '@/lib/liveSimulate'
 import { rankedLanes, sortedLanes } from '@/lib/lanes'
 import i18n from '@/i18n'
+
+const SIM_BASE_MS = 500
+const SIM_SPEEDS = [1, 2, 5]
+
+let simTimer = null
 
 export const useLiveStore = defineStore('live', () => {
   const app = useAppStore()
@@ -36,7 +46,21 @@ export const useLiveStore = defineStore('live', () => {
   const xZoom = ref(null)
   const yScales = reactive({})
 
-  const trackerConfig = computed(() => trackerData.value?.config || null)
+  const replaySnapshot = ref(null)
+  const simActive = ref(false)
+  const simPlaying = ref(false)
+  const simStep = ref(0)
+  const simTimeline = ref([])
+  const simSpeed = ref(1)
+
+  const displayTrackerData = computed(() => {
+    if (!simActive.value || !replaySnapshot.value) return trackerData.value
+    const tc = simTimeline.value[simStep.value]
+    if (tc == null) return trackerData.value
+    return sliceTrackerSnapshot(replaySnapshot.value, tc)
+  })
+
+  const trackerConfig = computed(() => displayTrackerData.value?.config || null)
   const lanes = computed(() => sortedLanes(trackerConfig.value?.lanes || []))
   const ranked = computed(() => rankedLanes(lanes.value))
   const totalLength = computed(() => trackerConfig.value?.plot?.totalLength || 2000)
@@ -63,11 +87,49 @@ export const useLiveStore = defineStore('live', () => {
 
   const isLiveTracker = computed(() => currentTrackerType.value === 'Live')
 
+  function isRaceLiveFromList() {
+    return /live/i.test(selectedRace.value?.raceStatus?.DisplayName || '')
+  }
+
+  const showCharts = computed(() => {
+    if (!trackerConfig.value) return false
+    if (simActive.value) return true
+    if (isLiveTracker.value) return false
+    return (trackerConfig.value.lanes || []).some((l) => (l.live || []).length > 0)
+  })
+
+  const canStartSim = computed(
+    () =>
+      !isLiveTracker.value &&
+      !isRaceLiveFromList() &&
+      !simActive.value &&
+      canSimulate(trackerData.value),
+  )
+
+  const simMaxStep = computed(() => Math.max(0, simTimeline.value.length - 1))
+
   const statusLabel = computed(() => {
     if (!selectedRace.value) return 'status_ready'
     if (lastError.value) return 'status_error'
+    if (simActive.value) return 'status_sim'
     return isLiveTracker.value ? 'status_live' : 'status_replay'
   })
+
+  function clearSimTimer() {
+    if (simTimer) {
+      clearInterval(simTimer)
+      simTimer = null
+    }
+  }
+
+  function stopSim() {
+    simPlaying.value = false
+    clearSimTimer()
+    simActive.value = false
+    simStep.value = 0
+    simTimeline.value = []
+    replaySnapshot.value = null
+  }
 
   function initFromSavedComp() {
     const saved = getSelectedComp()
@@ -85,6 +147,7 @@ export const useLiveStore = defineStore('live', () => {
   }
 
   function resetRaceState() {
+    stopSim()
     selectedRace.value = null
     trackerData.value = null
     loadingTracker.value = false
@@ -155,6 +218,7 @@ export const useLiveStore = defineStore('live', () => {
     const race = races.value.find((r) => r.id === id)
     if (!race) return
 
+    stopSim()
     selectedRace.value = race
     trackerData.value = null
     lastUpdate.value = null
@@ -176,7 +240,7 @@ export const useLiveStore = defineStore('live', () => {
   }
 
   async function refreshTracker() {
-    if (!selectedRace.value) return
+    if (!selectedRace.value || simActive.value) return
 
     if (!trackerData.value) loadingTracker.value = true
     try {
@@ -192,6 +256,69 @@ export const useLiveStore = defineStore('live', () => {
       lastError.value = e.message || String(e)
     } finally {
       loadingTracker.value = false
+    }
+  }
+
+  function startSim() {
+    if (!canStartSim.value || !trackerData.value) return
+    try {
+      replaySnapshot.value = structuredClone(toRaw(trackerData.value))
+    } catch (e) {
+      console.error('startSim: clone failed', e)
+      return
+    }
+    simTimeline.value = buildSimTimeline(replaySnapshot.value)
+    if (simTimeline.value.length < 2) return
+    simStep.value = 0
+    simActive.value = true
+    simPlaying.value = false
+    simSpeed.value = 1
+  }
+
+  function pauseSim() {
+    simPlaying.value = false
+    clearSimTimer()
+  }
+
+  function tickSim() {
+    if (simStep.value >= simMaxStep.value) {
+      pauseSim()
+      return
+    }
+    simStep.value += 1
+  }
+
+  function playSim() {
+    if (!simActive.value) return
+    if (simStep.value >= simMaxStep.value) simStep.value = 0
+    simPlaying.value = true
+    clearSimTimer()
+    const interval = SIM_BASE_MS / simSpeed.value
+    simTimer = setInterval(tickSim, interval)
+  }
+
+  function resetSim() {
+    if (!simActive.value) return
+    pauseSim()
+    simStep.value = 0
+  }
+
+  function stopSimulation() {
+    stopSim()
+  }
+
+  function setSimStep(step) {
+    if (!simActive.value) return
+    pauseSim()
+    simStep.value = Math.max(0, Math.min(simMaxStep.value, step))
+  }
+
+  function cycleSimSpeed() {
+    const idx = SIM_SPEEDS.indexOf(simSpeed.value)
+    simSpeed.value = SIM_SPEEDS[(idx + 1) % SIM_SPEEDS.length]
+    if (simPlaying.value) {
+      pauseSim()
+      playSim()
     }
   }
 
@@ -223,7 +350,7 @@ export const useLiveStore = defineStore('live', () => {
 
   function exportCsv() {
     const ok = exportLiveCsv(
-      trackerData.value,
+      displayTrackerData.value,
       selectedComp.value,
       selectedRace.value,
       i18n.global.t,
@@ -244,6 +371,7 @@ export const useLiveStore = defineStore('live', () => {
     classFilter,
     selectedRace,
     trackerData,
+    displayTrackerData,
     loadingTracker,
     currentTrackerType,
     lastUpdate,
@@ -252,6 +380,13 @@ export const useLiveStore = defineStore('live', () => {
     expandedChart,
     xZoom,
     yScales,
+    replaySnapshot,
+    simActive,
+    simPlaying,
+    simStep,
+    simTimeline,
+    simSpeed,
+    simMaxStep,
     trackerConfig,
     lanes,
     ranked,
@@ -260,6 +395,8 @@ export const useLiveStore = defineStore('live', () => {
     filteredRaces,
     racesByDate,
     isLiveTracker,
+    showCharts,
+    canStartSim,
     statusLabel,
     initFromSavedComp,
     search,
@@ -269,6 +406,13 @@ export const useLiveStore = defineStore('live', () => {
     backToComps,
     backToRaces,
     refreshTracker,
+    startSim,
+    playSim,
+    pauseSim,
+    resetSim,
+    stopSimulation,
+    setSimStep,
+    cycleSimSpeed,
     toggleLane,
     toggleExpanded,
     setXZoom,
