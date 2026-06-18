@@ -1,5 +1,5 @@
 import { laneColor } from '@/lib/lanes'
-import { baseLayout } from '@/components/charts/chartTheme'
+import { baseLayout, plotTraceType } from '@/components/charts/chartTheme'
 import { Y_DEFAULTS, C_DEFAULTS, SPECTRAL, getSpeedDefaults } from './constants'
 import { buildOfficialSplitSeries, buildTimeYTicks, formatSec, parseRaceTime } from './time'
 
@@ -153,13 +153,15 @@ function buildTraces({
   hovY = '%{y:.2f}',
   yUnit = '',
   t,
+  traceType: traceTypeOverride,
 }) {
+  const traceType = traceTypeOverride || plotTraceType()
   if (multi) {
     return series.map((s, idx) => ({
       x: s.xs,
       y: s[yKey],
       mode: 'markers+lines',
-      type: 'scattergl',
+      type: traceType,
       name: s.lane.DisplayName || `Lane ${s.lane.Lane}`,
       marker: { size: 5, color: laneColor(s.lane, idx) },
       line: { width: 1.5, color: laneColor(s.lane, idx) },
@@ -182,7 +184,7 @@ function buildTraces({
       x: s.xs,
       y: s[yKey],
       mode: 'markers',
-      type: 'scattergl',
+      type: traceType,
       marker: {
         size: markerSizes(s.dpsArr, sizeByDps),
         color: safeColor,
@@ -198,7 +200,8 @@ function buildTraces({
   ]
 }
 
-function buildTimeTraces(series, totalLength) {
+function buildTimeTraces(series, totalLength, traceTypeOverride) {
+  const traceType = traceTypeOverride || plotTraceType()
   return series
     .map((s, idx) => {
       const split = buildOfficialSplitSeries(s.lane, totalLength)
@@ -209,7 +212,7 @@ function buildTimeTraces(series, totalLength) {
         y: split.times,
         customdata: split.hovers,
         mode: 'lines+markers',
-        type: 'scattergl',
+        type: traceType,
         name: s.lane.DisplayName || `Lane ${s.lane.Lane}`,
         marker: { size: split.markerSizes, color: col },
         line: { width: 1.5, color: col },
@@ -309,6 +312,7 @@ export function buildAnalyseTraces({
   cScales,
   globalScales,
   t,
+  traceType,
 }) {
   if (!series.length) return {}
   const multi = series.length > 1
@@ -320,6 +324,7 @@ export function buildAnalyseTraces({
     cScales,
     globalScales,
     t,
+    traceType,
   }
   return {
     speed: buildTraces({
@@ -338,7 +343,7 @@ export function buildAnalyseTraces({
       hovY: '%{y:.0f}',
       yUnit: 'spm',
     }),
-    time: buildTimeTraces(series, totalLength),
+    time: buildTimeTraces(series, totalLength, traceType),
     gap: buildTraces({
       ...sharedArgs,
       plotId: 'gap',

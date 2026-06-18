@@ -788,3 +788,32 @@ body.has-analyse-fullscreen {
     height: 300px;
   }
 }
+
+@media (max-width: 720px),
+       (orientation: landscape) and (max-width: 1366px) and (hover: none) and (pointer: coarse) {
+  .analyse-page {
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+    margin: 0;
+    width: 100%;
+  }
+
+  .analyse-sidebar {
+    width: 100%;
+    flex-shrink: 0;
+    overflow: visible;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .analyse-main {
+    flex: none;
+    overflow: visible;
+    padding: 14px;
+  }
+
+  .compare-panel {
+    grid-template-columns: 1fr;
+  }
+}

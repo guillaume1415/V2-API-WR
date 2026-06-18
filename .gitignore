@@ -3,6 +3,5 @@ dist/
 .DS_Store
 *.local
 .cursor/
-.cursor/debug-36811a.log
-/.cursor
+./cursor/debug-36811a.log
 race_data/

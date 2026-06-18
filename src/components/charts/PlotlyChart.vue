@@ -20,10 +20,28 @@ let lastLayout = null
 let lastTheme = null
 let initialised = false
 
+function toSvgScatter(data) {
+  return data.map((t) => (t.type === 'scattergl' ? { ...t, type: 'scatter' } : t))
+}
+
+/** Detect a scattergl layer that failed to initialise (blank plot on mobile). */
+function webglPlotFailed(node) {
+  if (!node?.querySelector('.gl-container')) return false
+  const canvas = node.querySelector('.gl-canvas-context canvas') || node.querySelector('canvas')
+  if (!canvas) return true
+  const { width, height } = canvas.getBoundingClientRect()
+  return width < 1 || height < 1
+}
+
 async function fullRender() {
   if (!el.value || !props.data.length) return
   const layout = { ...props.layout, autosize: true }
-  await Plotly.react(el.value, props.data, layout, plotConfig)
+  let traces = props.data
+  await Plotly.react(el.value, traces, layout, plotConfig)
+  if (traces.some((t) => t.type === 'scattergl') && webglPlotFailed(el.value)) {
+    traces = toSvgScatter(traces)
+    await Plotly.react(el.value, traces, layout, plotConfig)
+  }
   if (props.cursorHover) attachCursorHover()
   lastData = props.data
   lastLayout = props.layout
@@ -53,9 +71,7 @@ async function relayoutOnly() {
  * reference until the underlying reactive deps change.
  */
 async function render() {
-  if (!el.value || !props.data.length) {
-    return
-  }
+  if (!el.value || !props.data.length) return
   if (!initialised || app.theme !== lastTheme) {
     await fullRender()
     return

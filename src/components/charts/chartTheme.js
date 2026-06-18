@@ -90,6 +90,19 @@ export const plotConfig = {
   modeBarButtonsToRemove: ['lasso2d', 'select2d'],
 }
 
+/**
+ * Plotly trace renderer. `scattergl` (WebGL) is faster on desktop but fails
+ * silently on many mobile browsers and in-app WebViews (blank plot + broken-
+ * image icon). Live charts already use SVG `scatter`.
+ */
+export function plotTraceType() {
+  if (typeof window === 'undefined') return 'scatter'
+  if (window.innerWidth <= 720) return 'scatter'
+  if (navigator.maxTouchPoints > 0) return 'scatter'
+  if (window.matchMedia('(hover: none) and (pointer: coarse)').matches) return 'scatter'
+  return 'scattergl'
+}
+
 export const SPECTRAL = [
   [0.0, '#5e4fa2'],
   [0.111, '#3288bd'],

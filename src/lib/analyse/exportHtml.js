@@ -203,7 +203,7 @@ function buildReportHtml({ meta, paceSections, charts, lang }) {
         responsive: true,
         modeBarButtonsToRemove: ['lasso2d', 'select2d'],
       })
-      return `Plotly.newPlot('chart-${idx}', ${tracesJson}, ${layoutJson}, ${configJson});`
+      return `plotReportChart(${idx}, ${tracesJson}, ${layoutJson}, ${configJson});`
     })
     .join('\n')
 
@@ -278,6 +278,10 @@ function buildReportHtml({ meta, paceSections, charts, lang }) {
   .splits-table td.pct-wbt-cell,.splits-table th.pct-wbt{white-space:nowrap;font-weight:600}
   .table-wrap{overflow:visible;width:100%}
   @media(max-width:1100px){.compare-pace-grid{grid-template-columns:1fr}}
+  @media(max-width:720px){
+    body{padding:12px}
+    .report-chart .js-plotly-plot,.report-chart .plotly-graph-div{min-height:280px}
+  }
   @media print{
     body{padding:0;background:#fff}
     section{break-inside:avoid;box-shadow:none}
@@ -297,6 +301,16 @@ function buildReportHtml({ meta, paceSections, charts, lang }) {
   ${chartBlocks}
 </div>
 <script>
+function plotReportTraces(traces) {
+  var mobile = window.innerWidth <= 720 || navigator.maxTouchPoints > 0;
+  if (!mobile) return traces;
+  return traces.map(function(t) {
+    return t.type === 'scattergl' ? Object.assign({}, t, { type: 'scatter' }) : t;
+  });
+}
+function plotReportChart(idx, traces, layout, config) {
+  Plotly.newPlot('chart-' + idx, plotReportTraces(traces), layout, config);
+}
 window.addEventListener('DOMContentLoaded', function(){
   ${chartScripts}
 });
@@ -365,6 +379,7 @@ export function exportAnalyseHtmlReport(ctx) {
     colorBy,
     sizeByDps,
     t,
+    traceType: 'scatter',
   })
 
   const charts = plotDefs
