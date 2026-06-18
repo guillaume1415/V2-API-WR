@@ -5,3 +5,4 @@ dist/
 .cursor/
 ./cursor/debug-36811a.log
 race_data/
+.cursor/debug-36811a.log
