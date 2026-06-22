@@ -553,17 +553,34 @@ function raceStatusName(race){
   return (typeof s === "object" ? s?.DisplayName : s) || "";
 }
 
-// Seules les finales A (ou finales uniques sans lettre B–E) attribuent des médailles.
-// racePhase.DisplayName vaut toujours "Final" même pour B/C/D/E — il faut lire race.DisplayName.
+// Seules les finales A (ou finales uniques sans lettre) attribuent des médailles.
+// L'API distingue 2 formats :
+//   - Long (récent)  : DisplayName = "Men's Single Sculls Final A" / "Final B" / "Final"
+//   - Court (ancien) : DisplayName = "FA" / "FB" / "FC" … (phase = "Final")
+// racePhase.DisplayName est fiable : il vaut toujours "Final" pour toutes les finales,
+// "Semifinal"/"Heat"/"Repechage" sinon. On filtre donc d'abord par phase, puis sur le nom.
 function isMedalFinalRace(race){
   const name = String(race?.DisplayName || "").trim();
   const phase = racePhaseName(race);
-  if(/semi\s*final|quarter\s*final|prelimin|heat|repechage/i.test(name)) return false;
-  if(/\bfinal\s+[b-e]\b/i.test(name)) return false;
-  if(/\bfinal\s+a\b/i.test(name)) return true;
-  if(/\bfinal\s*$/i.test(name)) return true;
-  if(/^final$/i.test(phase) && name && !/\bfinal\s+[b-e]\b/i.test(name)) return true;
-  return false;
+  let branch = "reject";
+  let result = false;
+  if(!/^final$/i.test(phase)){
+    branch = "not-final-phase"; result = false;
+  } else if(/\bfinal\s+a\b/i.test(name) || /\bfinal\s+FA\b/i.test(name) || /^FA\b/i.test(name)){
+    branch = "final-a"; result = true;
+  } else if(/\bfinal\s+[b-z]\b/i.test(name) || /\bfinal\s+F[B-Z]\b/i.test(name) || /^F[B-Z]\b/i.test(name)){
+    branch = "exclude-lettered"; result = false;
+  } else if(/\bfinal\s*$/i.test(name) || /^F$/i.test(name) || !name){
+    branch = "single-final"; result = true;
+  } else {
+    branch = "final-unknown"; result = false;
+  }
+  // #region agent log
+  if(/^final$/i.test(phase) || /\bfinal/i.test(name)){
+    fetch('http://127.0.0.1:7875/ingest/de178605-a63a-44cd-9c05-56fda985f837',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'26ed3c'},body:JSON.stringify({sessionId:'26ed3c',location:'nations.html:isMedalFinalRace',message:'final race check',data:{name,phase,branch,result},timestamp:Date.now(),runId:'post-fix-v2',hypothesisId:'E'})}).catch(()=>{});
+  }
+  // #endregion
+  return result;
 }
 
 function computeMedals(races, filters){
@@ -575,6 +592,11 @@ function computeMedals(races, filters){
 
     const isFinalA = isMedalFinalRace(race);
     const isOfficial = /official|finished|live/i.test(status);
+    // #region agent log
+    if(isFinalA && isOfficial && classMatchesFilter(cls, filters)){
+      fetch('http://127.0.0.1:7875/ingest/de178605-a63a-44cd-9c05-56fda985f837',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'26ed3c'},body:JSON.stringify({sessionId:'26ed3c',location:'nations.html:computeMedals',message:'race counted for medals',data:{raceName:race.DisplayName,phase:racePhaseName(race),cls,status},timestamp:Date.now(),runId:'post-fix-v2',hypothesisId:'E'})}).catch(()=>{});
+    }
+    // #endregion
     if(!isFinalA || !isOfficial) continue;
     if(!classMatchesFilter(cls, filters)) continue;
 
