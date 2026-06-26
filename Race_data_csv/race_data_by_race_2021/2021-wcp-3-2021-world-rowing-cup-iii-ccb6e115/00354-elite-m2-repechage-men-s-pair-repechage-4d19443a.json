@@ -1,0 +1,39 @@
+{
+  "competition": {
+    "id": "ccb6e115-c342-4948-b8e6-4525ff6d7832",
+    "name": "2021 World Rowing Cup III",
+    "year": "2021",
+    "start_date": "2021-06-04 00:00:00",
+    "end_date": "2021-06-06 00:00:00",
+    "type_id": "29712fef-cbdc-4831-8ff6-980543eec908",
+    "type": "World Rowing Cup III",
+    "type_abbreviation": "WCp 3",
+    "category_id": "9b1abc60-419f-463d-a311-ceaa79fdabd7",
+    "category": "World Rowing Cup",
+    "venue": "Sabaudia",
+    "venue_country": "Italy"
+  },
+  "event": {
+    "id": "3884e3f8-5364-46a3-a04e-e6b358c73e3d",
+    "name": "Men's Pair",
+    "boat_class": "M2-",
+    "gender": "Men",
+    "rsc_code": "ROWMNOCOX2------------------------",
+    "age_group": "elite"
+  },
+  "race": {
+    "id": "4d19443a-08ca-45f7-9359-6a195cf0ced6",
+    "name": "Men's Pair Repechage",
+    "date": "2021-06-05 07:48:00",
+    "race_nr": "42",
+    "rsc_code": "ROWMNOCOX2------------REP-000100--",
+    "phase": "Repechage",
+    "status": "Official"
+  },
+  "pdf_url_race_data": "https://d3fpn4c9813ycf.cloudfront.net/pdfDocuments/WCp3_2021_1/WCp3_2021_1_ROWMNOCOX2------------REP-000100--_C77X5711.PDF",
+  "race_data": [],
+  "parser_failed_urls": [
+    "https://d3fpn4c9813ycf.cloudfront.net/pdfDocuments/WCp3_2021_1/WCp3_2021_1_ROWMNOCOX2------------REP-000100--_C77X5711.PDF"
+  ],
+  "export_path": "exports/race_data_by_race_2021_2023/2021-wcp-3-2021-world-rowing-cup-iii-ccb6e115/00354-elite-m2-repechage-men-s-pair-repechage-4d19443a.json"
+}

@@ -1,0 +1,39 @@
+{
+  "competition": {
+    "id": "7c0ee77b-3bbe-45a1-b5e2-a46d3132b5e9",
+    "name": "2012 World Rowing Under 23 Championships - Galve/Trakai, Lithuania",
+    "year": "2012",
+    "start_date": "2012-07-11 00:00:00",
+    "end_date": "2012-07-15 00:00:00",
+    "type_id": "1c2c09fa-a8e6-4afc-9df7-1b7ebd413fac",
+    "type": "World Rowing  U23 Championships",
+    "type_abbreviation": "U23WCH",
+    "category_id": "51f27bfe-a72a-4a04-91df-eda2f883829f",
+    "category": "World Rowing Under 23 Championships",
+    "venue": "Trakai",
+    "venue_country": "Lithuania"
+  },
+  "event": {
+    "id": "23b8b744-1b2f-43f9-bc75-fafea94a2215",
+    "name": "U23 Women's Quadruple Sculls",
+    "boat_class": "BW4x",
+    "gender": "Women",
+    "rsc_code": "ROWWSCULL4--U23-------------------",
+    "age_group": "u23"
+  },
+  "race": {
+    "id": "fce041b5-8f81-4396-82e6-faacbd93d99b",
+    "name": "R2",
+    "date": "2012-07-12 16:56:00",
+    "race_nr": "67",
+    "rsc_code": "ROWWSCULL4--U23-------REP-005200--",
+    "phase": "Repechage",
+    "status": "Official"
+  },
+  "pdf_url_race_data": "https://d3fpn4c9813ycf.cloudfront.net/pdfDocuments/U23WCH_2012/U23WCH_2012_ROWWSCULL4--U23-------REP-005200--_MGPSX4019.pdf",
+  "race_data": [],
+  "parser_failed_urls": [
+    "https://d3fpn4c9813ycf.cloudfront.net/pdfDocuments/U23WCH_2012/U23WCH_2012_ROWWSCULL4--U23-------REP-005200--_MGPSX4019.pdf"
+  ],
+  "export_path": "exports/race_data_by_race_2012_2012/2012-u23wch-2012-world-rowing-under-23-championships-galve-trakai-lithuania-7c0ee77b/00223-u23-bw4x-repechage-r2-fce041b5.json"
+}

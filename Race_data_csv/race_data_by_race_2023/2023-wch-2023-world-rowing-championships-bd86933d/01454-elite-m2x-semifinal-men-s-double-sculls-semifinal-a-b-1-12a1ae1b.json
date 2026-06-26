@@ -1,0 +1,39 @@
+{
+  "competition": {
+    "id": "bd86933d-79f1-4f4e-8506-fbc04835e8d5",
+    "name": "2023 World Rowing Championships",
+    "year": "2023",
+    "start_date": "2023-09-03 00:00:00",
+    "end_date": "2023-09-10 00:00:00",
+    "type_id": "7c4013ad-c7a7-4d0f-a2aa-2a53bcb5d53a",
+    "type": "World Rowing Championships",
+    "type_abbreviation": "WCH",
+    "category_id": "6589b9db-e687-4958-aa4d-d7f980f3a307",
+    "category": "World Rowing Championships",
+    "venue": "Belgrade",
+    "venue_country": "Serbia"
+  },
+  "event": {
+    "id": "4a9fedca-e130-4414-89b8-93de4ac9eefe",
+    "name": "Men's Double Sculls",
+    "boat_class": "M2x",
+    "gender": "Men",
+    "rsc_code": "ROWMSCULL2------------------------",
+    "age_group": "elite"
+  },
+  "race": {
+    "id": "12a1ae1b-2e42-4dc9-9d95-4dd4edc0066c",
+    "name": "Men's Double Sculls Semifinal A/B 1",
+    "date": "2023-09-08 08:35:00",
+    "race_nr": "228",
+    "rsc_code": "ROWMSCULL2------------SFNL000100--",
+    "phase": "Semifinal",
+    "status": "Official"
+  },
+  "pdf_url_race_data": "https://d3fpn4c9813ycf.cloudfront.net/pdfDocuments/WCH_2023_1/WCH_2023_1_ROWMSCULL2------------SFNL000100--_C77X4788.PDF",
+  "race_data": [],
+  "parser_failed_urls": [
+    "https://d3fpn4c9813ycf.cloudfront.net/pdfDocuments/WCH_2023_1/WCH_2023_1_ROWMSCULL2------------SFNL000100--_C77X4788.PDF"
+  ],
+  "export_path": "exports/race_data_by_race_2021_2023/2023-wch-2023-world-rowing-championships-bd86933d/01454-elite-m2x-semifinal-men-s-double-sculls-semifinal-a-b-1-12a1ae1b.json"
+}

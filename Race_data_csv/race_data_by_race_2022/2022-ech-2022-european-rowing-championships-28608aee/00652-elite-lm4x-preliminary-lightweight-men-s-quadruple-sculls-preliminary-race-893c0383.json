@@ -1,0 +1,39 @@
+{
+  "competition": {
+    "id": "28608aee-911f-48a2-9598-36949cbc0169",
+    "name": "2022 European Rowing Championships",
+    "year": "2022",
+    "start_date": "2022-08-11 00:00:00",
+    "end_date": "2022-08-14 00:00:00",
+    "type_id": "d140f900-ebba-4d76-ad17-41ab15bd2b37",
+    "type": "European Rowing Championships",
+    "type_abbreviation": "ECH",
+    "category_id": "93eb61fb-ec69-45a6-818e-2f578a4df72c",
+    "category": "Continental Championships",
+    "venue": "Munich",
+    "venue_country": "Germany"
+  },
+  "event": {
+    "id": "e6c4b9ed-f2bc-48a4-bffc-e26995e7ec4a",
+    "name": "Lightweight Men's Quadruple Sculls",
+    "boat_class": "LM4x",
+    "gender": "Men",
+    "rsc_code": "ROWMSCULL4-L----------------------",
+    "age_group": "elite"
+  },
+  "race": {
+    "id": "893c0383-6502-4366-9b58-564bcae860a6",
+    "name": "Lightweight Men's Quadruple Sculls Preliminary Race",
+    "date": "2022-08-11 09:35:00",
+    "race_nr": "26",
+    "rsc_code": "ROWMSCULL4-L----------PREL000100--",
+    "phase": "Preliminary",
+    "status": "Official"
+  },
+  "pdf_url_race_data": "https://d3fpn4c9813ycf.cloudfront.net/pdfDocuments/ECM2022/ECM2022_ROWMSCULL4-L----------PREL000100--_C77X2548.PDF",
+  "race_data": [],
+  "parser_failed_urls": [
+    "https://d3fpn4c9813ycf.cloudfront.net/pdfDocuments/ECM2022/ECM2022_ROWMSCULL4-L----------PREL000100--_C77X2548.PDF"
+  ],
+  "export_path": "exports/race_data_by_race_2021_2023/2022-ech-2022-european-rowing-championships-28608aee/00652-elite-lm4x-preliminary-lightweight-men-s-quadruple-sculls-preliminary-race-893c0383.json"
+}

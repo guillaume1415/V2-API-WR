@@ -1,0 +1,39 @@
+{
+  "competition": {
+    "id": "b56cf9a5-a7d3-4e64-9571-38218f39413b",
+    "name": "2022 World Rowing Cup III",
+    "year": "2022",
+    "start_date": "2022-07-08 00:00:00",
+    "end_date": "2022-07-10 00:00:00",
+    "type_id": "29712fef-cbdc-4831-8ff6-980543eec908",
+    "type": "World Rowing Cup III",
+    "type_abbreviation": "WCp 3",
+    "category_id": "9b1abc60-419f-463d-a311-ceaa79fdabd7",
+    "category": "World Rowing Cup",
+    "venue": "Lucerne",
+    "venue_country": "Switzerland"
+  },
+  "event": {
+    "id": "b6d254f6-c64d-419a-9b01-05c0ba1233e7",
+    "name": "Men's Single Sculls",
+    "boat_class": "M1x",
+    "gender": "Men",
+    "rsc_code": "ROWMSCULL1------------------------",
+    "age_group": "elite"
+  },
+  "race": {
+    "id": "287128a7-c2a1-4dff-baaf-3eda5c906c7b",
+    "name": "Men's Single Sculls Final C",
+    "date": "2022-07-09 07:50:00",
+    "race_nr": "79",
+    "rsc_code": "ROWMSCULL1------------FNL-000300--",
+    "phase": "Final",
+    "status": "Official"
+  },
+  "pdf_url_race_data": "https://d3fpn4c9813ycf.cloudfront.net/pdfDocuments/WCp3_2022_1/WCp3_2022_1_ROWMSCULL1------------FNL-000300--_C77X9210.PDF",
+  "race_data": [],
+  "parser_failed_urls": [
+    "https://d3fpn4c9813ycf.cloudfront.net/pdfDocuments/WCp3_2022_1/WCp3_2022_1_ROWMSCULL1------------FNL-000300--_C77X9210.PDF"
+  ],
+  "export_path": "exports/race_data_by_race_2021_2023/2022-wcp-3-2022-world-rowing-cup-iii-b56cf9a5/01111-elite-m1x-final-men-s-single-sculls-final-c-287128a7.json"
+}

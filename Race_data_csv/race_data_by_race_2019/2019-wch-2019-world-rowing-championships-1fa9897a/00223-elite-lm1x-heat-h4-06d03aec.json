@@ -1,0 +1,36 @@
+{
+  "competition": {
+    "id": "1fa9897a-9405-423f-a7a5-2040576911cb",
+    "name": "2019 World Rowing Championships",
+    "year": "2019",
+    "start_date": "2019-08-25 00:00:00",
+    "end_date": "2019-09-01 00:00:00",
+    "type_id": "7c4013ad-c7a7-4d0f-a2aa-2a53bcb5d53a",
+    "type": "World Rowing Championships",
+    "type_abbreviation": "WCH",
+    "category_id": "6589b9db-e687-4958-aa4d-d7f980f3a307",
+    "category": "World Rowing Championships",
+    "venue": "Linz",
+    "venue_country": "Austria"
+  },
+  "event": {
+    "id": "4e0eda49-c076-447d-aeb9-12d452ac5594",
+    "name": "Lightweight Men's Single Sculls",
+    "boat_class": "LM1x",
+    "gender": "Men",
+    "rsc_code": "ROWMSCULL1-L----------------------",
+    "age_group": "elite"
+  },
+  "race": {
+    "id": "06d03aec-1997-4135-b39c-fd4af034f22d",
+    "name": "H4",
+    "date": "2019-08-25 13:06:00",
+    "race_nr": "41",
+    "rsc_code": "ROWMSCULL1-L----------HEAT000400--",
+    "phase": "Heat",
+    "status": "Official"
+  },
+  "pdf_url_race_data": "https://d3fpn4c9813ycf.cloudfront.net/pdfDocuments/WCH_2019_1/WCH_2019_1_ROWMSCULL1-L----------HEAT000400--_C77X2340.PDF",
+  "race_data": [],
+  "export_path": "exports/race_data_by_race_2019_2020/2019-wch-2019-world-rowing-championships-1fa9897a/00223-elite-lm1x-heat-h4-06d03aec.json"
+}

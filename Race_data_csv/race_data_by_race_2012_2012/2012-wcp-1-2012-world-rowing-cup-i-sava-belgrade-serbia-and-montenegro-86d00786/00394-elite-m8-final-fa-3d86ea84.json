@@ -1,0 +1,39 @@
+{
+  "competition": {
+    "id": "86d00786-a571-42eb-924f-260351b94bcf",
+    "name": "2012 World Rowing Cup I - Sava/Belgrade, Serbia and Montenegro",
+    "year": "2012",
+    "start_date": "2012-05-03 00:00:00",
+    "end_date": "2012-05-06 00:00:00",
+    "type_id": "651222cf-95cb-42cc-8207-7c76a57b3000",
+    "type": "World Rowing Cup I",
+    "type_abbreviation": "WCp 1",
+    "category_id": "9b1abc60-419f-463d-a311-ceaa79fdabd7",
+    "category": "World Rowing Cup",
+    "venue": "Belgrade",
+    "venue_country": "Serbia"
+  },
+  "event": {
+    "id": "2ea617eb-d2dc-4440-bac0-2488cbd8f63a",
+    "name": "Men's Eight",
+    "boat_class": "M8+",
+    "gender": "Men",
+    "rsc_code": "ROWMCOXED8------------------------",
+    "age_group": "elite"
+  },
+  "race": {
+    "id": "3d86ea84-8ead-4039-89c9-bbee77e43656",
+    "name": "FA",
+    "date": "2012-05-06 13:31:00",
+    "race_nr": "154",
+    "rsc_code": "ROWMCOXED8------------FNL-000100--",
+    "phase": "Final",
+    "status": "Official"
+  },
+  "pdf_url_race_data": "https://d3fpn4c9813ycf.cloudfront.net/pdfDocuments/WCp1_2012/WCP1_2012_ROWMCOXED8------------FNL-000100--_MGPSX2287.pdf",
+  "race_data": [],
+  "parser_failed_urls": [
+    "https://d3fpn4c9813ycf.cloudfront.net/pdfDocuments/WCp1_2012/WCP1_2012_ROWMCOXED8------------FNL-000100--_MGPSX2287.pdf"
+  ],
+  "export_path": "exports/race_data_by_race_2012_2012/2012-wcp-1-2012-world-rowing-cup-i-sava-belgrade-serbia-and-montenegro-86d00786/00394-elite-m8-final-fa-3d86ea84.json"
+}

@@ -1,0 +1,39 @@
+{
+  "competition": {
+    "id": "fe0db63a-247a-4e84-95a8-09a266818c43",
+    "name": "2020 European Rowing Championships",
+    "year": "2020",
+    "start_date": "2020-10-09 00:00:00",
+    "end_date": "2020-10-11 00:00:00",
+    "type_id": "d140f900-ebba-4d76-ad17-41ab15bd2b37",
+    "type": "European Rowing Championships",
+    "type_abbreviation": "ECH",
+    "category_id": "93eb61fb-ec69-45a6-818e-2f578a4df72c",
+    "category": "Continental Championships",
+    "venue": "Poznan",
+    "venue_country": "Poland"
+  },
+  "event": {
+    "id": "a4a132b5-4146-4bbb-be3b-420e2e9ab2f0",
+    "name": "Women's Quadruple Sculls",
+    "boat_class": "W4x",
+    "gender": "Women",
+    "rsc_code": "ROWWSCULL4------------------------",
+    "age_group": "elite"
+  },
+  "race": {
+    "id": "85e27492-8fff-4b19-bce7-b2b954eddcab",
+    "name": "H2",
+    "date": "2020-10-09 12:40:00",
+    "race_nr": "40",
+    "rsc_code": "ROWWSCULL4------------HEAT000200--",
+    "phase": "Heat",
+    "status": "Official"
+  },
+  "pdf_url_race_data": "https://d3fpn4c9813ycf.cloudfront.net/pdfDocuments/ECH_2020_1/ECH_2020_1_ROWWSCULL4------------HEAT000200--_C77X3062.PDF",
+  "race_data": [],
+  "parser_failed_urls": [
+    "https://d3fpn4c9813ycf.cloudfront.net/pdfDocuments/ECH_2020_1/ECH_2020_1_ROWWSCULL4------------HEAT000200--_C77X3062.PDF"
+  ],
+  "export_path": "exports/race_data_by_race_2019_2020/2020-ech-2020-european-rowing-championships-fe0db63a/00886-elite-w4x-heat-h2-85e27492.json"
+}

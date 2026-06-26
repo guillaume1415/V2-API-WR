@@ -263,6 +263,16 @@
   }
 
   .race-head{display:flex;gap:12px;align-items:baseline;margin-bottom:6px;flex-wrap:wrap}
+  .csv-banner{
+    background:rgba(245,158,11,0.12); border:1px solid var(--gold);
+    color:var(--text); border-radius:var(--radius); padding:8px 12px;
+    margin:8px 0 12px 0; font-size:0.85rem; line-height:1.4;
+  }
+  .csv-banner .csv-badge{
+    display:inline-block; background:var(--gold); color:#1a1100;
+    font-weight:700; font-size:0.7rem; letter-spacing:0.5px;
+    padding:2px 6px; border-radius:4px; margin-right:8px; vertical-align:middle;
+  }
   .race-head h2{margin:0;font-size:16px}
   .race-head .meta{color:var(--text-muted);font-size:12px}
   .race-head .badge{padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600}
@@ -1166,7 +1176,15 @@ const state = {
     races: [], loadingRaces: false,
     selectedRace: null, lastData: null,
     selectedLaneIds: [],
+    csvData: null,                 // CSV-en-JSON pour la course du slot B
   },
+  // ── Fallback CSV ────────────────────────────────────────────────────
+  // Quand l'API World Rowing n'expose pas les ~300 premiers mètres (cas
+  // des compétitions 2026 testées), on complète avec les données 50m
+  // tabulées exportées dans /Race_data_csv. Voir CSV_BASE_URL plus bas.
+  csvIndex: null,                  // { races: { <race.id>: {path, ...} } }
+  csvData: null,                   // CSV-en-JSON pour la course du slot A
+  csvFilledLanes: [],              // [{slot:"A"|"B", country, joinD}] pour bandeau
 };
 
 // Default Y ranges per plot id (autoscale upper if null)
@@ -1394,6 +1412,105 @@ async function fetchTracker(raceId){
   // Analyse → on prend l'endpoint complet (replay). Pas de polling.
   const d = await api(`/livetracker/${raceId}`);
   return d.data;
+}
+
+// ── CSV fallback (0-300 m manquants côté API) ────────────────────────────
+// Données 50m exportées dans Race_data_csv/ (cf. build_csv_index.py).
+// Index pré-généré : <CSV_BASE_URL>/index.json mappe race.id → chemin.
+// URL RELATIVE (pas de "/" initial) pour fonctionner :
+//   - en local via `python3 -m http.server 8000` lancé depuis API-WR/
+//     → fetch ./Race_data_csv/index.json
+//   - en ligne sur GitHub Pages où le repo est servi sous un sous-chemin
+//     (ex. https://<user>.github.io/V3-API-WR-analyse/analyse.html)
+//     → fetch <même base>/Race_data_csv/index.json
+// Pré-requis : analyse.html doit être accédé en HTTP (pas file://),
+// sinon fetch est bloqué par CORS.
+const CSV_BASE_URL = "Race_data_csv";
+
+let _csvIndexPromise = null;
+async function loadCsvIndex(){
+  if(state.csvIndex) return state.csvIndex;
+  if(!_csvIndexPromise){
+    _csvIndexPromise = (async () => {
+      try {
+        const r = await fetch(`${CSV_BASE_URL}/index.json`, {cache:"no-store"});
+        if(!r.ok) return null;
+        return await r.json();
+      } catch(e){
+        console.warn("[csv] index.json indisponible :", e.message);
+        return null;
+      }
+    })();
+  }
+  state.csvIndex = await _csvIndexPromise;
+  return state.csvIndex;
+}
+
+async function fetchCsvForRace(raceId){
+  if(!raceId) return null;
+  const idx = await loadCsvIndex();
+  const entry = idx?.races?.[raceId];
+  if(!entry?.path){
+    console.info(`[csv] pas d'entrée pour race ${raceId}`);
+    return null;
+  }
+  try {
+    const r = await fetch(`${CSV_BASE_URL}/${entry.path}`, {cache:"no-store"});
+    if(!r.ok) return null;
+    return await r.json();
+  } catch(e){
+    console.warn(`[csv] fetch raté pour race ${raceId} :`, e.message);
+    return null;
+  }
+}
+
+// Cherche dans le CSV l'entrée race_data dont le code pays matche
+// celui de la lane (lane.DisplayName, ex. "ROU", "ITA2").
+function findCsvLane(csvData, lane){
+  if(!csvData?.race_data || !lane) return null;
+  const code = String(lane.DisplayName||"").trim().toUpperCase();
+  if(!code) return null;
+  for(const rd of csvData.race_data){
+    if(String(rd.country||"").trim().toUpperCase() === code) return rd;
+  }
+  return null;
+}
+
+// Convertit une entrée race_data CSV en {d, s, c, t} où t est le temps
+// cumulé estimé par intégration trapézoïdale de 1/vitesse depuis le départ.
+// Hypothèse : la vitesse au point d[0] (typ. 50 m) est représentative
+// de la vitesse moyenne entre 0 et d[0].
+function csvLaneToArrays(rd){
+  const d = (rd?.data?.["dist [m]"]) || [];
+  const s = (rd?.data?.speed) || [];
+  const c = (rd?.data?.stroke) || [];
+  const n = Math.min(d.length, s.length, c.length);
+  if(n === 0) return null;
+  const t = new Array(n);
+  t[0] = (s[0] > 0) ? (d[0] / s[0]) : 0;
+  for(let i=1;i<n;i++){
+    const dd = d[i] - d[i-1];
+    const vavg = (s[i-1] + s[i]) / 2;
+    t[i] = t[i-1] + ((vavg > 0) ? dd / vavg : 0);
+  }
+  return { d: d.slice(0,n), s: s.slice(0,n), c: c.slice(0,n), t };
+}
+
+// Interpolation linéaire de t(d) sur le tableau CSV. Extrapolation
+// linéaire vers 0 si dQuery < d[0].
+function csvInterpT(csvArr, dQuery){
+  if(!csvArr || !csvArr.d.length) return null;
+  const {d, t} = csvArr;
+  if(dQuery <= d[0]){
+    return (d[0] > 0) ? (t[0] * dQuery / d[0]) : 0;
+  }
+  for(let i=1;i<d.length;i++){
+    if(d[i] >= dQuery){
+      const f = (dQuery - d[i-1]) / (d[i] - d[i-1]);
+      return t[i-1] + f * (t[i] - t[i-1]);
+    }
+  }
+  return t[t.length-1];
 }
 
 function esc(s){
@@ -1842,7 +1959,7 @@ function buildOfficialSplitSeries(lane, totalLength){
 // de la même lane id à travers des sessions). On détecte les resets de
 // distance (saut négatif > 100 m) et on découpe en segments ; on garde
 // le segment dont la distance max est la plus proche du totalLength visé.
-function laneSeries(lane, totalLength){
+function laneSeries(lane, totalLength, csvLaneData){
   const raw = [];
   for(const p of (lane.live||[])){
     const t = p.raceBoatTracker || {};
@@ -1936,21 +2053,72 @@ function laneSeries(lane, totalLength){
   // Puis on remplace pts[i].t (initialement le trackCount) par des SECONDES
   // RÉELLES. Toutes les dérivées en aval (recomputeSpeeds, Kalman…)
   // travaillent dès lors en m/s, sans changement.
+  // ── Fallback CSV : si les 300 premiers mètres manquent côté API, on
+  // recalibre `secondsPerTick` à partir du temps CSV au premier point API,
+  // puis on préfixe la série avec les points CSV manquants. Sans ça, la
+  // formule "secondsPerTick = ResultTime / tickSpan" surestimerait le pas
+  // (la durée API couvre seulement ~300-2000m, pas 0-2000m).
+  const csvArr = csvLaneData ? csvLaneToArrays(csvLaneData) : null;
+  const firstApiD = best[0].x;
+  // Seuil de déclenchement : aucun tick API dans les 200 premiers
+  // mètres → on comble avec le CSV. Ce seuil couvre aussi le cas
+  // "rien entre 0 et 300m" (200 ⊂ 300). Les compétitions 2026
+  // observées démarrent typiquement à 282-295m, donc on déclenche.
+  const FALLBACK_THRESHOLD_M = 200;
+  const useCsv = !!(
+    csvArr && csvArr.d.length &&
+    firstApiD > FALLBACK_THRESHOLD_M &&
+    firstApiD > csvArr.d[0]
+  );
+  let csvFilled = null;          // {joinD, prependedCount} si fallback appliqué
+
   let secondsPerTick = 1;
   const resultSec = (typeof lane.ResultTime === "string") ? parseTime(lane.ResultTime) : null;
+  // tStartApi = temps réel (s) du premier point API. Si CSV dispo, on
+  // l'estime indépendamment de la calibration ResultTime pour préserver
+  // la continuité temporelle au point de jonction même si ResultTime
+  // est manquant.
+  let tStartApi = useCsv ? (csvInterpT(csvArr, firstApiD) || 0) : 0;
   if(resultSec && best.length >= 2){
     const tickSpan = best[best.length-1].t - best[0].t;
     if(tickSpan > 0){
-      const spt = resultSec / tickSpan;
-      // garde-fou : on accepte 0.3 s ≤ spt ≤ 10 s, sinon on garde 1 s
+      const spt = useCsv
+        ? (resultSec - tStartApi) / tickSpan
+        : resultSec / tickSpan;
       if(spt >= 0.3 && spt <= 10) secondsPerTick = spt;
     }
   }
-  if(secondsPerTick !== 1){
-    for(const p of best) p.t = p.t * secondsPerTick;
+  if(secondsPerTick !== 1 || useCsv){
+    // Rebase : best[0].t devient tStartApi (0 si pas de CSV).
+    const t0 = best[0].t;
+    for(const p of best) p.t = tStartApi + (p.t - t0) * secondsPerTick;
   }
   // Suppression du tick de franchissement clippé (voir explication ci-dessus).
   if(lastClipped){ best = best.slice(0, best.length - 1); }
+
+  // Préfixage CSV : ajoute les points CSV antérieurs au premier point API.
+  if(useCsv){
+    const prepend = [];
+    for(let i=0;i<csvArr.d.length;i++){
+      const dC = csvArr.d[i];
+      if(dC >= firstApiD) break;     // on s'arrête au point de jonction
+      const sC = csvArr.s[i], cC = csvArr.c[i];
+      prepend.push({
+        x: dC, t: csvArr.t[i], d: dC,
+        speed: sC, cadence: cC,
+        rank: null, gap: null,
+        dps: (sC && cC) ? (sC * 60 / cC) : null,
+        _raceBoatId: null, _trackCount: null,
+        _csv: true,                  // marqueur pour la coloration éventuelle
+      });
+    }
+    if(prepend.length){
+      best = prepend.concat(best);
+      csvFilled = { joinD: firstApiD, prependedCount: prepend.length };
+    }
+  }
+
+  best._csvFilled = csvFilled;     // null si pas appliqué
   return best;
 }
 
@@ -2040,7 +2208,8 @@ function renderAnalyseHTML(data){
       <span class="meta">${esc(cls)}</span>
       <span class="badge ${statusClass}">${esc(statusName)}</span>
       <span class="meta">${(race.DateString||"").slice(0,16).replace("T"," ")}</span>
-    </div>`;
+    </div>
+    <div id="csv-banner" class="csv-banner" style="display:none"></div>`;
 
   if(state.compareMode){
     html += renderComparePanel();
@@ -2518,9 +2687,10 @@ function buildTimeYTicks(yLo, yHi){
 
 // ── Construction d'une "série" pour une lane : application de la cascade
 // (Kalman + RTS / Δd/Δt / DPS / lissage) et calcul des statistiques.
-function buildLaneSeries(lane, totalLength){
-  const pts = laneSeries(lane, totalLength);
+function buildLaneSeries(lane, totalLength, csvLaneData){
+  const pts = laneSeries(lane, totalLength, csvLaneData);
   if(!pts.length) return null;
+  const csvFilled = pts._csvFilled || null;
   const xs = pts.map(p=>p.x);
   let rawSpeeds = pts.map(p=>p.speed);
   let rawCads   = pts.map(p=>p.cadence);
@@ -2566,7 +2736,30 @@ function buildLaneSeries(lane, totalLength){
       peakStats = { dStart: dMin, dEnd: lastD, max, avg, n: inWin.length };
     }
   }
-  return { lane, pts, xs, speeds, cads, gaps, ranks, dpsArr, peakStats };
+  return { lane, pts, xs, speeds, cads, gaps, ranks, dpsArr, peakStats, csvFilled };
+}
+
+// Bandeau d'info quand des courbes ont été complétées avec le CSV.
+// Regroupe par tranche manquante (joinD) pour rester lisible quand
+// plusieurs bateaux sont à la même borne.
+function renderCsvBanner(series){
+  const el = document.getElementById("csv-banner");
+  if(!el) return;
+  const filled = series.filter(s => s.csvFilled);
+  if(!filled.length){ el.style.display = "none"; el.innerHTML = ""; return; }
+  // Bandeau unique : on prend la borne max (joinD le plus grand) comme
+  // borne de référence, et on liste tous les bateaux concernés.
+  let maxJoin = 0;
+  const names = [];
+  for(const s of filled){
+    if(s.csvFilled.joinD > maxJoin) maxJoin = s.csvFilled.joinD;
+    names.push(s.lane.DisplayName || ("Lane "+s.lane.Lane));
+  }
+  const upTo = Math.round(maxJoin);
+  el.style.display = "block";
+  el.innerHTML = `<span class="csv-badge">CSV</span> `
+    + `Données 0–${upTo} m complétées depuis le fichier CSV pour : `
+    + names.map(esc).join(", ");
 }
 
 // ── Plotly drawing ─────────────────────────────────────────────────────
@@ -2578,8 +2771,10 @@ function drawAllPlots(data){
     .map(id => lanes.find(l => l.id === id))
     .filter(Boolean);
   if(!selected.length) return;
-  const seriesSlot1 = selected.map(l => buildLaneSeries(l, totalLength)).filter(Boolean);
+  const csvA = state.csvData || null;
+  const seriesSlot1 = selected.map(l => buildLaneSeries(l, totalLength, findCsvLane(csvA, l))).filter(Boolean);
   if(!seriesSlot1.length) return;
+  for(const s of seriesSlot1) s.slot = "A";
 
   // Mode comparaison : ajoute les lanes du slot 2
   let series = seriesSlot1;
@@ -2589,8 +2784,9 @@ function drawAllPlots(data){
     const selected2 = state.cmp.selectedLaneIds
       .map(id => lanes2.find(l => l.id === id))
       .filter(Boolean);
+    const csvB = state.cmp.csvData || null;
     const seriesSlot2 = selected2.map((l, i) => {
-      const s = buildLaneSeries(l, totalLength2);
+      const s = buildLaneSeries(l, totalLength2, findCsvLane(csvB, l));
       if(!s) return null;
       // Différencie visuellement les bateaux du slot B avec des tirets dans le nom
       s.slot = "B";
@@ -2599,6 +2795,8 @@ function drawAllPlots(data){
     }).filter(Boolean);
     if(seriesSlot2.length) series = [...seriesSlot1, ...seriesSlot2];
   }
+  // Bandeau "Données 0-Xm issues du CSV pour : ..."
+  renderCsvBanner(series);
   // Référence pour splits + annotations Vmax (= première lane sélectionnée)
   const ref = series[0];
   const lane = ref.lane;
@@ -3435,6 +3633,7 @@ async function selectRace(id){
   const r = state.races.find(x=>x.id===id); if(!r) return;
   state.selectedRace = r;
   state.lastData = null;
+  state.csvData = null;
   state.selectedLaneIds = [];
   // Réinitialise l'échelle vitesse pour appliquer les defaults de la nouvelle classe
   delete state.yScales["speed"];
@@ -3447,6 +3646,13 @@ async function selectRace(id){
     $("status").textContent = "erreur: "+e.message;
     renderMoreMenu();
     state.error = e.message;
+  }
+  // Fetch CSV en parallèle (silencieux si indispo). On déclenche le 2e
+  // render seulement après pour éviter un flash du bandeau.
+  try {
+    state.csvData = await fetchCsvForRace(id);
+  } catch(e){
+    state.csvData = null;
   }
   render();
 }
@@ -3683,7 +3889,7 @@ async function cmpSelectComp(id){
 async function cmpSelectRace(id){
   const cmp = state.cmp;
   const r = cmp.races.find(x => x.id === id); if(!r) return;
-  cmp.selectedRace = r; cmp.lastData = null; cmp.selectedLaneIds = [];
+  cmp.selectedRace = r; cmp.lastData = null; cmp.csvData = null; cmp.selectedLaneIds = [];
   cmp.loadingRaces = true;
   render();
   try {
@@ -3692,7 +3898,10 @@ async function cmpSelectRace(id){
     // Présélectionne toutes les lanes du slot 2
     cmp.selectedLaneIds = lanes2.map(l => l.id).filter(Boolean);
   } catch(e){ console.error(e); }
-  finally { cmp.loadingRaces = false; render(); }
+  try {
+    cmp.csvData = await fetchCsvForRace(id);
+  } catch(e){ cmp.csvData = null; }
+  cmp.loadingRaces = false; render();
 }
 
 function cmpToggleLane(laneId){

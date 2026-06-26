@@ -1,0 +1,39 @@
+{
+  "competition": {
+    "id": "7c0ee77b-3bbe-45a1-b5e2-a46d3132b5e9",
+    "name": "2012 World Rowing Under 23 Championships - Galve/Trakai, Lithuania",
+    "year": "2012",
+    "start_date": "2012-07-11 00:00:00",
+    "end_date": "2012-07-15 00:00:00",
+    "type_id": "1c2c09fa-a8e6-4afc-9df7-1b7ebd413fac",
+    "type": "World Rowing  U23 Championships",
+    "type_abbreviation": "U23WCH",
+    "category_id": "51f27bfe-a72a-4a04-91df-eda2f883829f",
+    "category": "World Rowing Under 23 Championships",
+    "venue": "Trakai",
+    "venue_country": "Lithuania"
+  },
+  "event": {
+    "id": "38b738b5-87ab-4bd8-b650-3c242dfe16ed",
+    "name": "U23 Lightweight Men's Single Sculls",
+    "boat_class": "BLM1x",
+    "gender": "Men",
+    "rsc_code": "ROWMSCULL1-LU23-------------------",
+    "age_group": "u23"
+  },
+  "race": {
+    "id": "604b62e9-a08a-46ba-8919-a52fabe77798",
+    "name": "H2",
+    "date": "2012-07-12 10:05:00",
+    "race_nr": "22",
+    "rsc_code": "ROWMSCULL1-LU23-------HEAT000200--",
+    "phase": "Heat",
+    "status": "Official"
+  },
+  "pdf_url_race_data": "https://d3fpn4c9813ycf.cloudfront.net/pdfDocuments/U23WCH_2012/U23WCH_2012_ROWMSCULL1-LU23-------HEAT000200--_MGPSX4102.pdf",
+  "race_data": [],
+  "parser_failed_urls": [
+    "https://d3fpn4c9813ycf.cloudfront.net/pdfDocuments/U23WCH_2012/U23WCH_2012_ROWMSCULL1-LU23-------HEAT000200--_MGPSX4102.pdf"
+  ],
+  "export_path": "exports/race_data_by_race_2012_2012/2012-u23wch-2012-world-rowing-under-23-championships-galve-trakai-lithuania-7c0ee77b/00246-u23-blm1x-heat-h2-604b62e9.json"
+}

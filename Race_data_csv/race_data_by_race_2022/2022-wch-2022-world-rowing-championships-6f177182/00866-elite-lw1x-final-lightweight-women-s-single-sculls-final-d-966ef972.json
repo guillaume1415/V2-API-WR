@@ -1,0 +1,39 @@
+{
+  "competition": {
+    "id": "6f177182-6b70-49b7-8e81-abfe36f1ba04",
+    "name": "2022 World Rowing Championships",
+    "year": "2022",
+    "start_date": "2022-09-18 00:00:00",
+    "end_date": "2022-09-25 00:00:00",
+    "type_id": "7c4013ad-c7a7-4d0f-a2aa-2a53bcb5d53a",
+    "type": "World Rowing Championships",
+    "type_abbreviation": "WCH",
+    "category_id": "6589b9db-e687-4958-aa4d-d7f980f3a307",
+    "category": "World Rowing Championships",
+    "venue": "Racice",
+    "venue_country": "Czechia"
+  },
+  "event": {
+    "id": "e45a9937-6181-427d-95eb-40ccb969d08a",
+    "name": "Lightweight Women's Single Sculls",
+    "boat_class": "LW1x",
+    "gender": "Women",
+    "rsc_code": "ROWWSCULL1-L----------------------",
+    "age_group": "elite"
+  },
+  "race": {
+    "id": "966ef972-92c3-4ea3-9aed-61d2e345f0ce",
+    "name": "Lightweight Women's Single Sculls Final D",
+    "date": "2022-09-23 08:20:00",
+    "race_nr": "175",
+    "rsc_code": "ROWWSCULL1-L----------FNL-000400--",
+    "phase": "Final",
+    "status": "Official"
+  },
+  "pdf_url_race_data": "https://d3fpn4c9813ycf.cloudfront.net/pdfDocuments/WCH_2022_1/WCH_2022_1_ROWWSCULL1-L----------FNL-000400--_C77X7909.PDF",
+  "race_data": [],
+  "parser_failed_urls": [
+    "https://d3fpn4c9813ycf.cloudfront.net/pdfDocuments/WCH_2022_1/WCH_2022_1_ROWWSCULL1-L----------FNL-000400--_C77X7909.PDF"
+  ],
+  "export_path": "exports/race_data_by_race_2021_2023/2022-wch-2022-world-rowing-championships-6f177182/00866-elite-lw1x-final-lightweight-women-s-single-sculls-final-d-966ef972.json"
+}

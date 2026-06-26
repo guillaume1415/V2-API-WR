@@ -1,0 +1,39 @@
+{
+  "competition": {
+    "id": "7c0ee77b-3bbe-45a1-b5e2-a46d3132b5e9",
+    "name": "2012 World Rowing Under 23 Championships - Galve/Trakai, Lithuania",
+    "year": "2012",
+    "start_date": "2012-07-11 00:00:00",
+    "end_date": "2012-07-15 00:00:00",
+    "type_id": "1c2c09fa-a8e6-4afc-9df7-1b7ebd413fac",
+    "type": "World Rowing  U23 Championships",
+    "type_abbreviation": "U23WCH",
+    "category_id": "51f27bfe-a72a-4a04-91df-eda2f883829f",
+    "category": "World Rowing Under 23 Championships",
+    "venue": "Trakai",
+    "venue_country": "Lithuania"
+  },
+  "event": {
+    "id": "7496c8ec-535f-4695-bdda-0a1e48e812f5",
+    "name": "U23 Women's Double Sculls",
+    "boat_class": "BW2x",
+    "gender": "Women",
+    "rsc_code": "ROWWSCULL2--U23-------------------",
+    "age_group": "u23"
+  },
+  "race": {
+    "id": "d062a456-1566-4f0d-80cc-b7cdecac39a4",
+    "name": "H2",
+    "date": "2012-07-12 10:47:00",
+    "race_nr": "28",
+    "rsc_code": "ROWWSCULL2--U23-------HEAT000200--",
+    "phase": "Heat",
+    "status": "Official"
+  },
+  "pdf_url_race_data": "https://d3fpn4c9813ycf.cloudfront.net/pdfDocuments/U23WCH_2012/U23WCH_2012_ROWWSCULL2--U23-------HEAT000200--_MGPSX8850.pdf",
+  "race_data": [],
+  "parser_failed_urls": [
+    "https://d3fpn4c9813ycf.cloudfront.net/pdfDocuments/U23WCH_2012/U23WCH_2012_ROWWSCULL2--U23-------HEAT000200--_MGPSX8850.pdf"
+  ],
+  "export_path": "exports/race_data_by_race_2012_2012/2012-u23wch-2012-world-rowing-under-23-championships-galve-trakai-lithuania-7c0ee77b/00301-u23-bw2x-heat-h2-d062a456.json"
+}

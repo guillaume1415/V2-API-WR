@@ -1,0 +1,39 @@
+{
+  "competition": {
+    "id": "2fb9b0a4-a012-4a25-8207-66280c1d0a5b",
+    "name": "2012 World Rowing Cup II - Rotsee/Lucerne, Switzerland",
+    "year": "2012",
+    "start_date": "2012-05-25 00:00:00",
+    "end_date": "2012-05-27 00:00:00",
+    "type_id": "765733fd-a689-4ee8-9bbe-12c32e7d307e",
+    "type": "World Rowing Cup II",
+    "type_abbreviation": "WCp 2",
+    "category_id": "9b1abc60-419f-463d-a311-ceaa79fdabd7",
+    "category": "World Rowing Cup",
+    "venue": "Lucerne",
+    "venue_country": "Switzerland"
+  },
+  "event": {
+    "id": "41029805-98c6-4429-bc51-2dbf599673e1",
+    "name": "Lightweight Men's Single Sculls",
+    "boat_class": "LM1x",
+    "gender": "Men",
+    "rsc_code": "ROWMSCULL1-L----------------------",
+    "age_group": "elite"
+  },
+  "race": {
+    "id": "9ddeb6f6-15b3-414c-a38a-50fb30971924",
+    "name": "FA",
+    "date": "2012-05-26 17:20:00",
+    "race_nr": "98",
+    "rsc_code": "ROWMSCULL1-L----------FNL-000100--",
+    "phase": "Final",
+    "status": "Official"
+  },
+  "pdf_url_race_data": "https://d3fpn4c9813ycf.cloudfront.net/pdfDocuments/WCp2_2012/WCP2_2012_ROWMSCULL1-L----------FNL-000100--_MGPSX2701.pdf",
+  "race_data": [],
+  "parser_failed_urls": [
+    "https://d3fpn4c9813ycf.cloudfront.net/pdfDocuments/WCp2_2012/WCP2_2012_ROWMSCULL1-L----------FNL-000100--_MGPSX2701.pdf"
+  ],
+  "export_path": "exports/race_data_by_race_2012_2012/2012-wcp-2-2012-world-rowing-cup-ii-rotsee-lucerne-switzerland-2fb9b0a4/00072-elite-lm1x-final-fa-9ddeb6f6.json"
+}

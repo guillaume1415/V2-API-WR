@@ -1,0 +1,39 @@
+{
+  "competition": {
+    "id": "7c0ee77b-3bbe-45a1-b5e2-a46d3132b5e9",
+    "name": "2012 World Rowing Under 23 Championships - Galve/Trakai, Lithuania",
+    "year": "2012",
+    "start_date": "2012-07-11 00:00:00",
+    "end_date": "2012-07-15 00:00:00",
+    "type_id": "1c2c09fa-a8e6-4afc-9df7-1b7ebd413fac",
+    "type": "World Rowing  U23 Championships",
+    "type_abbreviation": "U23WCH",
+    "category_id": "51f27bfe-a72a-4a04-91df-eda2f883829f",
+    "category": "World Rowing Under 23 Championships",
+    "venue": "Trakai",
+    "venue_country": "Lithuania"
+  },
+  "event": {
+    "id": "76cd9483-0750-40cf-abc1-d60276728c81",
+    "name": "U23 Men's Pair",
+    "boat_class": "BM2-",
+    "gender": "Men",
+    "rsc_code": "ROWMNOCOX2--U23-------------------",
+    "age_group": "u23"
+  },
+  "race": {
+    "id": "2b46f615-5e47-4bb3-8125-18aa002f889e",
+    "name": "FA",
+    "date": "2012-07-15 11:26:00",
+    "race_nr": "177",
+    "rsc_code": "ROWMNOCOX2--U23-------FNL-000100--",
+    "phase": "Final",
+    "status": "Official"
+  },
+  "pdf_url_race_data": "https://d3fpn4c9813ycf.cloudfront.net/pdfDocuments/U23WCH_2012/U23WCH_2012_ROWMNOCOX2--U23-------FNL-000100--_MGPSX7710.pdf",
+  "race_data": [],
+  "parser_failed_urls": [
+    "https://d3fpn4c9813ycf.cloudfront.net/pdfDocuments/U23WCH_2012/U23WCH_2012_ROWMNOCOX2--U23-------FNL-000100--_MGPSX7710.pdf"
+  ],
+  "export_path": "exports/race_data_by_race_2012_2012/2012-u23wch-2012-world-rowing-under-23-championships-galve-trakai-lithuania-7c0ee77b/00304-u23-bm2-final-fa-2b46f615.json"
+}

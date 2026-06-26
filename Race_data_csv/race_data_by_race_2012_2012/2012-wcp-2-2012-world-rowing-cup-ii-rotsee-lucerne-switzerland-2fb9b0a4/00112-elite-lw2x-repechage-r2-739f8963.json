@@ -1,0 +1,39 @@
+{
+  "competition": {
+    "id": "2fb9b0a4-a012-4a25-8207-66280c1d0a5b",
+    "name": "2012 World Rowing Cup II - Rotsee/Lucerne, Switzerland",
+    "year": "2012",
+    "start_date": "2012-05-25 00:00:00",
+    "end_date": "2012-05-27 00:00:00",
+    "type_id": "765733fd-a689-4ee8-9bbe-12c32e7d307e",
+    "type": "World Rowing Cup II",
+    "type_abbreviation": "WCp 2",
+    "category_id": "9b1abc60-419f-463d-a311-ceaa79fdabd7",
+    "category": "World Rowing Cup",
+    "venue": "Lucerne",
+    "venue_country": "Switzerland"
+  },
+  "event": {
+    "id": "7cee3cc9-2b04-4f8d-8e57-5c2e4ad84d36",
+    "name": "Lightweight Women's Double Sculls",
+    "boat_class": "LW2x",
+    "gender": "Women",
+    "rsc_code": "ROWWSCULL2-L----------------------",
+    "age_group": "elite"
+  },
+  "race": {
+    "id": "739f8963-f550-4c97-b497-75d0ee85217d",
+    "name": "R2",
+    "date": "2012-05-26 14:58:00",
+    "race_nr": "81",
+    "rsc_code": "ROWWSCULL2-L----------REP-005200--",
+    "phase": "Repechage",
+    "status": "Official"
+  },
+  "pdf_url_race_data": "https://d3fpn4c9813ycf.cloudfront.net/pdfDocuments/WCp2_2012/WCP2_2012_ROWWSCULL2-L----------REP-005200--_MGPSX7809.pdf",
+  "race_data": [],
+  "parser_failed_urls": [
+    "https://d3fpn4c9813ycf.cloudfront.net/pdfDocuments/WCp2_2012/WCP2_2012_ROWWSCULL2-L----------REP-005200--_MGPSX7809.pdf"
+  ],
+  "export_path": "exports/race_data_by_race_2012_2012/2012-wcp-2-2012-world-rowing-cup-ii-rotsee-lucerne-switzerland-2fb9b0a4/00112-elite-lw2x-repechage-r2-739f8963.json"
+}

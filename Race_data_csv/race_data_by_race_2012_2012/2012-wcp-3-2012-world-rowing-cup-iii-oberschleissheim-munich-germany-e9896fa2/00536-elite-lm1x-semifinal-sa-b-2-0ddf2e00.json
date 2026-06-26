@@ -1,0 +1,39 @@
+{
+  "competition": {
+    "id": "e9896fa2-11e1-4407-83d4-41d4f569aacd",
+    "name": "2012 World Rowing Cup III - Oberschleissheim/Munich, Germany",
+    "year": "2012",
+    "start_date": "2012-06-14 00:00:00",
+    "end_date": "2012-06-17 00:00:00",
+    "type_id": "29712fef-cbdc-4831-8ff6-980543eec908",
+    "type": "World Rowing Cup III",
+    "type_abbreviation": "WCp 3",
+    "category_id": "9b1abc60-419f-463d-a311-ceaa79fdabd7",
+    "category": "World Rowing Cup",
+    "venue": "Munich",
+    "venue_country": "Germany"
+  },
+  "event": {
+    "id": "09208830-2957-453b-af98-a02868cc4e29",
+    "name": "Lightweight Men's Single Sculls",
+    "boat_class": "LM1x",
+    "gender": "Men",
+    "rsc_code": "ROWMSCULL1-L----------------------",
+    "age_group": "elite"
+  },
+  "race": {
+    "id": "0ddf2e00-fbbe-4c55-a96f-925fdd296ed4",
+    "name": "SA/B 2",
+    "date": "2012-06-16 09:51:00",
+    "race_nr": "85",
+    "rsc_code": "ROWMSCULL1-L----------SFNL000200--",
+    "phase": "Semifinal",
+    "status": "Official"
+  },
+  "pdf_url_race_data": "https://d3fpn4c9813ycf.cloudfront.net/pdfDocuments/WCp3F_2012/WCP3F_2012_ROWMSCULL1-L----------SFNL000200--_MGPSX7254.pdf",
+  "race_data": [],
+  "parser_failed_urls": [
+    "https://d3fpn4c9813ycf.cloudfront.net/pdfDocuments/WCp3F_2012/WCP3F_2012_ROWMSCULL1-L----------SFNL000200--_MGPSX7254.pdf"
+  ],
+  "export_path": "exports/race_data_by_race_2012_2012/2012-wcp-3-2012-world-rowing-cup-iii-oberschleissheim-munich-germany-e9896fa2/00536-elite-lm1x-semifinal-sa-b-2-0ddf2e00.json"
+}

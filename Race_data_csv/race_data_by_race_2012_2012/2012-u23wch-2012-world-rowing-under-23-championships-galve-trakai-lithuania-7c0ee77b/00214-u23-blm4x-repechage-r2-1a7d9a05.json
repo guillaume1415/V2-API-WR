@@ -1,0 +1,39 @@
+{
+  "competition": {
+    "id": "7c0ee77b-3bbe-45a1-b5e2-a46d3132b5e9",
+    "name": "2012 World Rowing Under 23 Championships - Galve/Trakai, Lithuania",
+    "year": "2012",
+    "start_date": "2012-07-11 00:00:00",
+    "end_date": "2012-07-15 00:00:00",
+    "type_id": "1c2c09fa-a8e6-4afc-9df7-1b7ebd413fac",
+    "type": "World Rowing  U23 Championships",
+    "type_abbreviation": "U23WCH",
+    "category_id": "51f27bfe-a72a-4a04-91df-eda2f883829f",
+    "category": "World Rowing Under 23 Championships",
+    "venue": "Trakai",
+    "venue_country": "Lithuania"
+  },
+  "event": {
+    "id": "12f1808f-cd33-4586-8af7-0d03a5b83222",
+    "name": "U23 Lightweight Men's Quadruple Sculls",
+    "boat_class": "BLM4x",
+    "gender": "Men",
+    "rsc_code": "ROWMSCULL4-LU23-------------------",
+    "age_group": "u23"
+  },
+  "race": {
+    "id": "1a7d9a05-4464-4e70-bb41-3980a8dc4f68",
+    "name": "R2",
+    "date": "2012-07-12 16:42:00",
+    "race_nr": "65",
+    "rsc_code": "ROWMSCULL4-LU23-------REP-005200--",
+    "phase": "Repechage",
+    "status": "Official"
+  },
+  "pdf_url_race_data": "https://d3fpn4c9813ycf.cloudfront.net/pdfDocuments/U23WCH_2012/U23WCH_2012_ROWMSCULL4-LU23-------REP-005200--_MGPSX4506.pdf",
+  "race_data": [],
+  "parser_failed_urls": [
+    "https://d3fpn4c9813ycf.cloudfront.net/pdfDocuments/U23WCH_2012/U23WCH_2012_ROWMSCULL4-LU23-------REP-005200--_MGPSX4506.pdf"
+  ],
+  "export_path": "exports/race_data_by_race_2012_2012/2012-u23wch-2012-world-rowing-under-23-championships-galve-trakai-lithuania-7c0ee77b/00214-u23-blm4x-repechage-r2-1a7d9a05.json"
+}

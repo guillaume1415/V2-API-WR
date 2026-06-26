@@ -1,0 +1,39 @@
+{
+  "competition": {
+    "id": "d52d1147-e2b8-4bc3-9f9b-e6f24cfa41ea",
+    "name": "2021 World Rowing European Olympic and Paralympic Qualification Regatta",
+    "year": "2021",
+    "start_date": "2021-04-05 00:00:00",
+    "end_date": "2021-04-08 00:00:00",
+    "type_id": "602ef0cd-de70-4e7e-a6af-9b9c85342a28",
+    "type": "World Rowing Olympic Qualification Regatta",
+    "type_abbreviation": "FOQR",
+    "category_id": "c4c08c7a-c6f5-43c7-97c5-a722bb74a767",
+    "category": "Olympics",
+    "venue": "Varese",
+    "venue_country": "Italy"
+  },
+  "event": {
+    "id": "d3ef52fe-6f3d-4f8f-abba-a63479f61a09",
+    "name": "Men's Single Sculls",
+    "boat_class": "M1x",
+    "gender": "Men",
+    "rsc_code": "ROWMSCULL1------------------------",
+    "age_group": "elite"
+  },
+  "race": {
+    "id": "88bbe366-c189-4ba9-b730-782749155f10",
+    "name": "Men's Single Sculls Final FC",
+    "date": "2021-04-08 06:47:00",
+    "race_nr": "17",
+    "rsc_code": "ROWMSCULL1------------FNL-000300--",
+    "phase": "Final",
+    "status": "Official"
+  },
+  "pdf_url_race_data": "https://d3fpn4c9813ycf.cloudfront.net/pdfDocuments/FOQR_2020_2/FOQR_2020_2_ROWMSCULL1------------FNL-000300--_C77X6775.PDF",
+  "race_data": [],
+  "parser_failed_urls": [
+    "https://d3fpn4c9813ycf.cloudfront.net/pdfDocuments/FOQR_2020_2/FOQR_2020_2_ROWMSCULL1------------FNL-000300--_C77X6775.PDF"
+  ],
+  "export_path": "exports/race_data_by_race_2021_2023/2021-foqr-2021-world-rowing-european-olympic-and-paralympic-qualification-regatta-d52d1147/00434-elite-m1x-final-men-s-single-sculls-final-fc-88bbe366.json"
+}

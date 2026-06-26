@@ -1,0 +1,39 @@
+{
+  "competition": {
+    "id": "6f177182-6b70-49b7-8e81-abfe36f1ba04",
+    "name": "2022 World Rowing Championships",
+    "year": "2022",
+    "start_date": "2022-09-18 00:00:00",
+    "end_date": "2022-09-25 00:00:00",
+    "type_id": "7c4013ad-c7a7-4d0f-a2aa-2a53bcb5d53a",
+    "type": "World Rowing Championships",
+    "type_abbreviation": "WCH",
+    "category_id": "6589b9db-e687-4958-aa4d-d7f980f3a307",
+    "category": "World Rowing Championships",
+    "venue": "Racice",
+    "venue_country": "Czechia"
+  },
+  "event": {
+    "id": "f683a602-d25c-46d9-bf63-d3942d68ddd3",
+    "name": "Men's Single Sculls",
+    "boat_class": "M1x",
+    "gender": "Men",
+    "rsc_code": "ROWMSCULL1------------------------",
+    "age_group": "elite"
+  },
+  "race": {
+    "id": "0f1c060a-b8fa-4cf0-9ac3-cc8fa2ef0ffb",
+    "name": "Men's Single Sculls Semifinal C/D 1",
+    "date": "2022-09-22 13:20:00",
+    "race_nr": "158",
+    "rsc_code": "ROWMSCULL1------------SFNL000300--",
+    "phase": "Semifinal",
+    "status": "Official"
+  },
+  "pdf_url_race_data": "https://d3fpn4c9813ycf.cloudfront.net/pdfDocuments/WCH_2022_1/WCH_2022_1_ROWMSCULL1------------SFNL000300--_C77X8866.PDF",
+  "race_data": [],
+  "parser_failed_urls": [
+    "https://d3fpn4c9813ycf.cloudfront.net/pdfDocuments/WCH_2022_1/WCH_2022_1_ROWMSCULL1------------SFNL000300--_C77X8866.PDF"
+  ],
+  "export_path": "exports/race_data_by_race_2021_2023/2022-wch-2022-world-rowing-championships-6f177182/00874-elite-m1x-semifinal-men-s-single-sculls-semifinal-c-d-1-0f1c060a.json"
+}

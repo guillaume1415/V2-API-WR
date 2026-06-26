@@ -1,0 +1,39 @@
+{
+  "competition": {
+    "id": "c2210936-0d5f-4c5e-95dc-d23d3e7076eb",
+    "name": "2021 World Rowing Final Olympic Qualification Regatta",
+    "year": "2021",
+    "start_date": "2021-05-15 00:00:00",
+    "end_date": "2021-05-17 00:00:00",
+    "type_id": "602ef0cd-de70-4e7e-a6af-9b9c85342a28",
+    "type": "World Rowing Olympic Qualification Regatta",
+    "type_abbreviation": "FOQR",
+    "category_id": "c4c08c7a-c6f5-43c7-97c5-a722bb74a767",
+    "category": "Olympics",
+    "venue": "Lucerne",
+    "venue_country": "Switzerland"
+  },
+  "event": {
+    "id": "473a896b-abe2-4eaa-8a2d-dd4b5554de70",
+    "name": "Men's Single Sculls",
+    "boat_class": "M1x",
+    "gender": "Men",
+    "rsc_code": "ROWMSCULL1------------------------",
+    "age_group": "elite"
+  },
+  "race": {
+    "id": "ed4fae83-19b7-4b68-90e9-57de61754d6e",
+    "name": "Men's Single Sculls Repechage 2",
+    "date": "2021-05-15 14:35:00",
+    "race_nr": "37",
+    "rsc_code": "ROWMSCULL1------------REP-000200--",
+    "phase": "Repechage",
+    "status": "Official"
+  },
+  "pdf_url_race_data": "https://d3fpn4c9813ycf.cloudfront.net/pdfDocuments/FOQR_2021_100/FOQR_2021_100_ROWMSCULL1------------REP-000200--_C77X6219.PDF",
+  "race_data": [],
+  "parser_failed_urls": [
+    "https://d3fpn4c9813ycf.cloudfront.net/pdfDocuments/FOQR_2021_100/FOQR_2021_100_ROWMSCULL1------------REP-000200--_C77X6219.PDF"
+  ],
+  "export_path": "exports/race_data_by_race_2021_2023/2021-foqr-2021-world-rowing-final-olympic-qualification-regatta-c2210936/00290-elite-m1x-repechage-men-s-single-sculls-repechage-2-ed4fae83.json"
+}

@@ -1,0 +1,39 @@
+{
+  "competition": {
+    "id": "299157d0-d077-4653-8af6-e96406496047",
+    "name": "2024 Olympic Games Regatta",
+    "year": "2024",
+    "start_date": "2024-07-27 00:00:00",
+    "end_date": "2024-08-03 00:00:00",
+    "type_id": "543ba8bd-2437-43b7-bd17-4cda34a5945c",
+    "type": "Olympic Games",
+    "type_abbreviation": "OG",
+    "category_id": "c4c08c7a-c6f5-43c7-97c5-a722bb74a767",
+    "category": "Olympics",
+    "venue": "Paris, France",
+    "venue_country": "France"
+  },
+  "event": {
+    "id": "cd411990-a340-4421-af3b-39366cde9abe",
+    "name": "Women's Single Sculls",
+    "boat_class": "W1x",
+    "gender": "Women",
+    "rsc_code": "ROWWSCULL1------------------------",
+    "age_group": "elite"
+  },
+  "race": {
+    "id": "2c5cdcf2-c5da-4ae2-8977-410e34531eeb",
+    "name": "Women's Single Sculls Heat 5",
+    "date": "2024-07-27 09:00:00",
+    "race_nr": "11",
+    "rsc_code": "ROWWSCULL1------------HEAT000500--",
+    "phase": "Heat",
+    "status": "Official"
+  },
+  "pdf_url_race_data": "https://d3fpn4c9813ycf.cloudfront.net/pdfDocuments/OG2024/OG2024_ROWWSCULL1------------HEAT000500--_C77X5346.PDF",
+  "race_data": [],
+  "parser_failed_urls": [
+    "https://d3fpn4c9813ycf.cloudfront.net/pdfDocuments/OG2024/OG2024_ROWWSCULL1------------HEAT000500--_C77X5346.PDF"
+  ],
+  "export_path": "exports/race_data_by_race_2024_2024/2024-og-2024-olympic-games-regatta-299157d0/00167-elite-w1x-heat-women-s-single-sculls-heat-5-2c5cdcf2.json"
+}
