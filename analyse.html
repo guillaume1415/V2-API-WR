@@ -1427,6 +1427,25 @@ async function fetchTracker(raceId){
 // sinon fetch est bloqué par CORS.
 const CSV_BASE_URL = "Race_data_csv";
 
+// Seuil unique (m) : si au moins une lane n'a aucun tick avant cette
+// distance, on déclenche le fallback CSV. Utilisé à 2 endroits :
+//   - raceNeedsCsvFallback() avant le fetch (optim : évite de charger
+//     index.json + fichier course quand l'API est complète)
+//   - laneSeries() pour décider du préfixage CSV par bateau
+const CSV_FALLBACK_THRESHOLD_M = 200;
+
+// Renvoie true si la course présente un trou initial justifiant le
+// chargement du CSV. Appelé juste après fetchTracker, avant fetch CSV.
+function raceNeedsCsvFallback(data){
+  if(!data) return false;
+  const lanes = getLanes(data);
+  for(const l of lanes){
+    const firstPt = (l.live||[])[0]?.raceBoatTracker?.distanceTravelled;
+    if(firstPt != null && firstPt > CSV_FALLBACK_THRESHOLD_M) return true;
+  }
+  return false;
+}
+
 let _csvIndexPromise = null;
 async function loadCsvIndex(){
   if(state.csvIndex) return state.csvIndex;
@@ -2060,14 +2079,12 @@ function laneSeries(lane, totalLength, csvLaneData){
   // (la durée API couvre seulement ~300-2000m, pas 0-2000m).
   const csvArr = csvLaneData ? csvLaneToArrays(csvLaneData) : null;
   const firstApiD = best[0].x;
-  // Seuil de déclenchement : aucun tick API dans les 200 premiers
-  // mètres → on comble avec le CSV. Ce seuil couvre aussi le cas
-  // "rien entre 0 et 300m" (200 ⊂ 300). Les compétitions 2026
-  // observées démarrent typiquement à 282-295m, donc on déclenche.
-  const FALLBACK_THRESHOLD_M = 200;
+  // Seuil de déclenchement (cf. CSV_FALLBACK_THRESHOLD_M, défini plus
+  // haut). Si aucun tick API avant ce seuil → on comble avec le CSV.
+  // Les compétitions 2026 observées démarrent typiquement à 282-295m.
   const useCsv = !!(
     csvArr && csvArr.d.length &&
-    firstApiD > FALLBACK_THRESHOLD_M &&
+    firstApiD > CSV_FALLBACK_THRESHOLD_M &&
     firstApiD > csvArr.d[0]
   );
   let csvFilled = null;          // {joinD, prependedCount} si fallback appliqué
@@ -3647,12 +3664,15 @@ async function selectRace(id){
     renderMoreMenu();
     state.error = e.message;
   }
-  // Fetch CSV en parallèle (silencieux si indispo). On déclenche le 2e
-  // render seulement après pour éviter un flash du bandeau.
-  try {
-    state.csvData = await fetchCsvForRace(id);
-  } catch(e){
-    state.csvData = null;
+  // Fetch CSV uniquement si l'API présente un trou initial (optim :
+  // évite de charger inutilement index.json + fichier course quand
+  // toutes les lanes ont des données avant CSV_FALLBACK_THRESHOLD_M).
+  if(raceNeedsCsvFallback(state.lastData)){
+    try {
+      state.csvData = await fetchCsvForRace(id);
+    } catch(e){
+      state.csvData = null;
+    }
   }
   render();
 }
@@ -3898,9 +3918,11 @@ async function cmpSelectRace(id){
     // Présélectionne toutes les lanes du slot 2
     cmp.selectedLaneIds = lanes2.map(l => l.id).filter(Boolean);
   } catch(e){ console.error(e); }
-  try {
-    cmp.csvData = await fetchCsvForRace(id);
-  } catch(e){ cmp.csvData = null; }
+  if(raceNeedsCsvFallback(cmp.lastData)){
+    try {
+      cmp.csvData = await fetchCsvForRace(id);
+    } catch(e){ cmp.csvData = null; }
+  }
   cmp.loadingRaces = false; render();
 }
 
